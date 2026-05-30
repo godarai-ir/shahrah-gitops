@@ -94,3 +94,6 @@ docs:
       enabled: true
       secretName: docs-staging-shahrah-ir-tls
       clusterIssuer: letsencrypt-prod
+
+migrations:
+  enabled: false
