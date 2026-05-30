@@ -1,6 +1,6 @@
 global:
   imageRegistry: registry-def882af9a-shahrah-staging.apps.ir-central1.arvancaas.ir/shahrah-staging
-  imageTag: "staging-sha-override"
+  imageTag: "sha-99eaffdf33c700a84b0f8fe7914d2fa0ceea619b"
 
 imagePullSecrets:
   - regcred
