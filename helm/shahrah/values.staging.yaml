@@ -85,15 +85,18 @@ blog:
 
 docs:
   ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: docs.staging.shahrah.ir
+      - host: localhost
         paths:
-          - path: /
-            pathType: Prefix
+          - path: /docs(/|$)(.*)
+            pathType: ImplementationSpecific
     tls:
       enabled: true
-      secretName: docs-staging-shahrah-ir-tls
-      clusterIssuer: letsencrypt-prod
+      secretName: localhost-docs-tls
+      clusterIssuer: ""
 
 migrations:
   enabled: false
