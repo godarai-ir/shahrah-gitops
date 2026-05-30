@@ -7,6 +7,7 @@ spec:
   description: Shahrah GitOps project with environment guardrails.
   sourceRepos:
     - https://github.com/Delpak/shahrah-gitops.git
+    - git@github.com:Delpak/shahrah-gitops.git
   destinations:
     - namespace: shahrah-staging
       server: https://kubernetes.default.svc
