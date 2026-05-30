@@ -1,0 +1,96 @@
+global:
+  imageRegistry: registry-def882af9a-shahrah-staging.apps.ir-central1.arvancaas.ir/shahrah-staging
+  imageTag: "staging-sha-override"
+
+imagePullSecrets:
+  - regcred
+
+config:
+  create: true
+  name: shahrah-config
+  data:
+    SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
+    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.staging.shahrah.ir,https://support-admin.staging.shahrah.ir
+    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://support-admin.staging.shahrah.ir/api/v1
+    MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    REDIS_HOST: redis.staging.internal
+    REDIS_PORT: "6379"
+    CLICKHOUSE_DB: sharah_db
+    CLICKHOUSE_USER: sharah_user
+    CLICKHOUSE_HTTP_PORT: "8123"
+    CLICKHOUSE_NATIVE_PORT: "9000"
+    TYPESENSE_HOST: typesense.staging.internal
+    TYPESENSE_PORT: "8108"
+    TYPESENSE_PROTOCOL: https
+    TUNNEL_SERVER_URL: http://tunnel-server:8082
+    TUNNEL_CLIENT_URL: http://tunnel-client:8081
+    SILK_ROAD_URL: http://silk-road:8083
+    SMTP_HOST: smtp.staging.internal
+    SMTP_PORT: "587"
+    SMTP_FROM: no-reply@staging.shahrah.ir
+    EMAIL_SENDING_ENABLED: "true"
+
+secrets:
+  create: false
+  name: shahrah-secret
+  data: {}
+
+controlPlane:
+  ingress:
+    hosts:
+      - host: api.staging.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: api-staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+tenantAdmin:
+  ingress:
+    hosts:
+      - host: tenant-admin.staging.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: tenant-admin-staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+website:
+  ingress:
+    hosts:
+      - host: staging.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+blog:
+  ingress:
+    hosts:
+      - host: blog.staging.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: blog-staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+docs:
+  ingress:
+    hosts:
+      - host: docs.staging.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: docs-staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod

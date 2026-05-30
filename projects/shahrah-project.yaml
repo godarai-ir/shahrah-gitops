@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: shahrah
+  namespace: argocd
+spec:
+  description: Shahrah GitOps project with environment guardrails.
+  sourceRepos:
+    - https://github.com/Delpak/shahrah-gitops.git
+  destinations:
+    - namespace: shahrah-staging
+      server: https://kubernetes.default.svc
+    - namespace: shahrah-production
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

@@ -1,0 +1,35 @@
+{{- $root := . -}}
+{{- $workloads := dict
+  "control-plane" .Values.controlPlane
+  "model-discovery" .Values.modelDiscovery
+  "support-admin" .Values.supportAdmin
+  "silk-road" .Values.silkRoad
+  "tunnel-server" .Values.tunnelServer
+  "tunnel-client" .Values.tunnelClient
+  "tenant-admin" .Values.tenantAdmin
+  "website" .Values.website
+  "blog" .Values.blog
+  "docs" .Values.docs
+-}}
+{{- range $name, $cfg := $workloads }}
+{{- if and $cfg.enabled $cfg.service.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "shahrah.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+spec:
+  type: {{ $cfg.service.type | default "ClusterIP" }}
+  selector:
+    app.kubernetes.io/instance: {{ $root.Release.Name }}
+    app.kubernetes.io/component: {{ $name }}
+  ports:
+    - name: http
+      port: {{ $cfg.service.port | default $cfg.containerPort }}
+      targetPort: {{ $cfg.service.targetPort | default "http" }}
+      protocol: TCP
+{{- end }}
+{{- end }}

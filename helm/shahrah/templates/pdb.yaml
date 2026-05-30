@@ -1,0 +1,35 @@
+{{- $root := . -}}
+{{- $workloads := dict
+  "control-plane" .Values.controlPlane
+  "model-discovery" .Values.modelDiscovery
+  "support-admin" .Values.supportAdmin
+  "silk-road" .Values.silkRoad
+  "tunnel-server" .Values.tunnelServer
+  "tunnel-client" .Values.tunnelClient
+  "tenant-admin" .Values.tenantAdmin
+  "website" .Values.website
+  "blog" .Values.blog
+  "docs" .Values.docs
+-}}
+{{- range $name, $cfg := $workloads }}
+{{- if and $cfg.enabled $cfg.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "shahrah.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+spec:
+  {{- if hasKey $cfg.pdb "minAvailable" }}
+  minAvailable: {{ $cfg.pdb.minAvailable }}
+  {{- else }}
+  maxUnavailable: {{ $cfg.pdb.maxUnavailable | default 1 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $root.Release.Name }}
+      app.kubernetes.io/component: {{ $name }}
+{{- end }}
+{{- end }}

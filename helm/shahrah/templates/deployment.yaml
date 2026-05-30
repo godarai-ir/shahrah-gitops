@@ -1,0 +1,201 @@
+{{- $root := . -}}
+{{- $workloads := dict
+  "control-plane" .Values.controlPlane
+  "model-discovery" .Values.modelDiscovery
+  "support-admin" .Values.supportAdmin
+  "silk-road" .Values.silkRoad
+  "tunnel-server" .Values.tunnelServer
+  "tunnel-client" .Values.tunnelClient
+  "tenant-admin" .Values.tenantAdmin
+  "website" .Values.website
+  "blog" .Values.blog
+  "docs" .Values.docs
+-}}
+{{- range $name, $cfg := $workloads }}
+{{- if $cfg.enabled }}
+{{- $strategy := default (dict) $cfg.strategy }}
+{{- $strategyType := default "RollingUpdate" (index $strategy "type") }}
+{{- $rollingUpdate := default (dict) (index $strategy "rollingUpdate") }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "shahrah.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+    {{- with $cfg.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $cfg.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ $cfg.replicaCount | default 1 }}
+  revisionHistoryLimit: {{ $cfg.revisionHistoryLimit | default 5 }}
+  strategy:
+    type: {{ $strategyType }}
+    {{- if eq $strategyType "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ index $rollingUpdate "maxSurge" | default "25%" }}
+      maxUnavailable: {{ index $rollingUpdate "maxUnavailable" | default "25%" }}
+    {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $root.Release.Name }}
+      app.kubernetes.io/component: {{ $name }}
+  template:
+    metadata:
+      labels:
+        {{- include "shahrah.selectorLabels" $root | nindent 8 }}
+        app.kubernetes.io/component: {{ $name }}
+        {{- with $cfg.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with $cfg.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if $root.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := $root.Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      {{- if $cfg.serviceAccountName }}
+      serviceAccountName: {{ $cfg.serviceAccountName }}
+      {{- else if and $cfg.serviceAccount $cfg.serviceAccount.create }}
+      serviceAccountName: {{ $cfg.serviceAccount.name | default $name }}
+      {{- end }}
+      {{- with $cfg.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with $cfg.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $cfg.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $cfg.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $cfg.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          image: "{{ $root.Values.global.imageRegistry }}/{{ $cfg.image.repository }}:{{ $cfg.image.tag | default $root.Values.global.imageTag }}"
+          imagePullPolicy: {{ $cfg.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: {{ $cfg.containerPort }}
+              protocol: TCP
+          {{- with $cfg.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $cfg.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or $cfg.env $cfg.envFromConfigKeys $cfg.envFromSecretKeys $cfg.extraEnv }}
+          env:
+            {{- range $k, $v := $cfg.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- range $k := $cfg.envFromConfigKeys }}
+            - name: {{ $k }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $root.Values.config.name }}
+                  key: {{ $k }}
+            {{- end }}
+            {{- range $k := $cfg.envFromSecretKeys }}
+            - name: {{ $k }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $root.Values.secrets.name }}
+                  key: {{ $k }}
+            {{- end }}
+            {{- with $cfg.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $cfg.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $cfg.securityContext | nindent 12 }}
+          {{- with $cfg.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if and $cfg.probes.readiness.enabled (eq $cfg.probes.readiness.type "http") }}
+          readinessProbe:
+            httpGet:
+              path: {{ $cfg.probes.readiness.path | default "/" }}
+              port: {{ $cfg.probes.readiness.port | default "http" }}
+            initialDelaySeconds: {{ $cfg.probes.readiness.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ $cfg.probes.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ $cfg.probes.readiness.timeoutSeconds | default 2 }}
+            failureThreshold: {{ $cfg.probes.readiness.failureThreshold | default 6 }}
+          {{- end }}
+          {{- if and $cfg.probes.readiness.enabled (eq $cfg.probes.readiness.type "tcp") }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ $cfg.probes.readiness.port | default $cfg.containerPort }}
+            initialDelaySeconds: {{ $cfg.probes.readiness.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ $cfg.probes.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ $cfg.probes.readiness.timeoutSeconds | default 2 }}
+            failureThreshold: {{ $cfg.probes.readiness.failureThreshold | default 6 }}
+          {{- end }}
+          {{- if and $cfg.probes.liveness.enabled (eq $cfg.probes.liveness.type "http") }}
+          livenessProbe:
+            httpGet:
+              path: {{ $cfg.probes.liveness.path | default "/" }}
+              port: {{ $cfg.probes.liveness.port | default "http" }}
+            initialDelaySeconds: {{ $cfg.probes.liveness.initialDelaySeconds | default 20 }}
+            periodSeconds: {{ $cfg.probes.liveness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ $cfg.probes.liveness.timeoutSeconds | default 2 }}
+            failureThreshold: {{ $cfg.probes.liveness.failureThreshold | default 6 }}
+          {{- end }}
+          {{- if and $cfg.probes.liveness.enabled (eq $cfg.probes.liveness.type "tcp") }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ $cfg.probes.liveness.port | default $cfg.containerPort }}
+            initialDelaySeconds: {{ $cfg.probes.liveness.initialDelaySeconds | default 20 }}
+            periodSeconds: {{ $cfg.probes.liveness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ $cfg.probes.liveness.timeoutSeconds | default 2 }}
+            failureThreshold: {{ $cfg.probes.liveness.failureThreshold | default 6 }}
+          {{- end }}
+          {{- if and $cfg.probes.startup.enabled (eq $cfg.probes.startup.type "http") }}
+          startupProbe:
+            httpGet:
+              path: {{ $cfg.probes.startup.path | default "/" }}
+              port: {{ $cfg.probes.startup.port | default "http" }}
+            initialDelaySeconds: {{ $cfg.probes.startup.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ $cfg.probes.startup.periodSeconds | default 10 }}
+            timeoutSeconds: {{ $cfg.probes.startup.timeoutSeconds | default 2 }}
+            failureThreshold: {{ $cfg.probes.startup.failureThreshold | default 30 }}
+          {{- end }}
+          {{- if and $cfg.probes.startup.enabled (eq $cfg.probes.startup.type "tcp") }}
+          startupProbe:
+            tcpSocket:
+              port: {{ $cfg.probes.startup.port | default $cfg.containerPort }}
+            initialDelaySeconds: {{ $cfg.probes.startup.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ $cfg.probes.startup.periodSeconds | default 10 }}
+            timeoutSeconds: {{ $cfg.probes.startup.timeoutSeconds | default 2 }}
+            failureThreshold: {{ $cfg.probes.startup.failureThreshold | default 30 }}
+          {{- end }}
+      {{- with $cfg.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,83 @@
+{{- if and .Values.migrations.enabled .Values.migrations.mainDb.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate-main-db
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrate-main-db
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrations.mainDb.backoffLimit | default 3 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: migrate-main-db
+    spec:
+      restartPolicy: OnFailure
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: goose
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.mainDb.image.repository }}:{{ .Values.migrations.mainDb.image.tag | default .Values.global.imageTag }}"
+          imagePullPolicy: {{ .Values.migrations.mainDb.image.pullPolicy | default "IfNotPresent" }}
+          command:
+            {{- toYaml .Values.migrations.mainDb.command | nindent 12 }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ .Values.migrations.mainDb.databaseUrlSecretKey | default "DATABASE_URL" }}
+{{- end }}
+
+{{- if and .Values.migrations.enabled .Values.migrations.modelDiscovery.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-discovery-migrate
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-discovery-migrate
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-9"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrations.modelDiscovery.backoffLimit | default 3 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: model-discovery-migrate
+    spec:
+      restartPolicy: OnFailure
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: model-discovery-migrate
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.modelDiscovery.image.repository }}:{{ .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
+          imagePullPolicy: {{ .Values.migrations.modelDiscovery.image.pullPolicy | default "IfNotPresent" }}
+          command:
+            {{- toYaml .Values.migrations.modelDiscovery.command | nindent 12 }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ .Values.migrations.modelDiscovery.databaseUrlSecretKey | default "MODEL_DISCOVERY_DATABASE_URL" }}
+{{- end }}

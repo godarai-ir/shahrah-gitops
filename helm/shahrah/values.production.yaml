@@ -1,0 +1,119 @@
+global:
+  imageRegistry: registry-def882af9a-shahrah-prod.apps.ir-central1.arvancaas.ir/shahrah-prod
+  imageTag: "prod-sha-override"
+
+imagePullSecrets:
+  - regcred
+
+config:
+  create: true
+  name: shahrah-config
+  data:
+    SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
+    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.shahrah.ir,https://support-admin.shahrah.ir
+    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://support-admin.shahrah.ir/api/v1
+    MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    REDIS_HOST: redis.prod.internal
+    REDIS_PORT: "6379"
+    CLICKHOUSE_DB: sharah_db
+    CLICKHOUSE_USER: sharah_user
+    CLICKHOUSE_HTTP_PORT: "8123"
+    CLICKHOUSE_NATIVE_PORT: "9000"
+    TYPESENSE_HOST: typesense.prod.internal
+    TYPESENSE_PORT: "8108"
+    TYPESENSE_PROTOCOL: https
+    TUNNEL_SERVER_URL: http://tunnel-server:8082
+    TUNNEL_CLIENT_URL: http://tunnel-client:8081
+    SILK_ROAD_URL: http://silk-road:8083
+    SMTP_HOST: smtp.prod.internal
+    SMTP_PORT: "587"
+    SMTP_FROM: no-reply@shahrah.ir
+    EMAIL_SENDING_ENABLED: "true"
+
+secrets:
+  create: false
+  name: shahrah-secret
+  data: {}
+
+controlPlane:
+  replicaCount: 3
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 15
+  pdb:
+    enabled: true
+    minAvailable: 2
+  ingress:
+    hosts:
+      - host: api.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: api-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+tenantAdmin:
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 8
+  ingress:
+    hosts:
+      - host: tenant-admin.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: tenant-admin-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+website:
+  ingress:
+    hosts:
+      - host: shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+blog:
+  ingress:
+    hosts:
+      - host: blog.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: blog-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+docs:
+  ingress:
+    hosts:
+      - host: docs.shahrah.ir
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: docs-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+
+modelDiscovery:
+  replicaCount: 3
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 12
+  pdb:
+    enabled: true
+    minAvailable: 2

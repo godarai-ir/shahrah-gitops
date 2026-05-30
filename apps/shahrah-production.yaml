@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: shahrah-production
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: shahrah
+    app.kubernetes.io/part-of: shahrah
+spec:
+  project: shahrah
+  source:
+    repoURL: https://github.com/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: helm/shahrah
+    helm:
+      releaseName: shahrah
+      valueFiles:
+        - values.yaml
+        - values.production.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shahrah-production
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
