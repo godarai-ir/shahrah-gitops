@@ -807,7 +807,8 @@ website:
     capabilities:
       drop: [ALL]
   env: {}
-  envFromConfigKeys: []
+  envFromConfigKeys:
+    - SHAHRAH_CONTROL_PLANE_URL
   envFromSecretKeys: []
   extraEnv: []
   volumes: []
