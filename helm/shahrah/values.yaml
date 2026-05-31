@@ -1064,3 +1064,8 @@ externalServices:
     name: postgres
     externalName: host.docker.internal
     port: 5432
+  redis:
+    enabled: false
+    name: redis
+    externalName: host.docker.internal
+    port: 6379

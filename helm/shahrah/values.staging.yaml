@@ -13,7 +13,7 @@ config:
     MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.staging.shahrah.ir,https://support-admin.staging.shahrah.ir
     NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://support-admin.staging.shahrah.ir/api/v1
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
-    REDIS_HOST: redis.staging.internal
+    REDIS_HOST: redis
     REDIS_PORT: "6379"
     CLICKHOUSE_DB: sharah_db
     CLICKHOUSE_USER: sharah_user
@@ -117,7 +117,11 @@ modelDiscovery:
       clusterIssuer: ""
 
 migrations:
-  enabled: false
+  enabled: true
+  mainDb:
+    enabled: false
+  modelDiscovery:
+    enabled: true
 
 externalServices:
   postgres:
@@ -125,3 +129,8 @@ externalServices:
     name: postgres
     externalName: host.docker.internal
     port: 5432
+  redis:
+    enabled: true
+    name: redis
+    externalName: host.docker.internal
+    port: 6379
