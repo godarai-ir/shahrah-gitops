@@ -24,8 +24,8 @@ config:
     TUNNEL_SERVER_URL: http://tunnel-server:8082
     TUNNEL_CLIENT_URL: http://tunnel-client:8081
     SILK_ROAD_URL: http://silk-road:8083
-    SMTP_HOST: smtp.staging.internal
-    SMTP_PORT: '587'
+    SMTP_HOST: mailpit
+    SMTP_PORT: '1025'
     SMTP_FROM: no-reply@staging.shahrah.ir
     EMAIL_SENDING_ENABLED: 'true'
 secrets:
@@ -180,3 +180,20 @@ externalServices:
     name: redis
     externalName: host.docker.internal
     port: 6379
+mailpit:
+  enabled: true
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: 'true'
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+    hosts:
+    - host: localhost
+      paths:
+      - path: /mailpit(/|$)(.*)
+        pathType: ImplementationSpecific
+    tls:
+      enabled: true
+      secretName: localhost-mailpit-tls
+      clusterIssuer: ''

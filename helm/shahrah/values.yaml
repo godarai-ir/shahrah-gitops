@@ -59,6 +59,33 @@ defaultWorkload:
       drop:
         - ALL
 
+mailpit:
+  enabled: false
+  image:
+    repository: axllent/mailpit
+    tag: v1.27
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    smtpPort: 1025
+    uiPort: 8025
+  ingress:
+    enabled: false
+    className: nginx
+    annotations: {}
+    hosts: []
+    tls:
+      enabled: false
+      secretName: ""
+      clusterIssuer: ""
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
 controlPlane:
   enabled: true
   image:
@@ -809,6 +836,10 @@ website:
   env: {}
   envFromConfigKeys:
     - SHAHRAH_CONTROL_PLANE_URL
+    - SMTP_HOST
+    - SMTP_PORT
+    - SMTP_FROM
+    - EMAIL_SENDING_ENABLED
   envFromSecretKeys: []
   extraEnv: []
   volumes: []

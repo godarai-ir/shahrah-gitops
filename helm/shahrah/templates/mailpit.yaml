@@ -1,0 +1,106 @@
+{{- if .Values.mailpit.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailpit
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mailpit
+spec:
+  replicas: {{ .Values.mailpit.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: mailpit
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: mailpit
+        app.kubernetes.io/name: {{ include "shahrah.name" . }}
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: mailpit
+          image: "{{ .Values.mailpit.image.repository }}:{{ .Values.mailpit.image.tag }}"
+          imagePullPolicy: {{ .Values.mailpit.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: smtp
+              containerPort: {{ .Values.mailpit.service.smtpPort | default 1025 }}
+              protocol: TCP
+            - name: web
+              containerPort: {{ .Values.mailpit.service.uiPort | default 8025 }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.mailpit.resources | nindent 12 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailpit
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mailpit
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: mailpit
+  ports:
+    - name: smtp
+      port: {{ .Values.mailpit.service.smtpPort | default 1025 }}
+      targetPort: smtp
+      protocol: TCP
+    - name: web
+      port: {{ .Values.mailpit.service.uiPort | default 8025 }}
+      targetPort: web
+      protocol: TCP
+
+{{- if .Values.mailpit.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mailpit
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mailpit
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.mailpit.ingress.className | quote }}
+    {{- with .Values.mailpit.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.mailpit.ingress.className | quote }}
+  rules:
+    {{- range .Values.mailpit.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: mailpit
+                port:
+                  number: {{ $.Values.mailpit.service.uiPort | default 8025 }}
+          {{- end }}
+    {{- end }}
+  {{- if .Values.mailpit.ingress.tls.enabled }}
+  tls:
+    - secretName: {{ .Values.mailpit.ingress.tls.secretName }}
+      hosts:
+        {{- range .Values.mailpit.ingress.hosts }}
+        - {{ .host | quote }}
+        {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
