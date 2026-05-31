@@ -1,6 +1,6 @@
 global:
   imageRegistry: registry.distr.sh/godar
-  imageTag: "sha-804c0eb7ad7de89e978feadc777124d7f2b76bcf"
+  imageTag: "sha-1f37d596aee371686acfedcedd1956caea182ed6"
 
 imagePullSecrets:
   - regcred
