@@ -109,13 +109,11 @@ supportAdmin:
     enabled: true
     annotations:
       argocd.argoproj.io/sync-wave: "1"
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
       - host: localhost
         paths:
-          - path: /models(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /models
+            pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-support-admin-tls
