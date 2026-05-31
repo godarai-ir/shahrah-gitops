@@ -34,7 +34,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: sha-8b0b15fcb5746b4241146dc1ffa8905a87e69b6f
+    tag: sha-e8cf6f2030a7f007db03239a448454dbf1f4e9c8
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
