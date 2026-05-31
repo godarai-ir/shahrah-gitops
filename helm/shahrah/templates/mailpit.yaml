@@ -30,6 +30,9 @@ spec:
         - name: mailpit
           image: "{{ .Values.mailpit.image.repository }}:{{ .Values.mailpit.image.tag }}"
           imagePullPolicy: {{ .Values.mailpit.image.pullPolicy | default "IfNotPresent" }}
+          env:
+            - name: MP_WEBROOT
+              value: {{ .Values.mailpit.webroot | default "/" | quote }}
           ports:
             - name: smtp
               containerPort: {{ .Values.mailpit.service.smtpPort | default 1025 }}

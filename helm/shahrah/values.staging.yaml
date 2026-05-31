@@ -182,17 +182,16 @@ externalServices:
     port: 6379
 mailpit:
   enabled: true
+  webroot: /mailpit
   ingress:
     enabled: true
     className: nginx
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: 'true'
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
+    annotations: {}
     hosts:
     - host: localhost
       paths:
-      - path: /mailpit(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /mailpit
+        pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-mailpit-tls

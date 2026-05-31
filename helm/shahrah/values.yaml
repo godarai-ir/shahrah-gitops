@@ -61,6 +61,7 @@ defaultWorkload:
 
 mailpit:
   enabled: false
+  webroot: /
   image:
     repository: axllent/mailpit
     tag: v1.27
