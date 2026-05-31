@@ -119,3 +119,10 @@ modelDiscovery:
 
 migrations:
   enabled: false
+
+externalServices:
+  postgres:
+    enabled: true
+    name: postgres
+    externalName: host.docker.internal
+    port: 5432

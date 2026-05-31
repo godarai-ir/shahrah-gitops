@@ -1,0 +1,15 @@
+{{- if .Values.externalServices.postgres.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.externalServices.postgres.name | default "postgres" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.externalServices.postgres.externalName | quote }}
+  ports:
+    - name: postgres
+      port: {{ .Values.externalServices.postgres.port | default 5432 }}
+      targetPort: {{ .Values.externalServices.postgres.port | default 5432 }}
+{{- end }}

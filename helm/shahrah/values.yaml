@@ -1057,3 +1057,10 @@ migrations:
       - deploy
     backoffLimit: 3
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
+
+externalServices:
+  postgres:
+    enabled: false
+    name: postgres
+    externalName: host.docker.internal
+    port: 5432
