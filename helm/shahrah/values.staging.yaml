@@ -50,38 +50,41 @@ controlPlane:
 tenantAdmin:
   ingress:
     hosts:
-      - host: tenant-admin.staging.shahrah.ir
+      - host: "*.localhost"
         paths:
           - path: /
             pathType: Prefix
     tls:
       enabled: true
-      secretName: tenant-admin-staging-shahrah-ir-tls
-      clusterIssuer: letsencrypt-prod
+      secretName: localhost-tenant-admin-tls
+      clusterIssuer: ""
 
 website:
   ingress:
     hosts:
-      - host: staging.shahrah.ir
+      - host: localhost
         paths:
           - path: /
             pathType: Prefix
     tls:
       enabled: true
-      secretName: staging-shahrah-ir-tls
-      clusterIssuer: letsencrypt-prod
+      secretName: localhost-website-tls
+      clusterIssuer: ""
 
 blog:
   ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: blog.staging.shahrah.ir
+      - host: localhost
         paths:
-          - path: /
-            pathType: Prefix
+          - path: /blog(/|$)(.*)
+            pathType: ImplementationSpecific
     tls:
       enabled: true
-      secretName: blog-staging-shahrah-ir-tls
-      clusterIssuer: letsencrypt-prod
+      secretName: localhost-blog-tls
+      clusterIssuer: ""
 
 docs:
   ingress:
@@ -96,6 +99,22 @@ docs:
     tls:
       enabled: true
       secretName: localhost-docs-tls
+      clusterIssuer: ""
+
+modelDiscovery:
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+    hosts:
+      - host: localhost
+        paths:
+          - path: /models(/|$)(.*)
+            pathType: ImplementationSpecific
+    tls:
+      enabled: true
+      secretName: localhost-model-discovery-tls
       clusterIssuer: ""
 
 migrations:
