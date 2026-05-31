@@ -30,3 +30,20 @@ spec:
       port: {{ .Values.externalServices.redis.port | default 6379 }}
       targetPort: {{ .Values.externalServices.redis.port | default 6379 }}
 {{- end }}
+
+{{- if .Values.externalServices.clickhouse.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.externalServices.clickhouse.name | default "clickhouse" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.externalServices.clickhouse.externalName | quote }}
+  ports:
+    - name: clickhouse
+      port: {{ .Values.externalServices.clickhouse.port | default 9000 }}
+      targetPort: {{ .Values.externalServices.clickhouse.port | default 9000 }}
+{{- end }}

@@ -1102,3 +1102,8 @@ externalServices:
     name: redis
     externalName: host.docker.internal
     port: 6379
+  clickhouse:
+    enabled: false
+    name: clickhouse
+    externalName: host.docker.internal
+    port: 9000

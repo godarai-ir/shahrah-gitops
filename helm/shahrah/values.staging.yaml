@@ -180,6 +180,11 @@ externalServices:
     name: redis
     externalName: host.docker.internal
     port: 6379
+  clickhouse:
+    enabled: true
+    name: clickhouse
+    externalName: host.docker.internal
+    port: 9000
 mailpit:
   enabled: true
   webroot: /mailpit
