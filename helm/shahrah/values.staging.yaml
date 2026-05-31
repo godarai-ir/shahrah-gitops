@@ -34,7 +34,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: ""
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -45,11 +45,9 @@ controlPlane:
       enabled: true
       secretName: api-staging-shahrah-ir-tls
       clusterIssuer: letsencrypt-prod
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 tenantAdmin:
   image:
-    tag: ""
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -65,11 +63,9 @@ tenantAdmin:
       enabled: true
       secretName: localhost-tenant-admin-tls
       clusterIssuer: ''
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 website:
   image:
-    tag: ""
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
   ingress:
     hosts:
     - host: localhost
@@ -80,11 +76,9 @@ website:
       enabled: true
       secretName: localhost-website-tls
       clusterIssuer: ''
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 blog:
   image:
-    tag: ""
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/use-regex: 'true'
@@ -98,11 +92,9 @@ blog:
       enabled: true
       secretName: localhost-blog-tls
       clusterIssuer: ''
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 docs:
   image:
-    tag: ""
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
   ingress:
     hosts:
     - host: localhost
@@ -113,11 +105,9 @@ docs:
       enabled: true
       secretName: localhost-docs-tls
       clusterIssuer: ''
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 supportAdmin:
   image:
-    tag: ""
+    tag: sha-402c4236ff6396f316856c642b63d91ea153bc91
   probes:
     readiness:
       path: /catalog
@@ -136,11 +126,9 @@ supportAdmin:
       enabled: true
       secretName: localhost-support-admin-tls
       clusterIssuer: ''
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 modelDiscovery:
   image:
-    tag: ""
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
   extraEnv:
   - name: DATABASE_URL
     valueFrom:
@@ -162,31 +150,25 @@ modelDiscovery:
       enabled: true
       secretName: localhost-model-discovery-tls
       clusterIssuer: ''
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 migrations:
   enabled: true
   mainDb:
     enabled: false
     image:
-      tag: ""
+      tag: ''
   modelDiscovery:
     enabled: true
     image:
-      tag: ""
-
+      tag: ''
 silkRoad:
   image:
-    tag: ""
-
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 tunnelServer:
   image:
-    tag: ""
-
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 tunnelClient:
   image:
-    tag: ""
-
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 externalServices:
   postgres:
     enabled: true
@@ -198,12 +180,3 @@ externalServices:
     name: redis
     externalName: host.docker.internal
     port: 6379
-silkRoad:
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
-tunnelClient:
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
-tunnelServer:
-  image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
