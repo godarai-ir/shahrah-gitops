@@ -90,14 +90,11 @@ blog:
 
 docs:
   ingress:
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
       - host: localhost
         paths:
-          - path: /docs(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /docs
+            pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-docs-tls
