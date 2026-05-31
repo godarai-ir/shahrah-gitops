@@ -37,6 +37,8 @@ secrets:
   data: {}
 
 controlPlane:
+  image:
+    tag: ""
   ingress:
     hosts:
       - host: api.staging.shahrah.ir
@@ -49,6 +51,8 @@ controlPlane:
       clusterIssuer: letsencrypt-prod
 
 tenantAdmin:
+  image:
+    tag: ""
   envFromConfigKeys:
     - SHAHRAH_CONTROL_PLANE_URL
     - SHAHRAH_MODEL_DISCOVERY_URL
@@ -66,6 +70,8 @@ tenantAdmin:
       clusterIssuer: ""
 
 website:
+  image:
+    tag: ""
   ingress:
     hosts:
       - host: localhost
@@ -78,6 +84,8 @@ website:
       clusterIssuer: ""
 
 blog:
+  image:
+    tag: ""
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/use-regex: "true"
@@ -93,6 +101,8 @@ blog:
       clusterIssuer: ""
 
 docs:
+  image:
+    tag: ""
   ingress:
     hosts:
       - host: localhost
@@ -105,6 +115,8 @@ docs:
       clusterIssuer: ""
 
 supportAdmin:
+  image:
+    tag: ""
   probes:
     readiness:
       path: /catalog
@@ -125,6 +137,8 @@ supportAdmin:
       clusterIssuer: ""
 
 modelDiscovery:
+  image:
+    tag: ""
   extraEnv:
     - name: DATABASE_URL
       valueFrom:
@@ -151,8 +165,24 @@ migrations:
   enabled: true
   mainDb:
     enabled: false
+    image:
+      tag: ""
   modelDiscovery:
     enabled: true
+    image:
+      tag: ""
+
+silkRoad:
+  image:
+    tag: ""
+
+tunnelServer:
+  image:
+    tag: ""
+
+tunnelClient:
+  image:
+    tag: ""
 
 externalServices:
   postgres:
