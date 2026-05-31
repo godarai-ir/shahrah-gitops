@@ -47,7 +47,7 @@ controlPlane:
       clusterIssuer: letsencrypt-prod
 tenantAdmin:
   image:
-    tag: sha-8b0b15fcb5746b4241146dc1ffa8905a87e69b6f
+    tag: sha-632a4ddc89733e1de0c8970b93d5a21d2c587992
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
