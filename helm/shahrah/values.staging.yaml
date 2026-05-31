@@ -34,7 +34,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-ace4b02d9103c2459fa655dfbdee418db40b1eb3
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -47,7 +47,7 @@ controlPlane:
       clusterIssuer: letsencrypt-prod
 tenantAdmin:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-632a4ddc89733e1de0c8970b93d5a21d2c587992
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
