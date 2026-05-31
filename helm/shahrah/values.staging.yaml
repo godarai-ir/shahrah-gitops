@@ -48,6 +48,8 @@ controlPlane:
       clusterIssuer: letsencrypt-prod
 
 tenantAdmin:
+  envFromSecretKeys:
+    - MASTER_KEY
   ingress:
     hosts:
       - host: "*.localhost"
