@@ -1,10 +1,8 @@
 global:
   imageRegistry: registry.distr.sh/godar
-  imageTag: "sha-45b16b9e74959a6bdd7866fe4f23dd8376ad4842"
-
+  imageTag: sha-45b16b9e74959a6bdd7866fe4f23dd8376ad4842
 imagePullSecrets:
-  - regcred
-
+- regcred
 config:
   create: true
   name: shahrah-config
@@ -15,105 +13,108 @@ config:
     NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://localhost:7000/catalog/api/v1
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
     REDIS_HOST: redis
-    REDIS_PORT: "6379"
+    REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db
     CLICKHOUSE_USER: sharah_user
-    CLICKHOUSE_HTTP_PORT: "8123"
-    CLICKHOUSE_NATIVE_PORT: "9000"
+    CLICKHOUSE_HTTP_PORT: '8123'
+    CLICKHOUSE_NATIVE_PORT: '9000'
     TYPESENSE_HOST: typesense.staging.internal
-    TYPESENSE_PORT: "8108"
+    TYPESENSE_PORT: '8108'
     TYPESENSE_PROTOCOL: https
     TUNNEL_SERVER_URL: http://tunnel-server:8082
     TUNNEL_CLIENT_URL: http://tunnel-client:8081
     SILK_ROAD_URL: http://silk-road:8083
     SMTP_HOST: smtp.staging.internal
-    SMTP_PORT: "587"
+    SMTP_PORT: '587'
     SMTP_FROM: no-reply@staging.shahrah.ir
-    EMAIL_SENDING_ENABLED: "true"
-
+    EMAIL_SENDING_ENABLED: 'true'
 secrets:
   create: false
   name: shahrah-secret
   data: {}
-
 controlPlane:
   image:
     tag: ""
   ingress:
     hosts:
-      - host: api.staging.shahrah.ir
-        paths:
-          - path: /
-            pathType: Prefix
+    - host: api.staging.shahrah.ir
+      paths:
+      - path: /
+        pathType: Prefix
     tls:
       enabled: true
       secretName: api-staging-shahrah-ir-tls
       clusterIssuer: letsencrypt-prod
-
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 tenantAdmin:
   image:
     tag: ""
   envFromConfigKeys:
-    - SHAHRAH_CONTROL_PLANE_URL
-    - SHAHRAH_MODEL_DISCOVERY_URL
+  - SHAHRAH_CONTROL_PLANE_URL
+  - SHAHRAH_MODEL_DISCOVERY_URL
   envFromSecretKeys:
-    - MASTER_KEY
+  - MASTER_KEY
   ingress:
     hosts:
-      - host: "*.localhost"
-        paths:
-          - path: /
-            pathType: Prefix
+    - host: '*.localhost'
+      paths:
+      - path: /
+        pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-tenant-admin-tls
-      clusterIssuer: ""
-
+      clusterIssuer: ''
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 website:
   image:
     tag: ""
   ingress:
     hosts:
-      - host: localhost
-        paths:
-          - path: /
-            pathType: Prefix
+    - host: localhost
+      paths:
+      - path: /
+        pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-website-tls
-      clusterIssuer: ""
-
+      clusterIssuer: ''
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 blog:
   image:
     tag: ""
   ingress:
     annotations:
-      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/use-regex: 'true'
       nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
-      - host: localhost
-        paths:
-          - path: /blog(/|$)(.*)
-            pathType: ImplementationSpecific
+    - host: localhost
+      paths:
+      - path: /blog(/|$)(.*)
+        pathType: ImplementationSpecific
     tls:
       enabled: true
       secretName: localhost-blog-tls
-      clusterIssuer: ""
-
+      clusterIssuer: ''
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 docs:
   image:
     tag: ""
   ingress:
     hosts:
-      - host: localhost
-        paths:
-          - path: /docs
-            pathType: Prefix
+    - host: localhost
+      paths:
+      - path: /docs
+        pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-docs-tls
-      clusterIssuer: ""
-
+      clusterIssuer: ''
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 supportAdmin:
   image:
     tag: ""
@@ -125,42 +126,44 @@ supportAdmin:
   ingress:
     enabled: true
     annotations:
-      argocd.argoproj.io/sync-wave: "1"
+      argocd.argoproj.io/sync-wave: '1'
     hosts:
-      - host: localhost
-        paths:
-          - path: /catalog
-            pathType: Prefix
+    - host: localhost
+      paths:
+      - path: /catalog
+        pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-support-admin-tls
-      clusterIssuer: ""
-
+      clusterIssuer: ''
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 modelDiscovery:
   image:
     tag: ""
   extraEnv:
-    - name: DATABASE_URL
-      valueFrom:
-        secretKeyRef:
-          name: shahrah-secret
-          key: MODEL_DISCOVERY_DATABASE_URL
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-secret
+        key: MODEL_DISCOVERY_DATABASE_URL
   ingress:
     enabled: true
     annotations:
-      argocd.argoproj.io/sync-wave: "-1"
-      nginx.ingress.kubernetes.io/use-regex: "true"
+      argocd.argoproj.io/sync-wave: '-1'
+      nginx.ingress.kubernetes.io/use-regex: 'true'
       nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
     hosts:
-      - host: localhost
-        paths:
-          - path: /catalog/api/v1(/|$)(.*)
-            pathType: ImplementationSpecific
+    - host: localhost
+      paths:
+      - path: /catalog/api/v1(/|$)(.*)
+        pathType: ImplementationSpecific
     tls:
       enabled: true
       secretName: localhost-model-discovery-tls
-      clusterIssuer: ""
-
+      clusterIssuer: ''
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 migrations:
   enabled: true
   mainDb:
@@ -195,3 +198,12 @@ externalServices:
     name: redis
     externalName: host.docker.internal
     port: 6379
+silkRoad:
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+tunnelClient:
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+tunnelServer:
+  image:
+    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
