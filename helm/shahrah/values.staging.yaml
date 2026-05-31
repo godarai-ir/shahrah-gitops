@@ -33,6 +33,8 @@ secrets:
   name: shahrah-secret
   data: {}
 controlPlane:
+  image:
+    tag: ""
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -46,6 +48,8 @@ controlPlane:
   image:
     tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 tenantAdmin:
+  image:
+    tag: ""
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -64,6 +68,8 @@ tenantAdmin:
   image:
     tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 website:
+  image:
+    tag: ""
   ingress:
     hosts:
     - host: localhost
@@ -77,6 +83,8 @@ website:
   image:
     tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 blog:
+  image:
+    tag: ""
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/use-regex: 'true'
@@ -93,6 +101,8 @@ blog:
   image:
     tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 docs:
+  image:
+    tag: ""
   ingress:
     hosts:
     - host: localhost
@@ -106,6 +116,8 @@ docs:
   image:
     tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 supportAdmin:
+  image:
+    tag: ""
   probes:
     readiness:
       path: /catalog
@@ -127,6 +139,8 @@ supportAdmin:
   image:
     tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
 modelDiscovery:
+  image:
+    tag: ""
   extraEnv:
   - name: DATABASE_URL
     valueFrom:
@@ -155,11 +169,24 @@ migrations:
   mainDb:
     enabled: false
     image:
-      tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+      tag: ""
   modelDiscovery:
     enabled: true
     image:
-      tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+      tag: ""
+
+silkRoad:
+  image:
+    tag: ""
+
+tunnelServer:
+  image:
+    tag: ""
+
+tunnelClient:
+  image:
+    tag: ""
+
 externalServices:
   postgres:
     enabled: true
