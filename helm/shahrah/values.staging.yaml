@@ -105,6 +105,11 @@ docs:
       clusterIssuer: ""
 
 supportAdmin:
+  probes:
+    readiness:
+      path: /models
+    liveness:
+      path: /models
   ingress:
     enabled: true
     annotations:
