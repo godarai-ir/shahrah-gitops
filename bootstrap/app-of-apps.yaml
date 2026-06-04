@@ -1,4 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
+﻿apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: shahrah-root
@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:Delpak/shahrah-gitops.git
+    repoURL: https://github.com/Delpak/shahrah-gitops.git
     targetRevision: main
     path: apps
     directory:
@@ -21,3 +21,4 @@ spec:
     automated:
       prune: true
       selfHeal: true
+

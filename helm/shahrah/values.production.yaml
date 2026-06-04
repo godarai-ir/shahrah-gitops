@@ -1,6 +1,6 @@
-global:
-  imageRegistry: registry-def882af9a-shahrah-prod.apps.ir-central1.arvancaas.ir/shahrah-prod
-  imageTag: "prod-sha-override"
+﻿global:
+  imageRegistry: registry.distr.sh/godar
+  imageTag: "sha-override-me"
 
 imagePullSecrets:
   - regcred
@@ -10,8 +10,9 @@ config:
   name: shahrah-config
   data:
     SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
-    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.shahrah.ir,https://support-admin.shahrah.ir
-    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://support-admin.shahrah.ir/api/v1
+    SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
+    MODEL_DISCOVERY_CORS_ORIGIN: https://godarai.ir,https://*.godarai.ir
+    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://godarai.ir/catalog/api/v1
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
     REDIS_HOST: redis.prod.internal
     REDIS_PORT: "6379"
@@ -27,7 +28,7 @@ config:
     SILK_ROAD_URL: http://silk-road:8083
     SMTP_HOST: smtp.prod.internal
     SMTP_PORT: "587"
-    SMTP_FROM: no-reply@shahrah.ir
+    SMTP_FROM: no-reply@godarai.ir
     EMAIL_SENDING_ENABLED: "true"
 
 secrets:
@@ -48,13 +49,13 @@ controlPlane:
     minAvailable: 2
   ingress:
     hosts:
-      - host: api.shahrah.ir
+      - host: godarai.ir
         paths:
-          - path: /
+          - path: /api
             pathType: Prefix
     tls:
       enabled: true
-      secretName: api-shahrah-ir-tls
+      secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
 
 tenantAdmin:
@@ -67,27 +68,27 @@ tenantAdmin:
     maxReplicas: 8
   ingress:
     hosts:
-      - host: tenant-admin.shahrah.ir
+      - host: "*.godarai.ir"
         paths:
           - path: /
             pathType: Prefix
     tls:
       enabled: true
-      secretName: tenant-admin-shahrah-ir-tls
-      clusterIssuer: letsencrypt-prod
+      secretName: godarai-ir-tls
+      clusterIssuer: letsencrypt-arvan-prod
 
 website:
   image:
     tag: ""
   ingress:
     hosts:
-      - host: shahrah.ir
+      - host: godarai.ir
         paths:
           - path: /
             pathType: Prefix
     tls:
       enabled: true
-      secretName: shahrah-ir-tls
+      secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
 
 blog:
@@ -95,13 +96,13 @@ blog:
     tag: ""
   ingress:
     hosts:
-      - host: blog.shahrah.ir
+      - host: godarai.ir
         paths:
-          - path: /
+          - path: /blog
             pathType: Prefix
     tls:
       enabled: true
-      secretName: blog-shahrah-ir-tls
+      secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
 
 docs:
@@ -109,19 +110,33 @@ docs:
     tag: ""
   ingress:
     hosts:
-      - host: docs.shahrah.ir
+      - host: godarai.ir
         paths:
-          - path: /
+          - path: /docs
             pathType: Prefix
     tls:
       enabled: true
-      secretName: docs-shahrah-ir-tls
+      secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
 
 modelDiscovery:
   image:
     tag: ""
   replicaCount: 3
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
+    hosts:
+      - host: godarai.ir
+        paths:
+          - path: /catalog/api/v1(/|$)(.*)
+            pathType: ImplementationSpecific
+    tls:
+      enabled: true
+      secretName: godarai-ir-tls
+      clusterIssuer: letsencrypt-prod
   autoscaling:
     enabled: true
     minReplicas: 3
@@ -133,6 +148,17 @@ modelDiscovery:
 supportAdmin:
   image:
     tag: ""
+  ingress:
+    enabled: true
+    hosts:
+      - host: godarai.ir
+        paths:
+          - path: /catalog
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: godarai-ir-tls
+      clusterIssuer: letsencrypt-prod
 
 silkRoad:
   image:
@@ -153,3 +179,4 @@ migrations:
   modelDiscovery:
     image:
       tag: ""
+

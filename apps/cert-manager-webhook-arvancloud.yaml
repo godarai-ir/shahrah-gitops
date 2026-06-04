@@ -1,0 +1,25 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-webhook-arvancloud
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: cert-manager-webhook-arvancloud
+    app.kubernetes.io/part-of: platform
+spec:
+  project: default
+  source:
+    repoURL: https://mohammad-abbasi.me/cert-manager-webhook-arvancloud
+    chart: cert-manager-webhook-arvancloud
+    targetRevision: 0.1.1
+    helm:
+      releaseName: cert-manager-webhook-arvancloud
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

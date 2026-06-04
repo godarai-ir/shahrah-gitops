@@ -1,0 +1,23 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: godarai-tls
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: godarai-tls
+    app.kubernetes.io/part-of: platform
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: platform/godarai-tls
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shahrah-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
