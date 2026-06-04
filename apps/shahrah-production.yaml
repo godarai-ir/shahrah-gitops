@@ -9,7 +9,7 @@ metadata:
 spec:
   project: shahrah
   source:
-    repoURL: https://github.com/Delpak/shahrah-gitops.git
+    repoURL: git@github.com:Delpak/shahrah-gitops.git
     targetRevision: main
     path: helm/shahrah
     helm:
@@ -26,5 +26,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
 
 
