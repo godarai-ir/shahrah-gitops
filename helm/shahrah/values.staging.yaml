@@ -34,7 +34,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: sha-ace4b02d9103c2459fa655dfbdee418db40b1eb3
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -47,7 +47,7 @@ controlPlane:
       clusterIssuer: letsencrypt-prod
 tenantAdmin:
   image:
-    tag: sha-632a4ddc89733e1de0c8970b93d5a21d2c587992
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -65,7 +65,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     hosts:
     - host: localhost
@@ -78,7 +78,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/use-regex: 'true'
@@ -94,7 +94,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     hosts:
     - host: localhost
@@ -107,7 +107,7 @@ docs:
       clusterIssuer: ''
 supportAdmin:
   image:
-    tag: sha-402c4236ff6396f316856c642b63d91ea153bc91
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   probes:
     readiness:
       path: /catalog
@@ -128,7 +128,7 @@ supportAdmin:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   extraEnv:
   - name: DATABASE_URL
     valueFrom:
@@ -155,20 +155,20 @@ migrations:
   mainDb:
     enabled: false
     image:
-      tag: sha-2076ed3bdadee6b457b8f0c206009445ca76d213
+      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   modelDiscovery:
     enabled: true
     image:
-      tag: ''
+      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 silkRoad:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 tunnelServer:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 tunnelClient:
   image:
-    tag: sha-300355c0ace65dee15f1629af394dfc8d9348665
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 externalServices:
   postgres:
     enabled: true
