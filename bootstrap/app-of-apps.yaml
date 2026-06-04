@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Delpak/shahrah-gitops.git
+    repoURL: git@github.com:Delpak/shahrah-gitops.git
     targetRevision: main
     path: apps
     directory:
@@ -21,4 +21,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
 
