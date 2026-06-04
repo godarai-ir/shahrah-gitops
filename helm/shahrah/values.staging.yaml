@@ -155,7 +155,7 @@ migrations:
   mainDb:
     enabled: false
     image:
-      tag: ''
+      tag: sha-2076ed3bdadee6b457b8f0c206009445ca76d213
   modelDiscovery:
     enabled: true
     image:
