@@ -1,10 +1,8 @@
-﻿global:
+global:
   imageRegistry: registry.distr.sh/godar
-  imageTag: "sha-override-me"
-
+  imageTag: sha-override-me
 imagePullSecrets:
-  - regcred
-
+- regcred
 config:
   create: true
   name: shahrah-config
@@ -15,30 +13,28 @@ config:
     NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://godarai.ir/catalog/api/v1
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
     REDIS_HOST: redis.prod.internal
-    REDIS_PORT: "6379"
+    REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db
     CLICKHOUSE_USER: sharah_user
-    CLICKHOUSE_HTTP_PORT: "8123"
-    CLICKHOUSE_NATIVE_PORT: "9000"
+    CLICKHOUSE_HTTP_PORT: '8123'
+    CLICKHOUSE_NATIVE_PORT: '9000'
     TYPESENSE_HOST: typesense.prod.internal
-    TYPESENSE_PORT: "8108"
+    TYPESENSE_PORT: '8108'
     TYPESENSE_PROTOCOL: https
     TUNNEL_SERVER_URL: http://tunnel-server:8082
     TUNNEL_CLIENT_URL: http://tunnel-client:8081
     SILK_ROAD_URL: http://silk-road:8083
     SMTP_HOST: smtp.prod.internal
-    SMTP_PORT: "587"
+    SMTP_PORT: '587'
     SMTP_FROM: no-reply@godarai.ir
-    EMAIL_SENDING_ENABLED: "true"
-
+    EMAIL_SENDING_ENABLED: 'true'
 secrets:
   create: false
   name: shahrah-secret
   data: {}
-
 controlPlane:
   image:
-    tag: ""
+    tag: sha-0.1.0
   replicaCount: 3
   autoscaling:
     enabled: true
@@ -49,18 +45,17 @@ controlPlane:
     minAvailable: 2
   ingress:
     hosts:
-      - host: godarai.ir
-        paths:
-          - path: /api
-            pathType: Prefix
+    - host: godarai.ir
+      paths:
+      - path: /api
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
-
 tenantAdmin:
   image:
-    tag: ""
+    tag: ''
   replicaCount: 2
   autoscaling:
     enabled: true
@@ -68,71 +63,67 @@ tenantAdmin:
     maxReplicas: 8
   ingress:
     hosts:
-      - host: "*.godarai.ir"
-        paths:
-          - path: /
-            pathType: Prefix
+    - host: '*.godarai.ir'
+      paths:
+      - path: /
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-arvan-prod
-
 website:
   image:
-    tag: ""
+    tag: ''
   ingress:
     hosts:
-      - host: godarai.ir
-        paths:
-          - path: /
-            pathType: Prefix
+    - host: godarai.ir
+      paths:
+      - path: /
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
-
 blog:
   image:
-    tag: ""
+    tag: ''
   ingress:
     hosts:
-      - host: godarai.ir
-        paths:
-          - path: /blog
-            pathType: Prefix
+    - host: godarai.ir
+      paths:
+      - path: /blog
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
-
 docs:
   image:
-    tag: ""
+    tag: ''
   ingress:
     hosts:
-      - host: godarai.ir
-        paths:
-          - path: /docs
-            pathType: Prefix
+    - host: godarai.ir
+      paths:
+      - path: /docs
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
-
 modelDiscovery:
   image:
-    tag: ""
+    tag: ''
   replicaCount: 3
   ingress:
     enabled: true
     annotations:
-      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/use-regex: 'true'
       nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
     hosts:
-      - host: godarai.ir
-        paths:
-          - path: /catalog/api/v1(/|$)(.*)
-            pathType: ImplementationSpecific
+    - host: godarai.ir
+      paths:
+      - path: /catalog/api/v1(/|$)(.*)
+        pathType: ImplementationSpecific
     tls:
       enabled: true
       secretName: godarai-ir-tls
@@ -144,39 +135,33 @@ modelDiscovery:
   pdb:
     enabled: true
     minAvailable: 2
-
 supportAdmin:
   image:
-    tag: ""
+    tag: ''
   ingress:
     enabled: true
     hosts:
-      - host: godarai.ir
-        paths:
-          - path: /catalog
-            pathType: Prefix
+    - host: godarai.ir
+      paths:
+      - path: /catalog
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
       clusterIssuer: letsencrypt-prod
-
 silkRoad:
   image:
-    tag: ""
-
+    tag: ''
 tunnelServer:
   image:
-    tag: ""
-
+    tag: ''
 tunnelClient:
   image:
-    tag: ""
-
+    tag: ''
 migrations:
   mainDb:
     image:
-      tag: ""
+      tag: ''
   modelDiscovery:
     image:
-      tag: ""
-
+      tag: ''
