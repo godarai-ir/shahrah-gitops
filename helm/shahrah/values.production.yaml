@@ -11,6 +11,8 @@ config:
     SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
     MODEL_DISCOVERY_CORS_ORIGIN: https://godarai.ir,https://*.godarai.ir
     NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://godarai.ir/catalog/api/v1
+    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: /catalog
+    NEXT_PUBLIC_SITE_URL: https://godarai.ir
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
     REDIS_HOST: redis.prod.internal
     REDIS_PORT: '6379'
@@ -52,10 +54,16 @@ controlPlane:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-prod
+      clusterIssuer: ''
 tenantAdmin:
   image:
     tag: ''
+  envFromConfigKeys:
+  - SHAHRAH_CONTROL_PLANE_URL
+  - SHAHRAH_MODEL_DISCOVERY_URL
+  - NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL
+  envFromSecretKeys:
+  - MASTER_KEY
   replicaCount: 2
   autoscaling:
     enabled: true
@@ -70,10 +78,17 @@ tenantAdmin:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-arvan-prod
+      clusterIssuer: ''
 website:
   image:
     tag: ''
+  envFromConfigKeys:
+  - SHAHRAH_CONTROL_PLANE_URL
+  - SMTP_HOST
+  - SMTP_PORT
+  - SMTP_FROM
+  - EMAIL_SENDING_ENABLED
+  - NEXT_PUBLIC_SITE_URL
   ingress:
     hosts:
     - host: godarai.ir
@@ -83,7 +98,7 @@ website:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-prod
+      clusterIssuer: ''
 blog:
   image:
     tag: ''
@@ -96,7 +111,7 @@ blog:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-prod
+      clusterIssuer: ''
 docs:
   image:
     tag: ''
@@ -109,7 +124,7 @@ docs:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-prod
+      clusterIssuer: ''
 modelDiscovery:
   image:
     tag: ''
@@ -127,7 +142,7 @@ modelDiscovery:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-prod
+      clusterIssuer: ''
   autoscaling:
     enabled: true
     minReplicas: 3
@@ -148,7 +163,7 @@ supportAdmin:
     tls:
       enabled: true
       secretName: godarai-ir-tls
-      clusterIssuer: letsencrypt-prod
+      clusterIssuer: ''
 silkRoad:
   image:
     tag: ''
