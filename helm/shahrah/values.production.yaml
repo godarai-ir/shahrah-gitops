@@ -176,7 +176,7 @@ tunnelClient:
 migrations:
   mainDb:
     image:
-      tag: sha-2076ed3bdadee6b457b8f0c206009445ca76d213
+      tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
   modelDiscovery:
     image:
       tag: ''
