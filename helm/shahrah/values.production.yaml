@@ -179,4 +179,4 @@ migrations:
       tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
   modelDiscovery:
     image:
-      tag: ''
+      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
