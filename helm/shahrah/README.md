@@ -20,17 +20,24 @@ This chart deploys Shahrah services/apps for staging and production.
 - Production values are configured for `secrets.create: false`.
 - A pre-provisioned Kubernetes Secret named `shahrah-secret` must exist in the target namespace.
 - Do not commit plaintext secret values into `values*.yaml`.
+- When `postgres.enabled=true`, that Secret must also include `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
+
+## PostgreSQL
+
+- The chart can deploy an in-cluster PostgreSQL instance with `postgres.enabled=true`.
+- PostgreSQL is deployed as a single-replica `StatefulSet` with persistent storage.
+- The chart bootstraps the `model_discovery` database via `/docker-entrypoint-initdb.d` on first initialization.
 
 ## Migrations
 
-- `migrate-main-db` and `model-discovery-migrate` run as Helm `pre-install,pre-upgrade` hooks.
-- Hook order is controlled with weights `-10` and `-9`.
+- `migrate-main-db` and `model-discovery-migrate` run as Argo CD `Sync` hooks.
+- PostgreSQL resources are applied in sync wave `-10`, then the migration jobs run in waves `-5` and `-4`.
 
 ## Validation
 
 ```bash
-helm lint infra/helm/shahrah
-helm template shahrah infra/helm/shahrah -f infra/helm/shahrah/values.yaml
-helm template shahrah infra/helm/shahrah -f infra/helm/shahrah/values.yaml -f infra/helm/shahrah/values.staging.yaml
-helm template shahrah infra/helm/shahrah -f infra/helm/shahrah/values.yaml -f infra/helm/shahrah/values.production.yaml
+helm lint helm/shahrah
+helm template shahrah helm/shahrah -f helm/shahrah/values.yaml
+helm template shahrah helm/shahrah -f helm/shahrah/values.yaml -f helm/shahrah/values.staging.yaml
+helm template shahrah helm/shahrah -f helm/shahrah/values.yaml -f helm/shahrah/values.production.yaml
 ```

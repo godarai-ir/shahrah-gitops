@@ -1,10 +1,12 @@
-{{- if .Values.externalServices.postgres.enabled }}
+{{- if and .Values.externalServices.postgres.enabled (not .Values.postgres.enabled) }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.externalServices.postgres.name | default "postgres" }}
   labels:
     {{- include "shahrah.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
 spec:
   type: ExternalName
   externalName: {{ .Values.externalServices.postgres.externalName | quote }}
@@ -22,6 +24,8 @@ metadata:
   name: {{ .Values.externalServices.redis.name | default "redis" }}
   labels:
     {{- include "shahrah.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
 spec:
   type: ExternalName
   externalName: {{ .Values.externalServices.redis.externalName | quote }}
@@ -39,6 +43,8 @@ metadata:
   name: {{ .Values.externalServices.clickhouse.name | default "clickhouse" }}
   labels:
     {{- include "shahrah.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
 spec:
   type: ExternalName
   externalName: {{ .Values.externalServices.clickhouse.externalName | quote }}

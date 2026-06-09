@@ -171,10 +171,7 @@ tunnelClient:
     tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 externalServices:
   postgres:
-    enabled: true
-    name: postgres
-    externalName: host.docker.internal
-    port: 5432
+    enabled: false
   redis:
     enabled: true
     name: redis
@@ -201,3 +198,8 @@ mailpit:
       enabled: true
       secretName: localhost-mailpit-tls
       clusterIssuer: ''
+
+postgres:
+  enabled: true
+  persistence:
+    size: 20Gi

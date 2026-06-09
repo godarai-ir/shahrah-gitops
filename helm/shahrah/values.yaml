@@ -1091,6 +1091,66 @@ migrations:
     backoffLimit: 3
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
 
+postgres:
+  enabled: false
+  name: postgres
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: "18"
+    pullPolicy: IfNotPresent
+  service:
+    name: postgres
+    port: 5432
+  headlessService:
+    name: postgres-headless
+  auth:
+    usernameSecretKey: POSTGRES_USER
+    passwordSecretKey: POSTGRES_PASSWORD
+    databaseSecretKey: POSTGRES_DB
+  initdb:
+    configMapName: postgres-initdb
+    modelDiscoveryDatabase: model_discovery
+  persistence:
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: ""
+  podSecurityContext:
+    fsGroup: 999
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+  podLabels: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  probes:
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    liveness:
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+
 externalServices:
   postgres:
     enabled: false
