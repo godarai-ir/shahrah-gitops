@@ -174,6 +174,7 @@ tunnelClient:
   image:
     tag: ''
 migrations:
+  enabled: false
   mainDb:
     image:
       tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
