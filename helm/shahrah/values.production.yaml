@@ -36,7 +36,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   replicaCount: 3
   autoscaling:
     enabled: true
@@ -57,7 +57,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -81,7 +81,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SMTP_HOST
@@ -101,7 +101,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     hosts:
     - host: godarai.ir
@@ -114,7 +114,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     hosts:
     - host: godarai.ir
@@ -127,7 +127,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   replicaCount: 3
   ingress:
     enabled: true
@@ -152,7 +152,7 @@ modelDiscovery:
     minAvailable: 2
 supportAdmin:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   ingress:
     enabled: true
     hosts:
@@ -166,21 +166,21 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 tunnelServer:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 tunnelClient:
   image:
-    tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 migrations:
   enabled: false
   mainDb:
     image:
-      tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   modelDiscovery:
     image:
-      tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
 externalServices:
   postgres:
     enabled: true
