@@ -37,6 +37,26 @@ config:
     SMTP_FROM: no-reply@example.com
     EMAIL_SENDING_ENABLED: "true"
 
+redis:
+  enabled: false
+  name: redis
+  image:
+    repository: redis
+    tag: "8-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  auth:
+    secretName: ""
+    passwordKey: REDIS_PASSWORD
+
 secrets:
   create: false
   name: shahrah-secret

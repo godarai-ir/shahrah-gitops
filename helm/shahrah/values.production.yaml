@@ -14,7 +14,7 @@ config:
     NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: /catalog
     NEXT_PUBLIC_SITE_URL: https://godarai.ir
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
-    REDIS_HOST: redis.prod.internal
+    REDIS_HOST: redis
     REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db
     CLICKHOUSE_USER: sharah_user
@@ -34,6 +34,8 @@ secrets:
   create: false
   name: shahrah-secret
   data: {}
+redis:
+  enabled: true
 controlPlane:
   image:
     tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
