@@ -153,6 +153,13 @@ modelDiscovery:
 supportAdmin:
   image:
     tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+  probes:
+    readiness:
+      type: tcp
+      port: 3000
+    liveness:
+      type: tcp
+      port: 3000
   ingress:
     enabled: true
     hosts:
