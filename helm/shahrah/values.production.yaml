@@ -29,8 +29,11 @@ config:
     SILK_ROAD_URL: http://silk-road:8083
     SMTP_HOST: smtp.prod.internal
     SMTP_PORT: '587'
-    SMTP_FROM: no-reply@godarai.ir
+    SMTP_FROM: noreply@godarai.ir
     EMAIL_SENDING_ENABLED: 'true'
+    RESEND_FROM_EMAIL: noreply@godarai.ir
+    RESEND_FROM_NAME: Godar-AI
+    RESEND_REPLY_TO: support@godarai.ir
 secrets:
   create: false
   name: shahrah-secret
@@ -40,6 +43,25 @@ redis:
 controlPlane:
   image:
     tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+  env:
+    NODE_ENV: production
+  envFromConfigKeys:
+  - REDIS_HOST
+  - REDIS_PORT
+  - TUNNEL_CLIENT_URL
+  - SHAHRAH_MODEL_DISCOVERY_URL
+  - EMAIL_SENDING_ENABLED
+  - RESEND_FROM_EMAIL
+  - RESEND_FROM_NAME
+  - RESEND_REPLY_TO
+  envFromSecretKeys:
+  - DATABASE_URL
+  - CLICKHOUSE_DSN
+  - REDIS_PASSWORD
+  - MASTER_KEY
+  - OPENAI_API_KEY
+  - SHAHRAH_DISCOVERY_TOKEN
+  - RESEND_API_KEY
   replicaCount: 3
   autoscaling:
     enabled: true
@@ -65,8 +87,13 @@ tenantAdmin:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
   - NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL
+  - EMAIL_SENDING_ENABLED
+  - RESEND_FROM_EMAIL
+  - RESEND_FROM_NAME
+  - RESEND_REPLY_TO
   envFromSecretKeys:
   - MASTER_KEY
+  - RESEND_API_KEY
   replicaCount: 2
   autoscaling:
     enabled: true
@@ -87,12 +114,17 @@ website:
     tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
+  - RESEND_FROM_EMAIL
+  - RESEND_FROM_NAME
+  - RESEND_REPLY_TO
   - SMTP_HOST
   - SMTP_PORT
   - SMTP_FROM
   - EMAIL_SENDING_ENABLED
   - NEXT_PUBLIC_SITE_URL
   - SHAHRAH_TENANT_BASE_DOMAIN
+  envFromSecretKeys:
+  - RESEND_API_KEY
   ingress:
     hosts:
     - host: godarai.ir
