@@ -62,6 +62,29 @@ controlPlane:
   - OPENAI_API_KEY
   - SHAHRAH_DISCOVERY_TOKEN
   - RESEND_API_KEY
+  extraEnv:
+  - name: TRACE_OTLP_ENDPOINT
+    value: opentelemetry-collector.observability.svc.cluster.local:4317
+  - name: TRACE_OTLP_INSECURE
+    value: "true"
+  - name: TRACE_OTLP_SERVICE_NAME
+    value: shahrah-control-plane
+  - name: TRACE_DEFAULT_SAMPLE_RATE
+    value: "0.01"
+  - name: TRACE_SLOW_REQUEST_MS
+    value: "1500"
+  - name: TRACE_CAPTURE_POLICY
+    value: metadata-only
+  - name: TRACE_PAYLOAD_ENCRYPTION_KEY
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-secret
+        key: TRACE_PAYLOAD_ENCRYPTION_KEY
+  - name: TRACE_PII_HASH_SALT
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-secret
+        key: TRACE_PII_HASH_SALT
   replicaCount: 3
   autoscaling:
     enabled: true

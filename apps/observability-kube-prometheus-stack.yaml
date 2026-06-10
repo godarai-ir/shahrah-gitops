@@ -22,6 +22,30 @@ spec:
             enabled: true
             storageClassName: longhorn
             size: 10Gi
+          additionalDataSources:
+            - name: Loki
+              uid: loki
+              type: loki
+              access: proxy
+              url: http://loki-gateway.observability.svc.cluster.local
+              isDefault: false
+            - name: Tempo
+              uid: tempo
+              type: tempo
+              access: proxy
+              url: http://tempo.observability.svc.cluster.local:3200
+              isDefault: false
+              jsonData:
+                httpMethod: GET
+                tracesToLogsV2:
+                  datasourceUid: loki
+                  spanStartTimeShift: -5m
+                  spanEndTimeShift: 5m
+                  tags:
+                    - key: service.name
+                      value: service_name
+                nodeGraph:
+                  enabled: true
         alertmanager:
           alertmanagerSpec:
             storage:
