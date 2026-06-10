@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: shahrah-servicemonitors
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: shahrah-servicemonitors
+    app.kubernetes.io/part-of: observability
+spec:
+  project: shahrah
+  source:
+    repoURL: git@github.com:Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: platform/observability/servicemonitors
+    directory:
+      recurse: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shahrah-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
