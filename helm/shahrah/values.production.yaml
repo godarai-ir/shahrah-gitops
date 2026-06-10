@@ -129,6 +129,12 @@ website:
     hosts:
     - host: godarai.ir
       paths:
+      - path: /api/onboarding
+        pathType: Prefix
+      - path: /api/signup
+        pathType: Prefix
+      - path: /api/proxy/wallet
+        pathType: Prefix
       - path: /
         pathType: Prefix
     tls:
