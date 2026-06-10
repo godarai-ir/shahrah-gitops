@@ -131,6 +131,12 @@ modelDiscovery:
   image:
     tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
   replicaCount: 3
+  extraEnv:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-secret
+        key: MODEL_DISCOVERY_DATABASE_URL
   ingress:
     enabled: true
     annotations:
@@ -196,6 +202,7 @@ migrations:
     - sh
     - -c
     - |
+      set -e
       apk add --no-cache git
       rm -rf /tmp/truefoundry-models
       git clone --depth 1 https://github.com/truefoundry/models.git /tmp/truefoundry-models
