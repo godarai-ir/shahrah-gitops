@@ -34,7 +34,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -47,7 +47,7 @@ controlPlane:
       clusterIssuer: letsencrypt-prod
 tenantAdmin:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -65,7 +65,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: sha-836c4ca8d2ee3e77da59530b2a2208d92c2ead64
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   ingress:
     hosts:
     - host: localhost
@@ -78,7 +78,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/use-regex: 'true'
@@ -94,7 +94,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   ingress:
     hosts:
     - host: localhost
@@ -107,7 +107,7 @@ docs:
       clusterIssuer: ''
 supportAdmin:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   probes:
     readiness:
       path: /catalog
@@ -128,7 +128,7 @@ supportAdmin:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   extraEnv:
   - name: DATABASE_URL
     valueFrom:
@@ -155,20 +155,20 @@ migrations:
   mainDb:
     enabled: false
     image:
-      tag: sha-171ab0323f0e281daf78e49753bd419f8e7f9d06
+      tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   modelDiscovery:
     enabled: true
     image:
-      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+      tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
 silkRoad:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
 tunnelServer:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
 tunnelClient:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
 externalServices:
   postgres:
     enabled: false
