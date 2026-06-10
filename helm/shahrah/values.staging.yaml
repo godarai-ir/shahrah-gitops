@@ -65,7 +65,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-836c4ca8d2ee3e77da59530b2a2208d92c2ead64
   ingress:
     hosts:
     - host: localhost
@@ -198,7 +198,6 @@ mailpit:
       enabled: true
       secretName: localhost-mailpit-tls
       clusterIssuer: ''
-
 postgres:
   enabled: true
   persistence:
