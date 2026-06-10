@@ -42,7 +42,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
   env:
     NODE_ENV: production
   envFromConfigKeys:
