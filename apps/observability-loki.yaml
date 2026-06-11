@@ -21,6 +21,7 @@ spec:
           commonConfig:
             replication_factor: 1
           compactor:
+            delete_request_store: filesystem
             retention_enabled: true
           limits_config:
             retention_period: 72h
