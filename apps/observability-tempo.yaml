@@ -17,7 +17,7 @@ spec:
       values: |
         tempo:
           reportingEnabled: false
-          retention: 72h
+          retention: 48h
           resources:
             requests:
               cpu: 250m
@@ -27,10 +27,10 @@ spec:
               memory: 1Gi
         persistence:
           enabled: true
-          storageClassName: longhorn
+          storageClassName: observability-longhorn
           accessModes:
             - ReadWriteOnce
-          size: 20Gi
+          size: 10Gi
         serviceMonitor:
           enabled: true
           additionalLabels:

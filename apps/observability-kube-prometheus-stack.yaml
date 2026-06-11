@@ -29,8 +29,8 @@ spec:
         grafana:
           persistence:
             enabled: true
-            storageClassName: longhorn
-            size: 10Gi
+            storageClassName: observability-longhorn
+            size: 5Gi
           additionalDataSources:
             - name: Loki
               uid: loki
@@ -57,18 +57,20 @@ spec:
                   enabled: true
         alertmanager:
           alertmanagerSpec:
+            retention: 48h
             storage:
               volumeClaimTemplate:
                 spec:
-                  storageClassName: longhorn
+                  storageClassName: observability-longhorn
                   accessModes:
                     - ReadWriteOnce
                   resources:
                     requests:
-                      storage: 5Gi
+                      storage: 2Gi
         prometheus:
           prometheusSpec:
-            retention: 15d
+            retention: 7d
+            retentionSize: 16GB
             serviceMonitorNamespaceSelector:
               matchNames:
                 - observability
@@ -80,12 +82,12 @@ spec:
             storageSpec:
               volumeClaimTemplate:
                 spec:
-                  storageClassName: longhorn
+                  storageClassName: observability-longhorn
                   accessModes:
                     - ReadWriteOnce
                   resources:
                     requests:
-                      storage: 50Gi
+                      storage: 20Gi
         kubeEtcd:
           enabled: false
         kubeControllerManager:
