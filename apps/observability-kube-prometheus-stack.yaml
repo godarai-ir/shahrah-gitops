@@ -17,6 +17,13 @@ spec:
       values: |
         crds:
           enabled: true
+          upgradeJob:
+            image:
+              kubectl:
+                registry: k8s-mirror.liara.ir
+        kube-state-metrics:
+          image:
+            registry: k8s-mirror.liara.ir
         grafana:
           persistence:
             enabled: true
