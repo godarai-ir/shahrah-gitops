@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: kube-prometheus-stack
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     app.kubernetes.io/name: kube-prometheus-stack
     app.kubernetes.io/part-of: observability
@@ -16,7 +18,7 @@ spec:
       releaseName: kube-prometheus-stack
       values: |
         crds:
-          enabled: true
+          enabled: false
           upgradeJob:
             image:
               kubectl:

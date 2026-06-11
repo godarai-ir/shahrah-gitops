@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack-crds
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  labels:
+    app.kubernetes.io/name: kube-prometheus-stack-crds
+    app.kubernetes.io/part-of: observability
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/prometheus-operator/prometheus-operator.git
+    targetRevision: v0.91.0
+    path: example/prometheus-operator-crd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
