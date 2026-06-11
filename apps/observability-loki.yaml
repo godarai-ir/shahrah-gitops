@@ -11,10 +11,11 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: loki
-    targetRevision: 6.*
+    targetRevision: 6.55.0
     helm:
       releaseName: loki
       values: |
+        deploymentMode: SingleBinary
         loki:
           auth_enabled: false
           commonConfig:
@@ -32,6 +33,10 @@ spec:
                   period: 24h
           storage:
             type: filesystem
+        backend:
+          replicas: 0
+        read:
+          replicas: 0
         singleBinary:
           replicas: 1
           persistence:
@@ -40,6 +45,8 @@ spec:
             accessModes:
               - ReadWriteOnce
             size: 50Gi
+        write:
+          replicas: 0
         monitoring:
           dashboards:
             enabled: true
