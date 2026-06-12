@@ -254,9 +254,11 @@ tunnelClient:
 migrations:
   enabled: true
   mainDb:
-    enabled: false
+    enabled: true
     image:
       tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+  clickhouse:
+    enabled: true
   modelDiscovery:
     enabled: true
     image:
@@ -277,6 +279,11 @@ externalServices:
     name: postgres
     externalName: c781656f0ab24ceb9040b7f8bdbe5f6c.db.arvandbaas.ir
     port: 5432
+  clickhouse:
+    enabled: true
+    name: clickhouse
+    externalName: clickhouse.prod.internal
+    port: 9000
 postgres:
   enabled: false
   persistence:

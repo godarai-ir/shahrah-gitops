@@ -156,6 +156,8 @@ migrations:
     enabled: false
     image:
       tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+  clickhouse:
+    enabled: true
   modelDiscovery:
     enabled: true
     image:

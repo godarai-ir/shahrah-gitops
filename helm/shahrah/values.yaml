@@ -1097,6 +1097,17 @@ migrations:
         goose -dir /migrations postgres "$DATABASE_URL" up
     backoffLimit: 3
     databaseUrlSecretKey: DATABASE_URL
+  clickhouse:
+    enabled: false
+    image:
+      repository: clickhouse/clickhouse-server
+      tag: "26.3"
+      pullPolicy: IfNotPresent
+    backoffLimit: 3
+    dsnSecretKey: CLICKHOUSE_DSN
+    serviceName: clickhouse
+    servicePort: 9000
+    configMapName: clickhouse-migrations
   modelDiscovery:
     enabled: true
     image:

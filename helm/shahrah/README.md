@@ -30,8 +30,8 @@ This chart deploys Shahrah services/apps for staging and production.
 
 ## Migrations
 
-- `migrate-main-db` and `model-discovery-migrate` run as Argo CD `Sync` hooks.
-- PostgreSQL resources are applied in sync wave `-10`, then the migration jobs run in waves `-5` and `-4`.
+- `migrate-clickhouse`, `migrate-main-db`, and `model-discovery-migrate` run as Argo CD `Sync` hooks.
+- External datastore aliases are applied in sync wave `-10`, ClickHouse migration assets in `-7`, then migration jobs run in waves `-6`, `-5`, and `-4`.
 
 ## Validation
 

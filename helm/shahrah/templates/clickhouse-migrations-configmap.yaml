@@ -1,0 +1,15 @@
+{{- if and .Values.migrations.enabled .Values.migrations.clickhouse.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.migrations.clickhouse.configMapName | default "clickhouse-migrations" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-7"
+data:
+  {{- range $path, $_ := .Files.Glob "files/clickhouse-migrations/*.sql" }}
+  {{ base $path }}: |
+{{ $.Files.Get $path | indent 4 }}
+  {{- end }}
+{{- end }}
