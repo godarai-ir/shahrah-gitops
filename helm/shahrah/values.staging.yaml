@@ -34,7 +34,7 @@ secrets:
   data: {}
 controlPlane:
   image:
-    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+    tag: sha-f6148a4878a72c9a098df944a4c21b559b1c640f
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -164,13 +164,13 @@ migrations:
       tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
 silkRoad:
   image:
-    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+    tag: sha-f6148a4878a72c9a098df944a4c21b559b1c640f
 tunnelServer:
   image:
-    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+    tag: sha-f6148a4878a72c9a098df944a4c21b559b1c640f
 tunnelClient:
   image:
-    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+    tag: sha-f6148a4878a72c9a098df944a4c21b559b1c640f
 externalServices:
   postgres:
     enabled: false
