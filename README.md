@@ -6,7 +6,7 @@ This repository is the single source of truth for Shahrah deployments via Argo C
 
 - `helm/shahrah`: Helm chart (staging + production values)
 - `apps/`: Argo CD Application manifests
-- `platform/argocd`: Argo CD Helm values
+- `platform/argocd-proxy-env`: Argo CD proxy environment patch job
 - `projects/`: Argo CD AppProject guardrails
 - `bootstrap/`: App-of-apps root bootstrap
 

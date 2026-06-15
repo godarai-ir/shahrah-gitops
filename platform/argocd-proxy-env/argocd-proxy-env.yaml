@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-proxy-env-patcher
+  namespace: argocd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-proxy-env-patcher
+  namespace: argocd
+rules:
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - statefulsets
+    verbs:
+      - get
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-proxy-env-patcher
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argocd-proxy-env-patcher
+subjects:
+  - kind: ServiceAccount
+    name: argocd-proxy-env-patcher
+    namespace: argocd
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argocd-proxy-env-patcher
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: argocd-proxy-env-patcher
+        app.kubernetes.io/part-of: platform
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: argocd-proxy-env-patcher
+      containers:
+        - name: kubectl
+          image: bitnami/kubectl:1.33.4
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              NO_PROXY_VALUE="localhost,127.0.0.1,argocd-repo-server,argocd-repo-server.argocd,argocd-repo-server.argocd.svc,argocd-repo-server.argocd.svc.cluster.local,argocd-server,argocd-server.argocd,argocd-server.argocd.svc,argocd-server.argocd.svc.cluster.local,argocd-application-controller,argocd-application-controller.argocd,argocd-application-controller.argocd.svc,argocd-application-controller.argocd.svc.cluster.local,kubernetes.default.svc,.svc,.svc.cluster.local,.cluster.local,10.0.0.0/8,10.10.0.0/24,10.42.0.0/16,10.43.0.0/16,172.16.0.0/12,192.168.0.0/16,k3s-api.internal"
+              kubectl -n argocd set env \
+                deployment/argocd-server \
+                deployment/argocd-repo-server \
+                deployment/argocd-applicationset-controller \
+                deployment/argocd-dex-server \
+                deployment/argocd-notifications-controller \
+                statefulset/argocd-application-controller \
+                HTTP_PROXY=http://10.10.0.5:3128 \
+                HTTPS_PROXY=http://10.10.0.5:3128 \
+                NO_PROXY="${NO_PROXY_VALUE}" \
+                http_proxy=http://10.10.0.5:3128 \
+                https_proxy=http://10.10.0.5:3128 \
+                no_proxy="${NO_PROXY_VALUE}"
