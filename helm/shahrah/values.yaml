@@ -1122,6 +1122,52 @@ migrations:
     backoffLimit: 3
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
 
+clickhouse:
+  enabled: false
+  name: clickhouse
+  image:
+    repository: clickhouse/clickhouse-server
+    tag: "26.3"
+    pullPolicy: IfNotPresent
+  service:
+    name: clickhouse
+    httpPort: 8123
+    nativePort: 9000
+  headlessService:
+    name: clickhouse-headless
+  auth:
+    databaseConfigKey: CLICKHOUSE_DB
+    usernameConfigKey: CLICKHOUSE_USER
+    passwordSecretKey: CLICKHOUSE_PASSWORD
+  persistence:
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+  probes:
+    readiness:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 12
+    liveness:
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 6
+  podLabels: {}
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 postgres:
   enabled: false
   name: postgres

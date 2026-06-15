@@ -83,7 +83,7 @@ spec:
           command:
             - sh
             - -c
-            - until nc -z {{ .Values.externalServices.clickhouse.name | default .Values.migrations.clickhouse.serviceName | default "clickhouse" }} {{ .Values.externalServices.clickhouse.port | default .Values.migrations.clickhouse.servicePort | default 9000 }}; do echo waiting for clickhouse; sleep 2; done
+            - until nc -z {{ if .Values.clickhouse.enabled }}{{ .Values.clickhouse.service.name | default "clickhouse" }}{{ else }}{{ .Values.externalServices.clickhouse.name | default .Values.migrations.clickhouse.serviceName | default "clickhouse" }}{{ end }} {{ if .Values.clickhouse.enabled }}{{ .Values.clickhouse.service.nativePort | default 9000 }}{{ else }}{{ .Values.externalServices.clickhouse.port | default .Values.migrations.clickhouse.servicePort | default 9000 }}{{ end }}; do echo waiting for clickhouse; sleep 2; done
       containers:
         - name: migrate-clickhouse
           image: "{{ .Values.migrations.clickhouse.image.repository }}:{{ .Values.migrations.clickhouse.image.tag }}"

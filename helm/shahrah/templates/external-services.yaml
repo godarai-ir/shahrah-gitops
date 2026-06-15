@@ -35,7 +35,7 @@ spec:
       targetPort: {{ .Values.externalServices.redis.port | default 6379 }}
 {{- end }}
 
-{{- if .Values.externalServices.clickhouse.enabled }}
+{{- if and .Values.externalServices.clickhouse.enabled (not .Values.clickhouse.enabled) }}
 ---
 apiVersion: v1
 kind: Service

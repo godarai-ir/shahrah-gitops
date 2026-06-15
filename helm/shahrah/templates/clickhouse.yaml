@@ -1,0 +1,160 @@
+{{- if .Values.clickhouse.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.clickhouse.headlessService.name | default "clickhouse-headless" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clickhouse
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: clickhouse
+  ports:
+    - name: http
+      port: {{ .Values.clickhouse.service.httpPort | default 8123 }}
+      targetPort: http
+    - name: native
+      port: {{ .Values.clickhouse.service.nativePort | default 9000 }}
+      targetPort: native
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.clickhouse.service.name | default "clickhouse" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clickhouse
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: clickhouse
+  ports:
+    - name: http
+      port: {{ .Values.clickhouse.service.httpPort | default 8123 }}
+      targetPort: http
+    - name: native
+      port: {{ .Values.clickhouse.service.nativePort | default 9000 }}
+      targetPort: native
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.clickhouse.name | default "clickhouse" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clickhouse
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  serviceName: {{ .Values.clickhouse.headlessService.name | default "clickhouse-headless" }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: clickhouse
+  template:
+    metadata:
+      labels:
+        {{- include "shahrah.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: clickhouse
+        {{- with .Values.clickhouse.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.clickhouse.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.clickhouse.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.clickhouse.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.clickhouse.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: clickhouse
+          image: "{{ .Values.clickhouse.image.repository }}:{{ .Values.clickhouse.image.tag }}"
+          imagePullPolicy: {{ .Values.clickhouse.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.clickhouse.service.httpPort | default 8123 }}
+              protocol: TCP
+            - name: native
+              containerPort: {{ .Values.clickhouse.service.nativePort | default 9000 }}
+              protocol: TCP
+          env:
+            - name: CLICKHOUSE_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.config.name }}
+                  key: {{ .Values.clickhouse.auth.databaseConfigKey | default "CLICKHOUSE_DB" }}
+            - name: CLICKHOUSE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.config.name }}
+                  key: {{ .Values.clickhouse.auth.usernameConfigKey | default "CLICKHOUSE_USER" }}
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ .Values.clickhouse.auth.passwordSecretKey | default "CLICKHOUSE_PASSWORD" }}
+          resources:
+            {{- toYaml .Values.clickhouse.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/clickhouse
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - clickhouse-client --user "$CLICKHOUSE_USER" --password "$CLICKHOUSE_PASSWORD" --query "SELECT 1"
+            initialDelaySeconds: {{ .Values.clickhouse.probes.readiness.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.clickhouse.probes.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.clickhouse.probes.readiness.timeoutSeconds | default 5 }}
+            failureThreshold: {{ .Values.clickhouse.probes.readiness.failureThreshold | default 12 }}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - clickhouse-client --user "$CLICKHOUSE_USER" --password "$CLICKHOUSE_PASSWORD" --query "SELECT 1"
+            initialDelaySeconds: {{ .Values.clickhouse.probes.liveness.initialDelaySeconds | default 30 }}
+            periodSeconds: {{ .Values.clickhouse.probes.liveness.periodSeconds | default 15 }}
+            timeoutSeconds: {{ .Values.clickhouse.probes.liveness.timeoutSeconds | default 5 }}
+            failureThreshold: {{ .Values.clickhouse.probes.liveness.failureThreshold | default 6 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "shahrah.labels" . | nindent 10 }}
+          app.kubernetes.io/component: clickhouse
+      spec:
+        accessModes:
+          {{- toYaml .Values.clickhouse.persistence.accessModes | nindent 10 }}
+        {{- with .Values.clickhouse.persistence.storageClassName }}
+        storageClassName: {{ . | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.clickhouse.persistence.size | quote }}
+{{- end }}

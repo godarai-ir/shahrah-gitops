@@ -280,10 +280,14 @@ externalServices:
     externalName: c781656f0ab24ceb9040b7f8bdbe5f6c.db.arvandbaas.ir
     port: 5432
   clickhouse:
-    enabled: true
+    enabled: false
     name: clickhouse
     externalName: clickhouse.prod.internal
     port: 9000
+clickhouse:
+  enabled: true
+  persistence:
+    size: 100Gi
 postgres:
   enabled: false
   persistence:
