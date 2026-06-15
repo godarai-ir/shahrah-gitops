@@ -1,0 +1,16 @@
+{{- if and .Values.clickhouse.enabled .Values.clickhouse.storageClass.create }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.clickhouse.storageClass.name | default "longhorn-clickhouse" }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-11"
+provisioner: {{ .Values.clickhouse.storageClass.provisioner | default "driver.longhorn.io" }}
+reclaimPolicy: {{ .Values.clickhouse.storageClass.reclaimPolicy | default "Delete" }}
+allowVolumeExpansion: {{ .Values.clickhouse.storageClass.allowVolumeExpansion | default true }}
+volumeBindingMode: {{ .Values.clickhouse.storageClass.volumeBindingMode | default "Immediate" }}
+parameters:
+  {{- toYaml .Values.clickhouse.storageClass.parameters | nindent 2 }}
+{{- end }}

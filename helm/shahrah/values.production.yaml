@@ -288,6 +288,9 @@ clickhouse:
   enabled: true
   persistence:
     size: 20Gi
+    storageClassName: longhorn-clickhouse
+  storageClass:
+    create: true
 postgres:
   enabled: false
   persistence:

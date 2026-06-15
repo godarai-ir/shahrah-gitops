@@ -1144,6 +1144,23 @@ clickhouse:
     accessModes:
       - ReadWriteOnce
     storageClassName: ""
+  storageClass:
+    create: false
+    name: longhorn-clickhouse
+    provisioner: driver.longhorn.io
+    reclaimPolicy: Delete
+    allowVolumeExpansion: true
+    volumeBindingMode: Immediate
+    parameters:
+      numberOfReplicas: "1"
+      staleReplicaTimeout: "30"
+      fromBackup: ""
+      fsType: ext4
+      dataLocality: disabled
+      unmapMarkSnapChainRemoved: ignored
+      disableRevisionCounter: "true"
+      dataEngine: v1
+      backupTargetName: default
   resources:
     requests:
       cpu: 250m
