@@ -42,7 +42,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   env:
     NODE_ENV: production
   envFromConfigKeys:
@@ -66,13 +66,13 @@ controlPlane:
   - name: TRACE_OTLP_ENDPOINT
     value: opentelemetry-collector.observability.svc.cluster.local:4317
   - name: TRACE_OTLP_INSECURE
-    value: "true"
+    value: 'true'
   - name: TRACE_OTLP_SERVICE_NAME
     value: shahrah-control-plane
   - name: TRACE_DEFAULT_SAMPLE_RATE
-    value: "0.01"
+    value: '0.01'
   - name: TRACE_SLOW_REQUEST_MS
-    value: "1500"
+    value: '1500'
   - name: TRACE_CAPTURE_POLICY
     value: metadata-only
   - name: TRACE_PAYLOAD_ENCRYPTION_KEY
@@ -105,7 +105,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -134,7 +134,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: sha-24bd70b0af8aa3bdd44078b8367d830b23c5b497
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -166,7 +166,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   ingress:
     hosts:
     - host: godarai.ir
@@ -179,7 +179,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   ingress:
     hosts:
     - host: godarai.ir
@@ -192,7 +192,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -223,7 +223,7 @@ modelDiscovery:
     minAvailable: 2
 supportAdmin:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   probes:
     readiness:
       type: tcp
@@ -244,35 +244,41 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
 tunnelServer:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
 tunnelClient:
   image:
-    tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
 migrations:
   enabled: true
   mainDb:
     enabled: true
     image:
-      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+      tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
   clickhouse:
     enabled: true
   modelDiscovery:
     enabled: true
     image:
-      tag: sha-a01b8604edb06a36f0f8819547fd48dc787f72d9
+      tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
     command:
     - sh
     - -c
-    - |
-      set -e
+    - 'set -e
+
       apk add --no-cache git
+
       rm -rf /tmp/truefoundry-models
+
       git clone --depth 1 https://github.com/truefoundry/models.git /tmp/truefoundry-models
+
       npx prisma migrate deploy
+
       npm run import:providers:yaml -- --providers-root /tmp/truefoundry-models/providers
+
+      '
 externalServices:
   postgres:
     enabled: true
