@@ -42,7 +42,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   env:
     NODE_ENV: production
   envFromConfigKeys:
@@ -105,7 +105,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -134,7 +134,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -166,7 +166,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   ingress:
     hosts:
     - host: godarai.ir
@@ -179,7 +179,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   ingress:
     hosts:
     - host: godarai.ir
@@ -192,7 +192,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -223,7 +223,7 @@ modelDiscovery:
     minAvailable: 2
 supportAdmin:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   probes:
     readiness:
       type: tcp
@@ -244,25 +244,25 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
 tunnelServer:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
 tunnelClient:
   image:
-    tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+    tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
 migrations:
   enabled: true
   mainDb:
     enabled: true
     image:
-      tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+      tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   clickhouse:
     enabled: true
   modelDiscovery:
     enabled: true
     image:
-      tag: sha-056bf181376e2bd7d79e7b91f61c164502d4bf9f
+      tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
     command:
     - sh
     - -c
