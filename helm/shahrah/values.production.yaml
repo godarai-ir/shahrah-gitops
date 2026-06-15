@@ -99,6 +99,10 @@ controlPlane:
       paths:
       - path: /api
         pathType: Prefix
+    - host: '*.godarai.ir'
+      paths:
+      - path: /v1
+        pathType: Prefix
     tls:
       enabled: true
       secretName: godarai-ir-tls
