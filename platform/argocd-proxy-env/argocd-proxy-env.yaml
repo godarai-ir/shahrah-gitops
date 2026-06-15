@@ -53,7 +53,7 @@ spec:
       serviceAccountName: argocd-proxy-env-patcher
       containers:
         - name: kubectl
-          image: bitnami/kubectl:1.33.4
+          image: bitnami/kubectl@sha256:323998cf83a2332f6761706df910870a3fa24dd8d4b999db977aa322de553399
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
