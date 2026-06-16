@@ -227,7 +227,8 @@ modelDiscovery:
   containerPort: 3002
   revisionHistoryLimit: 5
   labels: {}
-  annotations: {}
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
   podLabels: {}
   podAnnotations: {}
   serviceAccountName: ""
@@ -299,12 +300,13 @@ modelDiscovery:
   probes:
     readiness:
       enabled: true
-      type: tcp
-      port: 3002
+      type: http
+      path: /api/v1/providers
+      port: http
       initialDelaySeconds: 10
-      periodSeconds: 5
-      timeoutSeconds: 2
-      failureThreshold: 6
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 2
     liveness:
       enabled: true
       type: tcp
