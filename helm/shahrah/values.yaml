@@ -227,8 +227,7 @@ modelDiscovery:
   containerPort: 3002
   revisionHistoryLimit: 5
   labels: {}
-  annotations:
-    argocd.argoproj.io/sync-options: Replace=true
+  annotations: {}
   podLabels: {}
   podAnnotations: {}
   serviceAccountName: ""
