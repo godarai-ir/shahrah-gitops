@@ -301,24 +301,26 @@ modelDiscovery:
     readiness:
       enabled: true
       type: http
-      path: /api/v1/providers
+      path: /api/v1/ready
       port: http
       initialDelaySeconds: 10
-      periodSeconds: 30
+      periodSeconds: 10
       timeoutSeconds: 5
-      failureThreshold: 2
+      failureThreshold: 3
     liveness:
       enabled: true
-      type: tcp
-      port: 3002
+      type: http
+      path: /api/v1/health
+      port: http
       initialDelaySeconds: 20
       periodSeconds: 10
       timeoutSeconds: 2
       failureThreshold: 6
     startup:
       enabled: false
-      type: tcp
-      port: 3002
+      type: http
+      path: /api/v1/health
+      port: http
 
 supportAdmin:
   enabled: true
