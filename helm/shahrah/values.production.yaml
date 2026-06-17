@@ -42,7 +42,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
   env:
     NODE_ENV: production
   envFromConfigKeys:
@@ -109,7 +109,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -138,7 +138,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -170,7 +170,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -183,7 +183,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -196,7 +196,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.3.0
+    tag: v0.4.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -227,7 +227,7 @@ modelDiscovery:
     minAvailable: 2
 supportAdmin:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
   probes:
     readiness:
       type: tcp
@@ -248,25 +248,25 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
 tunnelServer:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
 tunnelClient:
   image:
-    tag: v0.2.0
+    tag: v0.3.0
 migrations:
   enabled: true
   mainDb:
     enabled: true
     image:
-      tag: v0.2.0
+      tag: v0.3.0
   clickhouse:
     enabled: true
   modelDiscovery:
     enabled: true
     image:
-      tag: v0.3.0
+      tag: v0.4.0
     command:
     - sh
     - -c
