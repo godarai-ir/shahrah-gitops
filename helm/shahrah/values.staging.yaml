@@ -12,6 +12,7 @@ config:
     MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.staging.shahrah.ir,https://support-admin.staging.shahrah.ir,https://localhost:7000
     NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://localhost:7000/catalog/api/v1
     MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    SHAHRAH_BASE_DOMAIN: localhost
     REDIS_HOST: redis
     REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db

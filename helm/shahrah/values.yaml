@@ -36,6 +36,7 @@ config:
     SMTP_PORT: "587"
     SMTP_FROM: no-reply@example.com
     EMAIL_SENDING_ENABLED: "true"
+    SHAHRAH_BASE_DOMAIN: shahrah.example.com
 
 redis:
   enabled: false
@@ -860,6 +861,7 @@ website:
   env: {}
   envFromConfigKeys:
     - SHAHRAH_CONTROL_PLANE_URL
+    - SHAHRAH_BASE_DOMAIN
     - SMTP_HOST
     - SMTP_PORT
     - SMTP_FROM
