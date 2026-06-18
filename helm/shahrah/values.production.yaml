@@ -139,7 +139,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.6.0
+    tag: v0.6.1
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
