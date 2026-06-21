@@ -43,7 +43,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.8.0
+    tag: v0.9.0
   env:
     NODE_ENV: production
   envFromConfigKeys:
