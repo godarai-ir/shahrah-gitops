@@ -43,7 +43,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.14.0
+    tag: v0.15.0
   env:
     NODE_ENV: production
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
