@@ -399,7 +399,7 @@ modelDiscoveryWeb:
     readiness:
       enabled: true
       type: http
-      path: /
+      path: /catalog
       port: http
       initialDelaySeconds: 10
       periodSeconds: 5
@@ -408,7 +408,7 @@ modelDiscoveryWeb:
     liveness:
       enabled: true
       type: http
-      path: /
+      path: /catalog
       port: http
       initialDelaySeconds: 20
       periodSeconds: 10
@@ -417,16 +417,14 @@ modelDiscoveryWeb:
     startup:
       enabled: false
       type: http
-      path: /
+      path: /catalog
       port: http
 
-legacyCatalogRedirect:
+catalogPathIngress:
   enabled: false
   className: nginx
   host: ""
-  path: /catalog(/|$)(.*)
-  targetURL: https://catalog.example.com/$2
-  statusCode: "308"
+  path: /catalog
   backendService: model-discovery-web
   backendPort: 3000
   tls:

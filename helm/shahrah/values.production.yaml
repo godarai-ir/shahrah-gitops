@@ -10,7 +10,7 @@ config:
     SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
     SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
     MODEL_DISCOVERY_CORS_ORIGIN: https://godarai.ir,https://*.godarai.ir
-    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.godarai.ir
+    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://godarai.ir/catalog
     NEXT_PUBLIC_SITE_URL: https://godarai.ir
     SHAHRAH_BASE_DOMAIN: godarai.ir
     SHAHRAH_TENANT_BASE_DOMAIN: godarai.ir
@@ -225,23 +225,12 @@ modelDiscoveryWeb:
     tag: v0.1.0
   replicaCount: 2
   ingress:
-    enabled: true
-    hosts:
-    - host: catalog.godarai.ir
-      paths:
-      - path: /
-        pathType: Prefix
-    tls:
-      enabled: true
-      secretName: godarai-ir-tls
-      clusterIssuer: ''
-legacyCatalogRedirect:
+    enabled: false
+catalogPathIngress:
   enabled: true
   className: nginx
   host: godarai.ir
-  path: /catalog(/|$)(.*)
-  targetURL: https://catalog.godarai.ir/$2
-  statusCode: '308'
+  path: /catalog
   backendService: model-discovery-web
   backendPort: 3000
   tls:

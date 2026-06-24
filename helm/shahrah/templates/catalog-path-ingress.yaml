@@ -1,0 +1,33 @@
+{{- if .Values.catalogPathIngress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catalog-path
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: catalog-path
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.catalogPathIngress.className | quote }}
+    {{- if .Values.catalogPathIngress.tls.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.catalogPathIngress.tls.clusterIssuer | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.catalogPathIngress.className }}
+  rules:
+    - host: {{ .Values.catalogPathIngress.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.catalogPathIngress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.catalogPathIngress.backendService }}
+                port:
+                  number: {{ .Values.catalogPathIngress.backendPort }}
+  {{- if and .Values.catalogPathIngress.tls.enabled .Values.catalogPathIngress.tls.secretName }}
+  tls:
+    - secretName: {{ .Values.catalogPathIngress.tls.secretName }}
+      hosts:
+        - {{ .Values.catalogPathIngress.host | quote }}
+  {{- end }}
+{{- end }}

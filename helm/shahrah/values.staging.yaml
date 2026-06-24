@@ -11,7 +11,7 @@ config:
     SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
     MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.staging.shahrah.ir,https://catalog.staging.shahrah.ir
     MODEL_DISCOVERY_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
-    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.staging.shahrah.ir
+    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.staging.shahrah.ir/catalog
     SUPPORT_ADMIN_ORIGIN: https://support-admin.staging.shahrah.ir
     SHAHRAH_BASE_DOMAIN: localhost
     REDIS_HOST: redis
@@ -143,7 +143,7 @@ modelDiscoveryWeb:
     hosts:
     - host: catalog.staging.shahrah.ir
       paths:
-      - path: /
+      - path: /catalog
         pathType: Prefix
     tls:
       enabled: true
