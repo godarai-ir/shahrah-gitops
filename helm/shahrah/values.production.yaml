@@ -161,6 +161,8 @@ website:
     hosts:
     - host: godarai.ir
       paths:
+      - path: /api/contact
+        pathType: Prefix
       - path: /api/login-discovery
         pathType: Prefix
       - path: /api/onboarding
