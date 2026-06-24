@@ -1244,6 +1244,19 @@ migrations:
       - deploy
     backoffLimit: 3
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
+  supportAdmin:
+    enabled: true
+    image:
+      repository: shahrah/support-admin-migrate
+      tag: ""
+      pullPolicy: IfNotPresent
+    command:
+      - npx
+      - prisma
+      - migrate
+      - deploy
+    backoffLimit: 3
+    databaseUrlSecretKey: SUPPORT_ADMIN_DATABASE_URL
 
 clickhouse:
   enabled: false
