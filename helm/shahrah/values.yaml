@@ -12,9 +12,11 @@ config:
   name: shahrah-config
   data:
     SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
-    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.example.com,https://support-admin.example.com
-    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://support-admin.example.com/api/v1
-    MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
+    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.example.com,https://catalog.example.com
+    MODEL_DISCOVERY_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.example.com
+    SUPPORT_ADMIN_ORIGIN: https://admin.example.com
     REDIS_HOST: redis-managed.example.local
     REDIS_PORT: "6379"
     CLICKHOUSE_DB: sharah_db
@@ -173,7 +175,10 @@ controlPlane:
     readOnlyRootFilesystem: true
     capabilities:
       drop: [ALL]
-  env: {}
+  env:
+    TRACE_RETENTION_CLEANUP_ENABLED: "true"
+    TRACE_RETENTION_CLEANUP_INTERVAL_MS: "3600000"
+    TRACE_RETENTION_CLEANUP_TIMEOUT_MS: "30000"
   envFromConfigKeys:
     - REDIS_HOST
     - REDIS_PORT
@@ -322,6 +327,113 @@ modelDiscovery:
       path: /api/v1/health
       port: http
 
+modelDiscoveryWeb:
+  enabled: true
+  image:
+    repository: shahrah/model-discovery-web
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicaCount: 2
+  containerPort: 3000
+  revisionHistoryLimit: 5
+  labels: {}
+  annotations: {}
+  podLabels: {}
+  podAnnotations: {}
+  serviceAccountName: ""
+  priorityClassName: ""
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: []
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 3000
+    targetPort: http
+  ingress:
+    enabled: false
+    className: nginx
+    annotations: {}
+    hosts: []
+    tls:
+      enabled: false
+      secretName: ""
+      clusterIssuer: ""
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+  pdb:
+    enabled: false
+    minAvailable: 1
+  networkPolicy:
+    enabled: false
+    ingress: []
+    egress: []
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: [ALL]
+  env: {}
+  envFromConfigKeys:
+    - MODEL_DISCOVERY_API_BASE_INTERNAL
+  envFromSecretKeys: []
+  extraEnv: []
+  volumes: []
+  volumeMounts: []
+  probes:
+    readiness:
+      enabled: true
+      type: http
+      path: /
+      port: http
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 2
+      failureThreshold: 6
+    liveness:
+      enabled: true
+      type: http
+      path: /
+      port: http
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 6
+    startup:
+      enabled: false
+      type: http
+      path: /
+      port: http
+
+legacyCatalogRedirect:
+  enabled: false
+  className: nginx
+  host: ""
+  path: /catalog(/|$)(.*)
+  targetURL: https://catalog.example.com/$2
+  statusCode: "308"
+  backendService: model-discovery-web
+  backendPort: 3000
+  tls:
+    enabled: false
+    secretName: ""
+    clusterIssuer: ""
+
 supportAdmin:
   enabled: true
   image:
@@ -385,10 +497,18 @@ supportAdmin:
       drop: [ALL]
   env: {}
   envFromConfigKeys:
-    - NEXT_PUBLIC_MODEL_CATALOG_API_BASE
-    - MODEL_CATALOG_API_BASE_INTERNAL
-  envFromSecretKeys: []
-  extraEnv: []
+    - MODEL_DISCOVERY_API_BASE_INTERNAL
+    - SHAHRAH_CONTROL_PLANE_URL
+    - SUPPORT_ADMIN_ORIGIN
+  envFromSecretKeys:
+    - MODEL_DISCOVERY_SERVICE_TOKEN
+    - CONTROL_PLANE_SERVICE_TOKEN
+  extraEnv:
+    - name: DATABASE_URL
+      valueFrom:
+        secretKeyRef:
+          name: shahrah-secret
+          key: SUPPORT_ADMIN_DATABASE_URL
   volumes: []
   volumeMounts: []
   probes:

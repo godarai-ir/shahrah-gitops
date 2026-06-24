@@ -6,6 +6,7 @@ This chart deploys Shahrah services/apps for staging and production.
 
 - `control-plane`
 - `model-discovery`
+- `model-discovery-web`
 - `support-admin`
 - `silk-road`
 - `tunnel-server`

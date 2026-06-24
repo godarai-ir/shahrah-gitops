@@ -10,12 +10,12 @@ config:
     SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
     SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
     MODEL_DISCOVERY_CORS_ORIGIN: https://godarai.ir,https://*.godarai.ir
-    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://godarai.ir/catalog/api/v1
-    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: /catalog
+    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.godarai.ir
     NEXT_PUBLIC_SITE_URL: https://godarai.ir
     SHAHRAH_BASE_DOMAIN: godarai.ir
     SHAHRAH_TENANT_BASE_DOMAIN: godarai.ir
-    MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    MODEL_DISCOVERY_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    SUPPORT_ADMIN_ORIGIN: https://admin.godarai.ir
     REDIS_HOST: redis
     REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db
@@ -46,6 +46,9 @@ controlPlane:
     tag: v0.5.0
   env:
     NODE_ENV: production
+    TRACE_RETENTION_CLEANUP_ENABLED: "true"
+    TRACE_RETENTION_CLEANUP_INTERVAL_MS: "3600000"
+    TRACE_RETENTION_CLEANUP_TIMEOUT_MS: "30000"
   envFromConfigKeys:
   - REDIS_HOST
   - REDIS_PORT
@@ -209,19 +212,7 @@ modelDiscovery:
         name: shahrah-secret
         key: MODEL_DISCOVERY_DATABASE_URL
   ingress:
-    enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: 'true'
-      nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
-    hosts:
-    - host: godarai.ir
-      paths:
-      - path: /catalog/api/v1(/|$)(.*)
-        pathType: ImplementationSpecific
-    tls:
-      enabled: true
-      secretName: godarai-ir-tls
-      clusterIssuer: ''
+    enabled: false
   autoscaling:
     enabled: true
     minReplicas: 3
@@ -229,6 +220,34 @@ modelDiscovery:
   pdb:
     enabled: true
     minAvailable: 2
+modelDiscoveryWeb:
+  image:
+    tag: v0.1.0
+  replicaCount: 2
+  ingress:
+    enabled: true
+    hosts:
+    - host: catalog.godarai.ir
+      paths:
+      - path: /
+        pathType: Prefix
+    tls:
+      enabled: true
+      secretName: godarai-ir-tls
+      clusterIssuer: ''
+legacyCatalogRedirect:
+  enabled: true
+  className: nginx
+  host: godarai.ir
+  path: /catalog(/|$)(.*)
+  targetURL: https://catalog.godarai.ir/$2
+  statusCode: '308'
+  backendService: model-discovery-web
+  backendPort: 3000
+  tls:
+    enabled: true
+    secretName: godarai-ir-tls
+    clusterIssuer: ''
 supportAdmin:
   image:
     tag: v0.4.0
@@ -242,9 +261,9 @@ supportAdmin:
   ingress:
     enabled: true
     hosts:
-    - host: godarai.ir
+    - host: admin.godarai.ir
       paths:
-      - path: /catalog
+      - path: /
         pathType: Prefix
     tls:
       enabled: true

@@ -36,6 +36,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- dict
   "control-plane" .Values.controlPlane
   "model-discovery" .Values.modelDiscovery
+  "model-discovery-web" .Values.modelDiscoveryWeb
   "support-admin" .Values.supportAdmin
   "silk-road" .Values.silkRoad
   "tunnel-server" .Values.tunnelServer

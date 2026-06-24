@@ -9,9 +9,10 @@ config:
   data:
     SHAHRAH_MODEL_DISCOVERY_URL: http://model-discovery:3002/api/v1
     SHAHRAH_CONTROL_PLANE_URL: http://control-plane:4000
-    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.staging.shahrah.ir,https://support-admin.staging.shahrah.ir,https://localhost:7000
-    NEXT_PUBLIC_MODEL_CATALOG_API_BASE: https://localhost:7000/catalog/api/v1
-    MODEL_CATALOG_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    MODEL_DISCOVERY_CORS_ORIGIN: https://tenant-admin.staging.shahrah.ir,https://catalog.staging.shahrah.ir
+    MODEL_DISCOVERY_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
+    NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.staging.shahrah.ir
+    SUPPORT_ADMIN_ORIGIN: https://support-admin.staging.shahrah.ir
     SHAHRAH_BASE_DOMAIN: localhost
     REDIS_HOST: redis
     REDIS_PORT: '6379'
@@ -36,6 +37,10 @@ secrets:
 controlPlane:
   image:
     tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
+  env:
+    TRACE_RETENTION_CLEANUP_ENABLED: "true"
+    TRACE_RETENTION_CLEANUP_INTERVAL_MS: "3600000"
+    TRACE_RETENTION_CLEANUP_TIMEOUT_MS: "30000"
   ingress:
     hosts:
     - host: api.staging.shahrah.ir
@@ -111,22 +116,39 @@ supportAdmin:
     tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   probes:
     readiness:
-      path: /catalog
+      path: /
     liveness:
-      path: /catalog
+      path: /
   ingress:
     enabled: true
     annotations:
       argocd.argoproj.io/sync-wave: '1'
     hosts:
-    - host: localhost
+    - host: support-admin.staging.shahrah.ir
       paths:
-      - path: /catalog
+      - path: /
         pathType: Prefix
     tls:
       enabled: true
-      secretName: localhost-support-admin-tls
-      clusterIssuer: ''
+      secretName: support-admin-staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
+modelDiscoveryWeb:
+  enabled: true
+  image:
+    tag: v0.1.0
+  ingress:
+    enabled: true
+    annotations:
+      argocd.argoproj.io/sync-wave: '1'
+    hosts:
+    - host: catalog.staging.shahrah.ir
+      paths:
+      - path: /
+        pathType: Prefix
+    tls:
+      enabled: true
+      secretName: catalog-staging-shahrah-ir-tls
+      clusterIssuer: letsencrypt-prod
 modelDiscovery:
   image:
     tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
@@ -137,20 +159,7 @@ modelDiscovery:
         name: shahrah-secret
         key: MODEL_DISCOVERY_DATABASE_URL
   ingress:
-    enabled: true
-    annotations:
-      argocd.argoproj.io/sync-wave: '-1'
-      nginx.ingress.kubernetes.io/use-regex: 'true'
-      nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
-    hosts:
-    - host: localhost
-      paths:
-      - path: /catalog/api/v1(/|$)(.*)
-        pathType: ImplementationSpecific
-    tls:
-      enabled: true
-      secretName: localhost-model-discovery-tls
-      clusterIssuer: ''
+    enabled: false
 migrations:
   enabled: true
   mainDb:
