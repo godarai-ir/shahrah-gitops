@@ -208,7 +208,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.18.0
+    tag: v0.18.1
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -283,7 +283,7 @@ migrations:
   modelDiscovery:
     enabled: true
     image:
-      tag: v0.18.0
+      tag: v0.18.1
     command:
     - sh
     - -c
