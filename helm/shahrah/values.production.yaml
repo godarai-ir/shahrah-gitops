@@ -180,6 +180,9 @@ website:
 blog:
   image:
     tag: v0.12.0
+  env:
+    PUBLIC_SITE_URL: https://godarai.ir/blog
+    PUBLIC_ALLOWED_HOSTS: godarai.ir
   ingress:
     hosts:
     - host: godarai.ir
