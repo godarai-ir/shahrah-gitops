@@ -86,14 +86,11 @@ blog:
   image:
     tag: sha-9ceee2fad5795a25d7ac91b938dfb63201b2ad3c
   ingress:
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: 'true'
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
     hosts:
     - host: localhost
       paths:
-      - path: /blog(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /blog
+        pathType: Prefix
     tls:
       enabled: true
       secretName: localhost-blog-tls

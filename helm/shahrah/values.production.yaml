@@ -182,6 +182,7 @@ blog:
     tag: v0.18.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
+    PUBLIC_BASE_PATH: /blog
     PUBLIC_ALLOWED_HOSTS: godarai.ir
   ingress:
     hosts:
