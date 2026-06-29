@@ -179,7 +179,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.19.0
+    tag: v0.20.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_ALLOWED_HOSTS: godarai.ir
