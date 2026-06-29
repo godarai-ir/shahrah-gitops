@@ -23,6 +23,22 @@ This chart deploys Shahrah services/apps for staging and production.
 - Do not commit plaintext secret values into `values*.yaml`.
 - When `postgres.enabled=true`, that Secret must also include `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
 
+## Typesense model-discovery rollout
+
+- `model-discovery` expects these config keys in every promoted environment:
+  - `TYPESENSE_HOST`
+  - `TYPESENSE_PORT`
+  - `TYPESENSE_PROTOCOL`
+  - `TYPESENSE_COLLECTION_MODELS`
+  - `TYPESENSE_READS_ENABLED`
+  - `TYPESENSE_READY_STRICT`
+- `TYPESENSE_API_KEY` remains a secret-backed env var from `shahrah-secret`.
+- Recommended promoted behavior for `staging` and `production` is:
+  - `TYPESENSE_READS_ENABLED=true`
+  - `TYPESENSE_READY_STRICT=true`
+- With strict readiness enabled, `model-discovery` will not report ready unless both Postgres and Typesense are reachable.
+- This matches the application-level hybrid read-path where Typesense serves heavy list/search/facet flows and Postgres remains the source of truth for relational detail reads.
+
 ## PostgreSQL
 
 - The chart can deploy an in-cluster PostgreSQL instance with `postgres.enabled=true`.

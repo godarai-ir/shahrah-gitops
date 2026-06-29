@@ -23,6 +23,9 @@ config:
     TYPESENSE_HOST: typesense.staging.internal
     TYPESENSE_PORT: '8108'
     TYPESENSE_PROTOCOL: https
+    TYPESENSE_COLLECTION_MODELS: models
+    TYPESENSE_READS_ENABLED: 'true'
+    TYPESENSE_READY_STRICT: 'true'
     TUNNEL_SERVER_URL: http://tunnel-server:8082
     TUNNEL_CLIENT_URL: http://tunnel-client:8081
     SILK_ROAD_URL: http://silk-road:8083
