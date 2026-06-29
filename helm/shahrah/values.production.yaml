@@ -43,7 +43,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.14.0
+    tag: v0.21.0
   env:
     NODE_ENV: production
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
@@ -113,7 +113,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.13.0
+    tag: v0.19.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -142,7 +142,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.17.1
+    tag: v0.23.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -179,7 +179,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.12.0
+    tag: v0.18.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_ALLOWED_HOSTS: godarai.ir
@@ -195,7 +195,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.12.0
+    tag: v0.18.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -208,7 +208,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.13.0
+    tag: v0.18.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -227,7 +227,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.4.0
+    tag: v0.10.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -244,7 +244,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.12.0
+    tag: v0.18.0
   probes:
     readiness:
       type: tcp
@@ -265,25 +265,25 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: v0.12.0
+    tag: v0.18.0
 tunnelServer:
   image:
-    tag: v0.12.0
+    tag: v0.18.0
 tunnelClient:
   image:
-    tag: v0.12.0
+    tag: v0.18.0
 migrations:
   enabled: true
   mainDb:
     enabled: true
     image:
-      tag: v0.12.0
+      tag: v0.17.0
   clickhouse:
     enabled: true
   modelDiscovery:
     enabled: true
     image:
-      tag: v0.13.0
+      tag: v0.18.0
     command:
     - sh
     - -c
@@ -302,7 +302,7 @@ migrations:
       '
   supportAdmin:
     image:
-      tag: v0.12.0
+      tag: v0.18.0
 externalServices:
   postgres:
     enabled: true
