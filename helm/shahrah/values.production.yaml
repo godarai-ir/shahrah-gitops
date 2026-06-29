@@ -179,7 +179,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.12.0
+    tag: v0.17.1
   ingress:
     hosts:
     - host: godarai.ir
