@@ -199,7 +199,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.21.1
+    tag: v0.21.3
   ingress:
     hosts:
     - host: godarai.ir
