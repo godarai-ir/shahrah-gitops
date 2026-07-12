@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cert-manager-image-patcher
+  namespace: cert-manager
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cert-manager-image-patcher
+  namespace: cert-manager
+rules:
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cert-manager-image-patcher
+  namespace: cert-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cert-manager-image-patcher
+subjects:
+  - kind: ServiceAccount
+    name: cert-manager-image-patcher
+    namespace: cert-manager
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cert-manager-image-patcher
+  namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cert-manager-image-patcher
+        app.kubernetes.io/part-of: platform
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: cert-manager-image-patcher
+      containers:
+        - name: kubectl
+          image: bitnami/kubectl@sha256:323998cf83a2332f6761706df910870a3fa24dd8d4b999db977aa322de553399
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              kubectl -n cert-manager set image \
+                deployment/cert-manager "*=docker.io/delpak/godar-ai:mirror-cert-manager-controller-v1.20.2" \
+                deployment/cert-manager-cainjector "*=docker.io/delpak/godar-ai:mirror-cert-manager-cainjector-v1.20.2" \
+                deployment/cert-manager-webhook "*=docker.io/delpak/godar-ai:mirror-cert-manager-webhook-v1.20.2"
