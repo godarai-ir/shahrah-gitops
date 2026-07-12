@@ -145,14 +145,30 @@ spec:
               set -eu
               dsn="${CLICKHOUSE_DSN#clickhouse://}"
               creds="${dsn%@*}"
-              target_and_query="${dsn#*@}"
+              target_and_query="${dsn##*@}"
               target="${target_and_query%%\?*}"
               hostport="${target%%/*}"
               database="${target#*/}"
-              host="${hostport%%:*}"
-              port="${hostport##*:}"
+              case "${hostport}" in
+                *:*)
+                  host="${hostport%:*}"
+                  port="${hostport##*:}"
+                  ;;
+                *)
+                  host="${hostport}"
+                  port="9000"
+                  ;;
+              esac
+              port="${port:-9000}"
+              if [ "${database}" = "${target}" ] || [ -z "${database}" ]; then
+                database="default"
+              fi
               username="${creds%%:*}"
               password="${creds#*:}"
+              if [ -z "${host}" ]; then
+                echo "CLICKHOUSE_DSN does not contain a valid host" >&2
+                exit 1
+              fi
               for migration in $(find -L /migrations -maxdepth 1 -type f -name '*.sql' | sort); do
                 echo "Applying ${migration}"
                 clickhouse-client \
