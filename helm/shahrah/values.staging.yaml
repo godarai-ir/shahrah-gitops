@@ -1,5 +1,5 @@
 global:
-  imageRegistry: registry.distr.sh/godar
+  imageRegistry: docker.io/delpak
   imageTag: sha-45b16b9e74959a6bdd7866fe4f23dd8376ad4842
 imagePullSecrets:
 - regcred

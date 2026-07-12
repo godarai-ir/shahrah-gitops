@@ -22,4 +22,5 @@ This repository is the single source of truth for Shahrah deployments via Argo C
 
 - Secrets are not committed in plaintext; chart defaults to `secrets.create: false`.
 - Use immutable image tags in values overrides.
+- Shahrah images are pulled from `docker.io/delpak/godar-ai` with service-qualified tags such as `control-plane-v1.2.3`.
 - Staging is auto-sync; production sync policy can be tightened later.

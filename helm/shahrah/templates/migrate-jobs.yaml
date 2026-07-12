@@ -36,7 +36,7 @@ spec:
             - until nc -z {{ if .Values.postgres.enabled }}{{ .Values.postgres.service.name | default "postgres" }}{{ else }}{{ .Values.externalServices.postgres.name | default "postgres" }}{{ end }} {{ .Values.externalServices.postgres.port | default .Values.postgres.service.port | default 5432 }}; do echo waiting for postgres; sleep 2; done
       containers:
         - name: goose
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.mainDb.image.repository }}:{{ .Values.migrations.mainDb.image.tag | default .Values.global.imageTag }}"
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.mainDb.image.repository }}:goose-{{ .Values.migrations.mainDb.image.tag | default .Values.global.imageTag }}"
           imagePullPolicy: {{ .Values.migrations.mainDb.image.pullPolicy | default "IfNotPresent" }}
           command:
             {{- toYaml .Values.migrations.mainDb.command | nindent 12 }}
@@ -86,7 +86,7 @@ spec:
             - until nc -z {{ if .Values.postgres.enabled }}{{ .Values.postgres.service.name | default "postgres" }}{{ else }}{{ .Values.externalServices.postgres.name | default "postgres" }}{{ end }} {{ .Values.externalServices.postgres.port | default .Values.postgres.service.port | default 5432 }}; do echo waiting for postgres; sleep 2; done
       containers:
         - name: support-admin-migrate
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.supportAdmin.image.repository }}:{{ .Values.migrations.supportAdmin.image.tag | default .Values.global.imageTag }}"
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.supportAdmin.image.repository }}:support-admin-migrate-{{ .Values.migrations.supportAdmin.image.tag | default .Values.global.imageTag }}"
           imagePullPolicy: {{ .Values.migrations.supportAdmin.image.pullPolicy | default "IfNotPresent" }}
           command:
             {{- toYaml .Values.migrations.supportAdmin.command | nindent 12 }}
@@ -216,7 +216,7 @@ spec:
             - until nc -z {{ if .Values.postgres.enabled }}{{ .Values.postgres.service.name | default "postgres" }}{{ else }}{{ .Values.externalServices.postgres.name | default "postgres" }}{{ end }} {{ .Values.externalServices.postgres.port | default .Values.postgres.service.port | default 5432 }}; do echo waiting for postgres; sleep 2; done
       containers:
         - name: model-discovery-migrate
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.modelDiscovery.image.repository }}:{{ .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
           imagePullPolicy: {{ .Values.migrations.modelDiscovery.image.pullPolicy | default "IfNotPresent" }}
           command:
             {{- toYaml .Values.migrations.modelDiscovery.command | nindent 12 }}

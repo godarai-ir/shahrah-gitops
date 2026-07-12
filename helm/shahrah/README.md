@@ -23,6 +23,13 @@ This chart deploys Shahrah services/apps for staging and production.
 - Do not commit plaintext secret values into `values*.yaml`.
 - When `postgres.enabled=true`, that Secret must also include `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
 
+## Container registry
+
+- All Shahrah workloads use the Docker Hub repository `delpak/godar-ai`.
+- Tags are service-qualified, for example `control-plane-v1.2.3` and `website-sha-<commit>`.
+- Environment values store only the version portion; the chart prepends the workload name while rendering.
+- Private pulls require a `regcred` image pull secret created with the Docker Hub username and personal access token.
+
 ## Typesense model-discovery rollout
 
 - `model-discovery` expects these config keys in every promoted environment:

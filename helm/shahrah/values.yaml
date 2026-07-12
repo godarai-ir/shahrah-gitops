@@ -2,7 +2,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-  imageRegistry: ghcr.io/delpak
+  imageRegistry: docker.io/delpak
   imageTag: "sha-override-me"
 
 imagePullSecrets: []
@@ -116,7 +116,7 @@ mailpit:
 controlPlane:
   enabled: true
   image:
-    repository: shahrah/control-plane
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 2
@@ -229,7 +229,7 @@ controlPlane:
 modelDiscovery:
   enabled: true
   image:
-    repository: shahrah/model-discovery
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 2
@@ -336,7 +336,7 @@ modelDiscovery:
 modelDiscoveryWeb:
   enabled: true
   image:
-    repository: shahrah/model-discovery-web
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 2
@@ -441,7 +441,7 @@ catalogPathIngress:
 supportAdmin:
   enabled: true
   image:
-    repository: shahrah/support-admin
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 1
@@ -543,7 +543,7 @@ supportAdmin:
 silkRoad:
   enabled: true
   image:
-    repository: shahrah/silk-road
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 1
@@ -636,7 +636,7 @@ silkRoad:
 tunnelServer:
   enabled: true
   image:
-    repository: shahrah/tunnel-server
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 1
@@ -730,7 +730,7 @@ tunnelServer:
 tunnelClient:
   enabled: true
   image:
-    repository: shahrah/tunnel-client
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 1
@@ -824,7 +824,7 @@ tunnelClient:
 tenantAdmin:
   enabled: true
   image:
-    repository: shahrah/tenant-admin
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 2
@@ -920,7 +920,7 @@ tenantAdmin:
 website:
   enabled: true
   image:
-    repository: shahrah/website
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 2
@@ -1022,7 +1022,7 @@ website:
 blog:
   enabled: true
   image:
-    repository: shahrah/blog
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 1
@@ -1118,7 +1118,7 @@ blog:
 docs:
   enabled: true
   image:
-    repository: shahrah/docs
+    repository: godar-ai
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 1
@@ -1216,7 +1216,7 @@ migrations:
   mainDb:
     enabled: true
     image:
-      repository: shahrah/goose
+      repository: godar-ai
       tag: ""
       pullPolicy: IfNotPresent
     command:
@@ -1240,7 +1240,7 @@ migrations:
   modelDiscovery:
     enabled: true
     image:
-      repository: shahrah/model-discovery-migrate
+      repository: godar-ai
       tag: ""
       pullPolicy: IfNotPresent
     command:
@@ -1253,7 +1253,7 @@ migrations:
   supportAdmin:
     enabled: true
     image:
-      repository: shahrah/support-admin-migrate
+      repository: godar-ai
       tag: ""
       pullPolicy: IfNotPresent
     command:

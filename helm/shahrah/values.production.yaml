@@ -1,5 +1,5 @@
 global:
-  imageRegistry: registry.distr.sh/godar
+  imageRegistry: docker.io/delpak
   imageTag: sha-override-me
 imagePullSecrets:
 - regcred
