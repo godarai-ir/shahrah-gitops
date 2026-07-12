@@ -159,12 +159,14 @@ spec:
                   port="9000"
                   ;;
               esac
-              port="${port:-9000}"
+              host="${host:-${CLICKHOUSE_HOST}}"
+              port="${port:-${CLICKHOUSE_PORT:-9000}}"
               if [ "${database}" = "${target}" ] || [ -z "${database}" ]; then
-                database="default"
+                database="${CLICKHOUSE_DATABASE:-default}"
               fi
               username="${creds%%:*}"
               password="${creds#*:}"
+              username="${username:-${CLICKHOUSE_USERNAME}}"
               if [ -z "${host}" ]; then
                 echo "CLICKHOUSE_DSN does not contain a valid host" >&2
                 exit 1
@@ -180,6 +182,20 @@ spec:
                   --multiquery < "${migration}"
               done
           env:
+            - name: CLICKHOUSE_HOST
+              value: {{ if .Values.clickhouse.enabled }}{{ .Values.clickhouse.service.name | default "clickhouse" | quote }}{{ else }}{{ .Values.externalServices.clickhouse.name | default .Values.migrations.clickhouse.serviceName | default "clickhouse" | quote }}{{ end }}
+            - name: CLICKHOUSE_PORT
+              value: {{ if .Values.clickhouse.enabled }}{{ .Values.clickhouse.service.nativePort | default 9000 | quote }}{{ else }}{{ .Values.externalServices.clickhouse.port | default .Values.migrations.clickhouse.servicePort | default 9000 | quote }}{{ end }}
+            - name: CLICKHOUSE_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.config.name }}
+                  key: CLICKHOUSE_DB
+            - name: CLICKHOUSE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.config.name }}
+                  key: CLICKHOUSE_USER
             - name: CLICKHOUSE_DSN
               valueFrom:
                 secretKeyRef:
