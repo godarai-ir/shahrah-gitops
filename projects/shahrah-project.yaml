@@ -8,6 +8,7 @@ spec:
   sourceRepos:
     - https://github.com/Delpak/shahrah-gitops.git
     - git@github.com:Delpak/shahrah-gitops.git
+    - ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
   destinations:
     - namespace: shahrah-staging
       server: https://kubernetes.default.svc
