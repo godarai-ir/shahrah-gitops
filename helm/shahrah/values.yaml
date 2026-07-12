@@ -1254,7 +1254,6 @@ migrations:
       tag: "26.3"
       pullPolicy: IfNotPresent
     backoffLimit: 3
-    dsnSecretKey: CLICKHOUSE_DSN
     serviceName: clickhouse
     servicePort: 9000
     configMapName: clickhouse-migrations

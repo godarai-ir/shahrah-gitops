@@ -143,42 +143,14 @@ spec:
             - -c
             - |
               set -eu
-              dsn="${CLICKHOUSE_DSN#clickhouse://}"
-              creds="${dsn%@*}"
-              target_and_query="${dsn##*@}"
-              target="${target_and_query%%\?*}"
-              hostport="${target%%/*}"
-              database="${target#*/}"
-              case "${hostport}" in
-                *:*)
-                  host="${hostport%:*}"
-                  port="${hostport##*:}"
-                  ;;
-                *)
-                  host="${hostport}"
-                  port="9000"
-                  ;;
-              esac
-              host="${host:-${CLICKHOUSE_HOST}}"
-              port="${port:-${CLICKHOUSE_PORT:-9000}}"
-              if [ "${database}" = "${target}" ] || [ -z "${database}" ]; then
-                database="${CLICKHOUSE_DATABASE:-default}"
-              fi
-              username="${creds%%:*}"
-              password="${creds#*:}"
-              username="${username:-${CLICKHOUSE_USERNAME}}"
-              if [ -z "${host}" ]; then
-                echo "CLICKHOUSE_DSN does not contain a valid host" >&2
-                exit 1
-              fi
               for migration in $(find -L /migrations -maxdepth 1 -type f -name '*.sql' | sort); do
                 echo "Applying ${migration}"
                 clickhouse-client \
-                  --host "${host}" \
-                  --port "${port}" \
-                  --user "${username}" \
-                  --password "${password}" \
-                  --database "${database}" \
+                  --host "${CLICKHOUSE_HOST}" \
+                  --port "${CLICKHOUSE_PORT}" \
+                  --user "${CLICKHOUSE_USERNAME}" \
+                  --password "${CLICKHOUSE_PASSWORD}" \
+                  --database "${CLICKHOUSE_DATABASE}" \
                   --multiquery < "${migration}"
               done
           env:
@@ -196,11 +168,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Values.config.name }}
                   key: CLICKHOUSE_USER
-            - name: CLICKHOUSE_DSN
+            - name: CLICKHOUSE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
-                  key: {{ .Values.migrations.clickhouse.dsnSecretKey | default "CLICKHOUSE_DSN" }}
+                  key: {{ .Values.clickhouse.auth.passwordSecretKey | default "CLICKHOUSE_PASSWORD" }}
           volumeMounts:
             - name: clickhouse-migrations
               mountPath: /migrations
