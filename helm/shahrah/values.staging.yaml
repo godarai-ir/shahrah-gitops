@@ -14,7 +14,7 @@ config:
     NEXT_PUBLIC_MODEL_DISCOVERY_APP_URL: https://catalog.staging.shahrah.ir/catalog
     SUPPORT_ADMIN_ORIGIN: https://support-admin.staging.shahrah.ir
     SHAHRAH_BASE_DOMAIN: localhost
-    REDIS_HOST: redis
+    REDIS_HOST: redis.shahrah-staging.svc.cluster.local
     REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db
     CLICKHOUSE_USER: sharah_user

@@ -16,7 +16,7 @@ config:
     SHAHRAH_TENANT_BASE_DOMAIN: godarai.ir
     MODEL_DISCOVERY_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
     SUPPORT_ADMIN_ORIGIN: https://admin.godarai.ir
-    REDIS_HOST: redis
+    REDIS_HOST: redis.shahrah-production.svc.cluster.local
     REDIS_PORT: '6379'
     CLICKHOUSE_DB: sharah_db
     CLICKHOUSE_USER: sharah_user
