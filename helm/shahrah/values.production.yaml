@@ -22,9 +22,9 @@ config:
     CLICKHOUSE_USER: sharah_user
     CLICKHOUSE_HTTP_PORT: '8123'
     CLICKHOUSE_NATIVE_PORT: '9000'
-    TYPESENSE_HOST: typesense.prod.internal
+    TYPESENSE_HOST: typesense
     TYPESENSE_PORT: '8108'
-    TYPESENSE_PROTOCOL: https
+    TYPESENSE_PROTOCOL: http
     TYPESENSE_COLLECTION_MODELS: models
     TYPESENSE_READS_ENABLED: 'true'
     TYPESENSE_READY_STRICT: 'true'
@@ -42,6 +42,8 @@ secrets:
   create: false
   name: shahrah-secret
   data: {}
+typesense:
+  enabled: true
 redis:
   enabled: true
 controlPlane:

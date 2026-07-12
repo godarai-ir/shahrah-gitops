@@ -1,0 +1,93 @@
+{{- if .Values.typesense.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: typesense
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: typesense
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: typesense
+  ports:
+    - name: http
+      port: {{ .Values.typesense.service.port }}
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: typesense
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: typesense
+spec:
+  serviceName: typesense
+  replicas: {{ .Values.typesense.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: typesense
+  template:
+    metadata:
+      labels:
+        {{- include "shahrah.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: typesense
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: typesense
+          image: "{{ .Values.typesense.image.repository }}:{{ .Values.typesense.image.tag }}"
+          imagePullPolicy: {{ .Values.typesense.image.pullPolicy }}
+          args:
+            - --api-key=$(TYPESENSE_API_KEY)
+            - --data-dir=/data
+            - --enable-cors
+          env:
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: TYPESENSE_API_KEY
+          ports:
+            - name: http
+              containerPort: 8108
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.typesense.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  {{- if .Values.typesense.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.typesense.persistence.storageClassName | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.typesense.persistence.size }}
+  {{- else }}
+      volumes:
+        - name: data
+          emptyDir: {}
+  {{- end }}
+{{- end }}

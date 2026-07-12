@@ -113,6 +113,27 @@ mailpit:
       cpu: 200m
       memory: 256Mi
 
+typesense:
+  enabled: false
+  image:
+    repository: typesense/typesense
+    tag: "29.1"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    port: 8108
+  persistence:
+    enabled: true
+    storageClassName: local-path
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+
 controlPlane:
   enabled: true
   image:
