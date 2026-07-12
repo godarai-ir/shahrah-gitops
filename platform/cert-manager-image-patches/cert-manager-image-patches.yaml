@@ -59,6 +59,18 @@ spec:
             - -ec
             - |
               kubectl -n cert-manager set image \
-                deployment/cert-manager "*=docker.io/delpak/godar-ai:mirror-cert-manager-controller-v1.20.2" \
-                deployment/cert-manager-cainjector "*=docker.io/delpak/godar-ai:mirror-cert-manager-cainjector-v1.20.2" \
-                deployment/cert-manager-webhook "*=docker.io/delpak/godar-ai:mirror-cert-manager-webhook-v1.20.2"
+                deployment/cert-manager \
+                "*=docker.io/delpak/godar-ai:mirror-cert-manager-controller-v1.20.2"
+              kubectl -n cert-manager set image \
+                deployment/cert-manager-cainjector \
+                "*=docker.io/delpak/godar-ai:mirror-cert-manager-cainjector-v1.20.2"
+              kubectl -n cert-manager set image \
+                deployment/cert-manager-webhook \
+                "*=docker.io/delpak/godar-ai:mirror-cert-manager-webhook-v1.20.2"
+              kubectl -n cert-manager patch deployment \
+                cert-manager \
+                cert-manager-cainjector \
+                cert-manager-webhook \
+                -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"regcred"}]}}}}'
+              kubectl -n cert-manager patch deployment cert-manager --type=json \
+                -p '[{"op":"replace","path":"/spec/template/spec/containers/0/args/3","value":"--acme-http01-solver-image=docker.io/delpak/godar-ai:mirror-cert-manager-acmesolver-v1.20.2"}]'

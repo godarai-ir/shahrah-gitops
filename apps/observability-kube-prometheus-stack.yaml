@@ -17,6 +17,9 @@ spec:
     helm:
       releaseName: kube-prometheus-stack
       values: |
+        global:
+          imagePullSecrets:
+            - name: regcred
         crds:
           enabled: false
           upgradeJob:

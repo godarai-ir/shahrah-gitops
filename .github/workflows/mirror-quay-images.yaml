@@ -34,6 +34,8 @@ jobs:
             target_tag: mirror-cert-manager-cainjector-v1.20.2
           - source: quay.io/jetstack/cert-manager-webhook:v1.20.2
             target_tag: mirror-cert-manager-webhook-v1.20.2
+          - source: quay.io/jetstack/cert-manager-acmesolver:v1.20.2
+            target_tag: mirror-cert-manager-acmesolver-v1.20.2
 
     steps:
       - name: Set up Docker Buildx

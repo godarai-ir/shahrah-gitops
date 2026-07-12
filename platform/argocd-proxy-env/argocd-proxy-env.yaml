@@ -61,12 +61,26 @@ spec:
             - |
               ARGOCD_IMAGE="docker.io/delpak/godar-ai:mirror-argocd-v3.4.3"
               kubectl -n argocd set image \
-                deployment/argocd-server "*=${ARGOCD_IMAGE}" \
-                deployment/argocd-repo-server "*=${ARGOCD_IMAGE}" \
-                deployment/argocd-applicationset-controller "*=${ARGOCD_IMAGE}" \
-                deployment/argocd-dex-server "*=${ARGOCD_IMAGE}" \
-                deployment/argocd-notifications-controller "*=${ARGOCD_IMAGE}" \
-                statefulset/argocd-application-controller "*=${ARGOCD_IMAGE}"
+                deployment/argocd-server \
+                deployment/argocd-repo-server \
+                deployment/argocd-applicationset-controller \
+                deployment/argocd-notifications-controller \
+                statefulset/argocd-application-controller \
+                "*=${ARGOCD_IMAGE}"
+              kubectl -n argocd set image \
+                deployment/argocd-dex-server \
+                dex=ghcr.io/dexidp/dex:v2.45.0 \
+                copyutil="${ARGOCD_IMAGE}"
+              kubectl -n argocd patch deployment \
+                argocd-server \
+                argocd-repo-server \
+                argocd-applicationset-controller \
+                argocd-dex-server \
+                argocd-notifications-controller \
+                -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"regcred"}]}}}}'
+              kubectl -n argocd patch statefulset \
+                argocd-application-controller \
+                -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"regcred"}]}}}}'
 
               NO_PROXY_VALUE="localhost,127.0.0.1,argocd-repo-server,argocd-repo-server.argocd,argocd-repo-server.argocd.svc,argocd-repo-server.argocd.svc.cluster.local,argocd-server,argocd-server.argocd,argocd-server.argocd.svc,argocd-server.argocd.svc.cluster.local,argocd-application-controller,argocd-application-controller.argocd,argocd-application-controller.argocd.svc,argocd-application-controller.argocd.svc.cluster.local,kubernetes.default.svc,.svc,.svc.cluster.local,.cluster.local,10.0.0.0/8,10.10.0.0/24,10.42.0.0/16,10.43.0.0/16,172.16.0.0/12,192.168.0.0/16,k3s-api.internal"
               kubectl -n argocd set env \
