@@ -8,6 +8,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-7"
 data:
+  # Mirrored from Shahrah/infra/clickhouse/migrations; keep names and contents identical.
   {{- range $path, $_ := .Files.Glob "files/clickhouse-migrations/*.sql" }}
   {{ base $path }}: |
 {{ $.Files.Get $path | indent 4 }}
