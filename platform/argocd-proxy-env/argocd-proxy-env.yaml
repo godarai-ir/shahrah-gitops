@@ -102,3 +102,7 @@ spec:
                 http_proxy=http://10.10.0.5:3128 \
                 https_proxy=http://10.10.0.5:3128 \
                 no_proxy="${NO_PROXY_VALUE}"
+
+              kubectl -n argocd set env \
+                deployment/argocd-repo-server \
+                GIT_SSH_COMMAND='ssh -o ProxyCommand="connect-proxy -H 10.10.0.5:3128 %h %p"'

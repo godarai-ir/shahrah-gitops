@@ -11,9 +11,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/prometheus-operator/prometheus-operator.git
-    targetRevision: v0.91.0
-    path: example/prometheus-operator-crd
+    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: platform/observability/prometheus-operator-crd
   destination:
     server: https://kubernetes.default.svc
     namespace: observability

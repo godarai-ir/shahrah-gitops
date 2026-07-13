@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Delpak/shahrah-gitops.git
+    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
     targetRevision: main
     path: platform/cert-manager-image-patches
   destination:
