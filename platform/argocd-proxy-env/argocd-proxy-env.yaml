@@ -13,6 +13,13 @@ rules:
   - apiGroups:
       - apps
     resources:
+      - configmaps
+    verbs:
+      - get
+      - patch
+  - apiGroups:
+      - ""
+    resources:
       - deployments
       - statefulsets
     verbs:
@@ -105,4 +112,8 @@ spec:
 
               kubectl -n argocd set env \
                 deployment/argocd-repo-server \
-                GIT_SSH_COMMAND='ssh -o ProxyCommand="connect-proxy -H 10.10.0.5:3128 %h %p"'
+                GIT_SSH_COMMAND='ssh -o ProxyCommand="connect-proxy -H 10.10.0.5:3128 %h %p"' \
+                ARGOCD_EXEC_TIMEOUT=150s
+
+              kubectl -n argocd patch configmap argocd-cmd-params-cm \
+                -p '{"data":{"controller.repo.server.timeout.seconds":"180"}}'
