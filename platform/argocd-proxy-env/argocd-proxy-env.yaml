@@ -11,14 +11,15 @@ metadata:
   namespace: argocd
 rules:
   - apiGroups:
-      - apps
+      - ""
     resources:
       - configmaps
+      - secrets
     verbs:
       - get
       - patch
   - apiGroups:
-      - ""
+      - apps
     resources:
       - deployments
       - statefulsets
@@ -117,3 +118,7 @@ spec:
 
               kubectl -n argocd patch configmap argocd-cmd-params-cm \
                 -p '{"data":{"controller.repo.server.timeout.seconds":"180"}}'
+
+              PROXY_VALUE="$(printf %s 'socks5://argocd-git-proxy.argocd.svc.cluster.local:1080' | base64 -w0)"
+              kubectl -n argocd patch secret repo-shahrah-gitops \
+                -p "{\"data\":{\"proxy\":\"${PROXY_VALUE}\"}}"
