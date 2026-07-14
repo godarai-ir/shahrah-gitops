@@ -48,7 +48,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.25.2
+    tag: v0.25.4
   env:
     NODE_ENV: production
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
@@ -118,7 +118,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.28.4
+    tag: v0.28.7
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -201,7 +201,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.23.2
+    tag: v0.23.4
   ingress:
     hosts:
     - host: godarai.ir
@@ -214,7 +214,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.22.3
+    tag: v0.22.5
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -233,7 +233,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.14.2
+    tag: v0.14.4
   replicaCount: 2
   ingress:
     enabled: false
@@ -271,7 +271,7 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: v0.22.2
+    tag: v0.22.4
 tunnelServer:
   image:
     tag: v0.22.2
@@ -293,7 +293,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.22.3
+      tag: v0.22.5
     command:
     - sh
     - -c
