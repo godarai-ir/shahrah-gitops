@@ -1236,6 +1236,8 @@ migrations:
   enabled: true
   mainDb:
     enabled: true
+    waitForPostgres:
+      enabled: false
     image:
       repository: godar-ai
       tag: ""
@@ -1259,6 +1261,8 @@ migrations:
     configMapName: clickhouse-migrations
   modelDiscovery:
     enabled: true
+    waitForPostgres:
+      enabled: false
     image:
       repository: godar-ai
       tag: ""
@@ -1272,6 +1276,8 @@ migrations:
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
   supportAdmin:
     enabled: true
+    waitForPostgres:
+      enabled: false
     image:
       repository: godar-ai
       tag: ""
