@@ -20,6 +20,25 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: shahrah-production
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: control-plane
+      namespace: shahrah-production
+      jsonPointers:
+        - /spec/replicas
+    - group: apps
+      kind: Deployment
+      name: model-discovery
+      namespace: shahrah-production
+      jsonPointers:
+        - /spec/replicas
+    - group: apps
+      kind: Deployment
+      name: tenant-admin
+      namespace: shahrah-production
+      jsonPointers:
+        - /spec/replicas
   syncPolicy:
     automated:
       prune: true
