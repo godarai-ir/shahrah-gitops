@@ -147,7 +147,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.27.2
+    tag: v0.27.4
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -201,7 +201,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.23.5
+    tag: v0.23.6
   ingress:
     hosts:
     - host: godarai.ir
