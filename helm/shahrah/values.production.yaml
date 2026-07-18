@@ -48,7 +48,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.25.6
+    tag: v0.26.0
   env:
     NODE_ENV: production
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
@@ -118,7 +118,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.28.9
+    tag: v0.29.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -147,7 +147,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.27.6
+    tag: v0.28.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -184,7 +184,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.25.6
+    tag: v0.26.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_BASE_PATH: /blog
@@ -201,7 +201,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.23.9
+    tag: v0.24.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -214,7 +214,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.22.7
+    tag: v0.23.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -233,7 +233,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.14.6
+    tag: v0.15.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -250,7 +250,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.22.5
+    tag: v0.23.0
   probes:
     readiness:
       type: tcp
@@ -271,13 +271,13 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: v0.22.6
+    tag: v0.23.0
 tunnelServer:
   image:
-    tag: v0.22.5
+    tag: v0.23.0
 tunnelClient:
   image:
-    tag: v0.22.5
+    tag: v0.23.0
 migrations:
   enabled: true
   mainDb:
@@ -285,7 +285,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.21.5
+      tag: v0.22.0
   clickhouse:
     enabled: true
   modelDiscovery:
@@ -293,7 +293,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.22.7
+      tag: v0.23.0
     command:
     - sh
     - -c
@@ -314,7 +314,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.22.5
+      tag: v0.23.0
 externalServices:
   postgres:
     enabled: true
