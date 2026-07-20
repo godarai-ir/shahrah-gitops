@@ -48,7 +48,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.28.5
+    tag: v0.28.6
   env:
     NODE_ENV: production
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
@@ -285,7 +285,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.24.1
+      tag: v0.24.2
   clickhouse:
     enabled: true
   modelDiscovery:
