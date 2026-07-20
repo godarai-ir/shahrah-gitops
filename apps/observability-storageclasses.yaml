@@ -14,8 +14,6 @@ spec:
     repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
     targetRevision: main
     path: platform/observability/storageclasses
-    directory:
-      recurse: false
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
