@@ -214,7 +214,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.25.1
+    tag: v0.25.2
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -293,7 +293,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.25.1
+      tag: v0.25.2
     command:
     - sh
     - -c
