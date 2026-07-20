@@ -10,6 +10,19 @@ metadata:
     app.kubernetes.io/part-of: observability
 spec:
   project: default
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: kube-prometheus-stack-grafana
+      namespace: observability
+      jsonPointers:
+        - /data/admin-password
+    - group: apps
+      kind: Deployment
+      name: kube-prometheus-stack-grafana
+      namespace: observability
+      jqPathExpressions:
+        - .spec.template.metadata.annotations."checksum/secret"
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
     chart: kube-prometheus-stack
@@ -104,10 +117,13 @@ spec:
             retention: 7d
             retentionSize: 16GB
             serviceMonitorNamespaceSelector:
-              matchNames:
-                - observability
-                - ingress-nginx
-                - shahrah-production
+              matchExpressions:
+                - key: kubernetes.io/metadata.name
+                  operator: In
+                  values:
+                    - observability
+                    - ingress-nginx
+                    - shahrah-production
             serviceMonitorSelector:
               matchLabels:
                 release: kube-prometheus-stack
@@ -135,3 +151,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
