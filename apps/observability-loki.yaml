@@ -50,6 +50,10 @@ spec:
             size: 20Gi
         write:
           replicas: 0
+        chunksCache:
+          # The default 8 GiB cache requests ~9.8 GiB after chart overhead,
+          # which cannot be scheduled on the current 4/12 GiB worker nodes.
+          allocatedMemory: 1024
         monitoring:
           dashboards:
             enabled: true
