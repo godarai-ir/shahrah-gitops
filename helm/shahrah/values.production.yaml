@@ -285,7 +285,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.21.5
+      tag: v0.24.0
   clickhouse:
     enabled: true
   modelDiscovery:
