@@ -48,7 +48,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.25.6
+    tag: v0.28.2
   env:
     NODE_ENV: production
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
@@ -118,7 +118,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.31.2
+    tag: v0.31.3
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
