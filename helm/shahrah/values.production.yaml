@@ -337,6 +337,8 @@ externalServices:
     port: 9000
 clickhouse:
   enabled: true
+  nodeSelector:
+    kubernetes.io/hostname: node-1
   persistence:
     size: 10Gi
     storageClassName: longhorn-prod-r2
