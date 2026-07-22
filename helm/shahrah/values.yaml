@@ -1304,6 +1304,7 @@ clickhouse:
     name: clickhouse
     httpPort: 8123
     nativePort: 9000
+    nativeTargetPort: native
     selector: {}
   headlessService:
     name: clickhouse-headless

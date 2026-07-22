@@ -341,6 +341,7 @@ clickhouse:
   enabled: true
   workloadEnabled: false
   service:
+    nativeTargetPort: tcp
     selector:
       app: shahrah-clickhouse-clickhouse
   persistence:
