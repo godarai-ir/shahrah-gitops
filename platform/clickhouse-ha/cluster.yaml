@@ -1,0 +1,132 @@
+apiVersion: clickhouse.com/v1alpha1
+kind: KeeperCluster
+metadata:
+  name: shahrah-keeper
+  namespace: shahrah-production
+  labels:
+    app.kubernetes.io/name: clickhouse-keeper
+    app.kubernetes.io/part-of: shahrah
+    app.kubernetes.io/component: database-coordination
+spec:
+  replicas: 3
+  dataVolumeClaimSpec:
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: longhorn-prod-r2
+    resources:
+      requests:
+        storage: 2Gi
+  podTemplate:
+    nodeHostnameKey: kubernetes.io/hostname
+    terminationGracePeriodSeconds: 30
+  containerTemplate:
+    image:
+      repository: docker.io/clickhouse/clickhouse-keeper
+      tag: 26.3.17.56
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+  settings:
+    logger:
+      logToFile: false
+      level: information
+---
+apiVersion: clickhouse.com/v1alpha1
+kind: ClickHouseCluster
+metadata:
+  name: shahrah-clickhouse
+  namespace: shahrah-production
+  labels:
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/part-of: shahrah
+    app.kubernetes.io/component: database
+spec:
+  shards: 1
+  replicas: 2
+  keeperClusterRef:
+    name: shahrah-keeper
+  dataVolumeClaimSpec:
+    accessModes:
+      - ReadWriteOnce
+    storageClassName: longhorn-clickhouse-r1
+    resources:
+      requests:
+        storage: 20Gi
+  podTemplate:
+    nodeHostnameKey: kubernetes.io/hostname
+    terminationGracePeriodSeconds: 60
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - node-1
+                    - node-2
+  containerTemplate:
+    image:
+      repository: docker.io/clickhouse/clickhouse-server
+      tag: 26.3.17.56
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: "1"
+        memory: 2Gi
+    env:
+      - name: SHAHRAH_CLICKHOUSE_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: shahrah-secret
+            key: CLICKHOUSE_PASSWORD
+  externalSecret:
+    name: shahrah-secret
+    policy: Manage
+  settings:
+    logger:
+      logToFile: false
+      level: information
+    defaultUserPassword:
+      secret:
+        name: shahrah-secret
+        key: CLICKHOUSE_PASSWORD
+    extraUsersConfig:
+      users:
+        sharah_user:
+          password:
+            "@from_env": SHAHRAH_CLICKHOUSE_PASSWORD
+            "@hide_in_preprocessed": true
+          profile: default
+          quota: default
+          grants:
+            - query: GRANT ALL ON *.*
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-ha
+  namespace: shahrah-production
+  labels:
+    app.kubernetes.io/name: clickhouse-ha
+    app.kubernetes.io/part-of: shahrah
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  selector:
+    app: shahrah-clickhouse-clickhouse
+  ports:
+    - name: http
+      port: 8123
+      targetPort: http
+    - name: native
+      port: 9000
+      targetPort: tcp

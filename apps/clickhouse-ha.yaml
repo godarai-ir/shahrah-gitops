@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: clickhouse-ha
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app.kubernetes.io/name: clickhouse-ha
+    app.kubernetes.io/part-of: shahrah
+spec:
+  project: default
+  source:
+    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: platform/clickhouse-ha
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shahrah-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - SkipDryRunOnMissingResource=true
+
