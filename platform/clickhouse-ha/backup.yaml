@@ -1,0 +1,99 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: clickhouse-backup-full
+  namespace: shahrah-production
+  labels:
+    app.kubernetes.io/name: clickhouse-backup
+    app.kubernetes.io/part-of: shahrah
+    app.kubernetes.io/component: database-backup
+spec:
+  schedule: "30 2 * * *"
+  timeZone: Asia/Tehran
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 3600
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 604800
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: clickhouse-backup
+            app.kubernetes.io/part-of: shahrah
+            app.kubernetes.io/component: database-backup
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: docker.io/clickhouse/clickhouse-server:26.3.17.56
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -ec
+              args:
+                - |
+                  backup_path="full/$(date -u +%Y%m%dT%H%M%SZ)"
+                  backup_status="$(
+                    clickhouse-client \
+                      --host clickhouse-ha \
+                      --port 9000 \
+                      --user sharah_user \
+                      --password "$CLICKHOUSE_PASSWORD" \
+                      --format TSVRaw \
+                      --query "BACKUP DATABASE sharah_db TO Disk('backup_s3', '${backup_path}')" \
+                    | cut -f2
+                  )"
+                  if [ "$backup_status" != "BACKUP_CREATED" ]; then
+                    echo "ClickHouse backup finished with unexpected status: $backup_status" >&2
+                    exit 1
+                  fi
+                  echo "ClickHouse full backup completed: $backup_path"
+              env:
+                - name: CLICKHOUSE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: shahrah-secret
+                      key: CLICKHOUSE_PASSWORD
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: clickhouse-backup
+  namespace: shahrah-production
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/name: clickhouse-backup
+    app.kubernetes.io/part-of: shahrah
+spec:
+  groups:
+    - name: clickhouse-backup
+      rules:
+        - alert: ClickHouseBackupStale
+          expr: |
+            (time() - kube_cronjob_status_last_successful_time{namespace="shahrah-production", cronjob="clickhouse-backup-full"} > 93600)
+            or
+            absent(kube_cronjob_status_last_successful_time{namespace="shahrah-production", cronjob="clickhouse-backup-full"})
+          for: 30m
+          labels:
+            severity: critical
+          annotations:
+            summary: ClickHouse has no recent successful backup
+            description: The production ClickHouse full backup has not succeeded in the last 26 hours.
+        - alert: ClickHouseBackupRunningTooLong
+          expr: kube_cronjob_status_active{namespace="shahrah-production", cronjob="clickhouse-backup-full"} > 0
+          for: 45m
+          labels:
+            severity: warning
+          annotations:
+            summary: ClickHouse backup is taking too long
+            description: The production ClickHouse backup CronJob has been active for more than 45 minutes.
