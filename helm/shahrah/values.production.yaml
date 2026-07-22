@@ -45,6 +45,8 @@ secrets:
   data: {}
 typesense:
   enabled: true
+  persistence:
+    storageClassName: longhorn-prod-r2
 redis:
   enabled: true
 controlPlane:
@@ -337,7 +339,7 @@ clickhouse:
   enabled: true
   persistence:
     size: 10Gi
-    storageClassName: local-path
+    storageClassName: longhorn-prod-r2
   storageClass:
     create: false
 postgres:
