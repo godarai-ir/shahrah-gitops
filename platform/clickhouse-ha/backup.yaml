@@ -79,16 +79,21 @@ spec:
     - name: clickhouse-backup
       rules:
         - alert: ClickHouseBackupStale
-          expr: |
-            (time() - kube_cronjob_status_last_successful_time{namespace="shahrah-production", cronjob="clickhouse-backup-full"} > 93600)
-            or
-            absent(kube_cronjob_status_last_successful_time{namespace="shahrah-production", cronjob="clickhouse-backup-full"})
+          expr: time() - kube_cronjob_status_last_successful_time{namespace="shahrah-production", cronjob="clickhouse-backup-full"} > 93600
           for: 30m
           labels:
             severity: critical
           annotations:
             summary: ClickHouse has no recent successful backup
             description: The production ClickHouse full backup has not succeeded in the last 26 hours.
+        - alert: ClickHouseBackupNeverSucceeded
+          expr: absent(kube_cronjob_status_last_successful_time{namespace="shahrah-production", cronjob="clickhouse-backup-full"})
+          for: 26h
+          labels:
+            severity: critical
+          annotations:
+            summary: ClickHouse backup has never succeeded
+            description: The production ClickHouse backup CronJob has not recorded a successful scheduled run.
         - alert: ClickHouseBackupRunningTooLong
           expr: kube_cronjob_status_active{namespace="shahrah-production", cronjob="clickhouse-backup-full"} > 0
           for: 45m
