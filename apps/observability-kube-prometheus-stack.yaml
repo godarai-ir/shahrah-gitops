@@ -124,6 +124,7 @@ spec:
                     - observability
                     - ingress-nginx
                     - shahrah-production
+                    - clickhouse-operator-system
             serviceMonitorSelector:
               matchLabels:
                 release: kube-prometheus-stack

@@ -1,0 +1,72 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: shahrah-clickhouse
+  namespace: shahrah-production
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/name: clickhouse
+    app.kubernetes.io/part-of: shahrah
+spec:
+  selector:
+    matchLabels:
+      app: shahrah-clickhouse-clickhouse
+  endpoints:
+    - port: prometheus
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: shahrah-clickhouse-keeper
+  namespace: shahrah-production
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/name: clickhouse-keeper
+    app.kubernetes.io/part-of: shahrah
+spec:
+  selector:
+    matchLabels:
+      app: shahrah-keeper-keeper
+  endpoints:
+    - port: prometheus
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: clickhouse-operator
+  namespace: clickhouse-operator-system
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/name: clickhouse-operator
+    app.kubernetes.io/part-of: platform
+spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  endpoints:
+    - port: https
+      path: /metrics
+      scheme: https
+      interval: 30s
+      scrapeTimeout: 10s
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        serverName: clickhouse-operator-metrics-service.clickhouse-operator-system.svc
+        ca:
+          secret:
+            name: metrics-server-cert
+            key: ca.crt
+        cert:
+          secret:
+            name: metrics-server-cert
+            key: tls.crt
+        keySecret:
+          name: metrics-server-cert
+          key: tls.key
+        insecureSkipVerify: false
