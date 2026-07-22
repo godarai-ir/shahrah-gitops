@@ -110,6 +110,7 @@ spec:
                       storage: 2Gi
         prometheus:
           prometheusSpec:
+            version: v3.12.0
             image:
               registry: docker.io
               repository: delpak/godar-ai
