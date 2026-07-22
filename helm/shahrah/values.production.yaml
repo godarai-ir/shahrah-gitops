@@ -297,6 +297,8 @@ migrations:
       tag: v0.25.1
   clickhouse:
     enabled: true
+    replicatedDatabase:
+      enabled: true
   modelDiscovery:
     enabled: true
     waitForPostgres:
@@ -337,8 +339,10 @@ externalServices:
     port: 9000
 clickhouse:
   enabled: true
-  nodeSelector:
-    kubernetes.io/hostname: node-1
+  workloadEnabled: false
+  service:
+    selector:
+      app: shahrah-clickhouse-clickhouse
   persistence:
     size: 10Gi
     storageClassName: longhorn-prod-r2

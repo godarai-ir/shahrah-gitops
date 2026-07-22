@@ -11,8 +11,12 @@ metadata:
 spec:
   clusterIP: None
   selector:
+    {{- with .Values.clickhouse.service.selector }}
+    {{- toYaml . | nindent 4 }}
+    {{- else }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: clickhouse
+    {{- end }}
   ports:
     - name: http
       port: {{ .Values.clickhouse.service.httpPort | default 8123 }}
@@ -33,8 +37,12 @@ metadata:
 spec:
   type: ClusterIP
   selector:
+    {{- with .Values.clickhouse.service.selector }}
+    {{- toYaml . | nindent 4 }}
+    {{- else }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: clickhouse
+    {{- end }}
   ports:
     - name: http
       port: {{ .Values.clickhouse.service.httpPort | default 8123 }}
@@ -42,6 +50,7 @@ spec:
     - name: native
       port: {{ .Values.clickhouse.service.nativePort | default 9000 }}
       targetPort: native
+{{- if ne (.Values.clickhouse.workloadEnabled | toString) "false" }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -157,4 +166,5 @@ spec:
         resources:
           requests:
             storage: {{ .Values.clickhouse.persistence.size | quote }}
+{{- end }}
 {{- end }}

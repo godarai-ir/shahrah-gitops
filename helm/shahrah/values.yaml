@@ -1251,6 +1251,8 @@ migrations:
     databaseUrlSecretKey: DATABASE_URL
   clickhouse:
     enabled: false
+    replicatedDatabase:
+      enabled: false
     image:
       repository: clickhouse/clickhouse-server
       tag: "26.3"
@@ -1292,6 +1294,7 @@ migrations:
 
 clickhouse:
   enabled: false
+  workloadEnabled: true
   name: clickhouse
   image:
     repository: clickhouse/clickhouse-server
@@ -1301,6 +1304,7 @@ clickhouse:
     name: clickhouse
     httpPort: 8123
     nativePort: 9000
+    selector: {}
   headlessService:
     name: clickhouse-headless
   auth:

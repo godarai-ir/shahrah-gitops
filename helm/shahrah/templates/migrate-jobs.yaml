@@ -147,6 +147,15 @@ spec:
             - -c
             - |
               set -eu
+              {{ if .Values.migrations.clickhouse.replicatedDatabase.enabled }}
+              clickhouse-client \
+                --host "${CLICKHOUSE_HOST}" \
+                --port "${CLICKHOUSE_PORT}" \
+                --user "${CLICKHOUSE_USERNAME}" \
+                --password "${CLICKHOUSE_PASSWORD}" \
+                --database default \
+                --query "CREATE DATABASE IF NOT EXISTS \`${CLICKHOUSE_DATABASE}\` ENGINE = Replicated('/clickhouse/databases/${CLICKHOUSE_DATABASE}', '{shard}', '{replica}')"
+              {{ end }}
               for migration in $(find -L /migrations -maxdepth 1 -type f -name '*.sql' | sort); do
                 echo "Applying ${migration}"
                 clickhouse-client \
