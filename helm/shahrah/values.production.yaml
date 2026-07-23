@@ -127,7 +127,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.32.2
+    tag: v0.33.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -156,7 +156,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.31.1
+    tag: v0.32.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
