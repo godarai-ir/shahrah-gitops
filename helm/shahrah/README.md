@@ -2,6 +2,25 @@
 
 This chart deploys Shahrah services/apps for staging and production.
 
+## Production load-test mock provider
+
+The in-process Silk Road mock provider must remain disabled until a dedicated
+load-test tenant and model deployment have been provisioned. Production values
+must use exact IDs:
+
+```yaml
+silkRoad:
+  env:
+    SILK_ROAD_ENABLE_MOCK_PROVIDER: "true"
+    SILK_ROAD_MOCK_ALLOWED_TENANT_IDS: "<dedicated-tenant-uuid>"
+    SILK_ROAD_MOCK_ALLOWED_DEPLOYMENT_IDS: "<dedicated-deployment-uuid>"
+```
+
+Never use `*` for the production tenant allowlist. The Silk Road adapter denies
+requests unless both the tunnel request tenant ID and deployment ID match.
+Roll out a Silk Road image containing this fail-closed enforcement before
+changing the enable flag to `true`.
+
 ## Workloads
 
 - `control-plane`
