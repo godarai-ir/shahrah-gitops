@@ -246,3 +246,71 @@ spec:
                   name: {{ .Values.secrets.name }}
                   key: {{ .Values.migrations.modelDiscovery.databaseUrlSecretKey | default "MODEL_DISCOVERY_DATABASE_URL" }}
 {{- end }}
+
+{{- $catalogImport := .Values.migrations.modelDiscoveryCatalogImport }}
+{{- if and .Values.migrations.enabled $catalogImport.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-discovery-catalog-import
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-discovery-catalog-import
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "-3"
+spec:
+  backoffLimit: {{ $catalogImport.backoffLimit | default 3 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: model-discovery-catalog-import
+    spec:
+      restartPolicy: OnFailure
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      {{- if ne ($catalogImport.waitForPostgres.enabled | toString) "false" }}
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - until nc -z {{ if .Values.postgres.enabled }}{{ .Values.postgres.service.name | default "postgres" }}{{ else }}{{ .Values.externalServices.postgres.name | default "postgres" }}{{ end }} {{ .Values.externalServices.postgres.port | default .Values.postgres.service.port | default 5432 }}; do echo waiting for postgres; sleep 2; done
+      {{- end }}
+      containers:
+        - name: model-discovery-catalog-import
+          image: "{{ .Values.global.imageRegistry }}/{{ $catalogImport.image.repository | default .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ $catalogImport.image.tag | default .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
+          imagePullPolicy: {{ $catalogImport.image.pullPolicy | default "IfNotPresent" }}
+          command:
+            - npm
+            - run
+            - import:providers:git
+            - --
+            - --source-key
+            - {{ $catalogImport.source.key | default "truefoundry/models" | quote }}
+            - --repo-url
+            - {{ $catalogImport.source.repoUrl | default "https://github.com/truefoundry/models.git" | quote }}
+            - --ref
+            - {{ $catalogImport.source.ref | default "main" | quote }}
+            {{ if $catalogImport.source.commitSha }}
+            - --commit-sha
+            - {{ $catalogImport.source.commitSha | quote }}
+            {{ end }}
+            - --providers-path
+            - {{ $catalogImport.source.providersPath | default "providers" | quote }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ $catalogImport.databaseUrlSecretKey | default .Values.migrations.modelDiscovery.databaseUrlSecretKey | default "MODEL_DISCOVERY_DATABASE_URL" }}
+{{- end }}

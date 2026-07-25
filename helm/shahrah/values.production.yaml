@@ -310,21 +310,22 @@ migrations:
     image:
       tag: v0.26.1
     command:
-    - sh
-    - -c
-    - 'set -e
-
-      apk add --no-cache git
-
-      rm -rf /tmp/truefoundry-models
-
-      git clone --depth 1 https://github.com/truefoundry/models.git /tmp/truefoundry-models
-
-      npx prisma migrate deploy
-
-      npm run import:providers:yaml -- --providers-root /tmp/truefoundry-models/providers
-
-      '
+    - npx
+    - prisma
+    - migrate
+    - deploy
+  modelDiscoveryCatalogImport:
+    enabled: true
+    waitForPostgres:
+      enabled: false
+    image:
+      tag: v0.22.7
+    source:
+      key: truefoundry/models
+      repoUrl: https://github.com/truefoundry/models.git
+      ref: main
+      commitSha: 9ee4a17eb9a435ba4cc79d411ffd6ae66052f996
+      providersPath: providers
   supportAdmin:
     waitForPostgres:
       enabled: false

@@ -1,0 +1,79 @@
+name: Update Model Discovery Catalog Source
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-source-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve upstream commit
+        id: upstream
+        run: |
+          sha="$(git ls-remote https://github.com/truefoundry/models.git refs/heads/main | awk '{print $1}')"
+          test -n "$sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Update production values
+        id: update
+        env:
+          UPSTREAM_SHA: ${{ steps.upstream.outputs.sha }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          path = Path("helm/shahrah/values.production.yaml")
+          lines = path.read_text(encoding="utf-8").splitlines()
+          upstream_sha = os.environ["UPSTREAM_SHA"]
+
+          in_import_block = False
+          current_sha = None
+          updated = False
+
+          for idx, line in enumerate(lines):
+              if line.startswith("  modelDiscoveryCatalogImport:"):
+                  in_import_block = True
+                  continue
+              if in_import_block and line.startswith("  ") and not line.startswith("    "):
+                  break
+              if in_import_block and line.strip().startswith("commitSha:"):
+                  current_sha = line.split(":", 1)[1].strip()
+                  if current_sha != upstream_sha:
+                      indent = line[: len(line) - len(line.lstrip())]
+                      lines[idx] = f"{indent}commitSha: {upstream_sha}"
+                      updated = True
+                  break
+
+          if current_sha is None:
+              raise SystemExit("Could not find modelDiscoveryCatalogImport.source.commitSha")
+
+          if updated:
+              path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"changed={str(updated).lower()}\n")
+              out.write(f"current_sha={current_sha}\n")
+          PY
+
+      - name: Open GitOps PR
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/model-discovery-catalog-source
+          delete-branch: true
+          commit-message: "chore(model-discovery): update catalog source commit"
+          title: "chore(model-discovery): update catalog source commit"
+          body: |
+            Updates `migrations.modelDiscoveryCatalogImport.source.commitSha`.
+
+            - Previous commit: `${{ steps.update.outputs.current_sha }}`
+            - New commit: `${{ steps.upstream.outputs.sha }}`

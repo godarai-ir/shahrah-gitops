@@ -1276,6 +1276,22 @@ migrations:
       - deploy
     backoffLimit: 3
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
+  modelDiscoveryCatalogImport:
+    enabled: false
+    waitForPostgres:
+      enabled: false
+    image:
+      repository: godar-ai
+      tag: ""
+      pullPolicy: IfNotPresent
+    source:
+      key: truefoundry/models
+      repoUrl: https://github.com/truefoundry/models.git
+      ref: main
+      commitSha: ""
+      providersPath: providers
+    backoffLimit: 3
+    databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
   supportAdmin:
     enabled: true
     waitForPostgres:

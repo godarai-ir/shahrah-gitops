@@ -73,8 +73,10 @@ changing the enable flag to `true`.
 
 ## Migrations
 
-- `migrate-clickhouse`, `migrate-main-db`, and `model-discovery-migrate` run as Argo CD `Sync` hooks.
-- External datastore aliases are applied in sync wave `-10`, ClickHouse migration assets in `-7`, then migration jobs run in waves `-6`, `-5`, and `-4`.
+- `migrate-clickhouse`, `migrate-main-db`, `model-discovery-migrate`, and `model-discovery-catalog-import` run as Argo CD `Sync` hooks.
+- External datastore aliases are applied in sync wave `-10`, ClickHouse migration assets in `-7`, migration jobs run in waves `-6`, `-5`, and `-4`, then catalog import runs in wave `-3`.
+- `model-discovery-catalog-import` stores the imported upstream commit in `ImportSourceState` and skips the YAML import when the pinned source commit was already imported.
+- `.github/workflows/update-model-discovery-catalog-source.yaml` periodically opens a PR when `truefoundry/models` has a newer `main` commit.
 
 ## Validation
 
