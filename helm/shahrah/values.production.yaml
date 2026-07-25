@@ -319,7 +319,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.22.7
+      tag: v0.26.1
     source:
       key: truefoundry/models
       repoUrl: https://github.com/truefoundry/models.git
