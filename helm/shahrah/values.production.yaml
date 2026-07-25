@@ -282,11 +282,11 @@ silkRoad:
   image:
     tag: v0.27.0
   env:
-    # Production load-test mock stays fail-closed until the dedicated tenant
-    # and deployment IDs are provisioned and reviewed.
-    SILK_ROAD_ENABLE_MOCK_PROVIDER: "false"
-    SILK_ROAD_MOCK_ALLOWED_TENANT_IDS: ""
-    SILK_ROAD_MOCK_ALLOWED_DEPLOYMENT_IDS: ""
+    # Production load-test mock is restricted to this dedicated tenant and
+    # deployment. Keep both allowlists exact; never use "*" in production.
+    SILK_ROAD_ENABLE_MOCK_PROVIDER: "true"
+    SILK_ROAD_MOCK_ALLOWED_TENANT_IDS: "a6ea1c25-d710-4e31-8dac-d2651bf1c796"
+    SILK_ROAD_MOCK_ALLOWED_DEPLOYMENT_IDS: "88403b1d-5a7c-4192-8580-7a019c045693"
 tunnelServer:
   image:
     tag: v0.26.1
