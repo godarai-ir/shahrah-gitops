@@ -281,6 +281,24 @@ supportAdmin:
 silkRoad:
   image:
     tag: v0.27.0
+  replicaCount: 2
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: silk-road
+        topologyKey: kubernetes.io/hostname
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: silk-road
+  pdb:
+    enabled: true
+    minAvailable: 1
   env:
     SILK_ROAD_ENABLE_MOCK_PROVIDER: 'true'
     SILK_ROAD_MOCK_ALLOWED_TENANT_IDS: a6ea1c25-d710-4e31-8dac-d2651bf1c796
@@ -288,9 +306,45 @@ silkRoad:
 tunnelServer:
   image:
     tag: v0.26.1
+  replicaCount: 2
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: tunnel-server
+        topologyKey: kubernetes.io/hostname
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: tunnel-server
+  pdb:
+    enabled: true
+    minAvailable: 1
 tunnelClient:
   image:
     tag: v0.26.1
+  replicaCount: 2
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: tunnel-client
+        topologyKey: kubernetes.io/hostname
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: tunnel-client
+  pdb:
+    enabled: true
+    minAvailable: 1
 migrations:
   enabled: true
   mainDb:
