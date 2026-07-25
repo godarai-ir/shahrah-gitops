@@ -51,7 +51,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.29.5
+    tag: v0.29.6
   env:
     NODE_ENV: production
     PLATFORM_PROVIDER_CREDENTIAL_MODE: platform_store
