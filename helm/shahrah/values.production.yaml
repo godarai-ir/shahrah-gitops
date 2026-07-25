@@ -51,7 +51,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.29.1
+    tag: v0.30.0
   env:
     NODE_ENV: production
     PLATFORM_PROVIDER_CREDENTIAL_MODE: platform_store
@@ -280,7 +280,7 @@ supportAdmin:
       clusterIssuer: ''
 silkRoad:
   image:
-    tag: v0.26.1
+    tag: v0.27.0
   env:
     # Production load-test mock stays fail-closed until the dedicated tenant
     # and deployment IDs are provisioned and reviewed.
