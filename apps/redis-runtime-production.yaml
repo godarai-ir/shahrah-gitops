@@ -9,9 +9,9 @@ metadata:
 spec:
   project: shahrah
   source:
-    repoURL: registry-1.docker.io/bitnamicharts
-    chart: redis
-    targetRevision: 23.1.1
+    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: vendor/redis
     helm:
       releaseName: shahrah-redis-runtime
       values: |
@@ -19,7 +19,8 @@ spec:
         image:
           registry: docker.io
           repository: bitnami/redis
-          tag: 8.2.1-debian-12-r0
+          tag: latest
+          digest: sha256:5ff436b8a0dbe3808f03c7b682865cd30ddb1f08c1a8d17970ebf475f5689722
         auth:
           enabled: true
           sentinel: true
@@ -69,7 +70,8 @@ spec:
           image:
             registry: docker.io
             repository: bitnami/redis-sentinel
-            tag: 8.2.1-debian-12-r0
+            tag: latest
+            digest: sha256:667bfef3e22ce9910bdcf304b1b7c659cfc15390a2d473187eb3caac2537d0e6
           masterSet: mymaster
           quorum: 2
           downAfterMilliseconds: 5000
@@ -103,7 +105,8 @@ spec:
           image:
             registry: docker.io
             repository: bitnami/redis-exporter
-            tag: 1.76.0-debian-12-r0
+            tag: latest
+            digest: sha256:0468a9a14ebd96953f967f9f3e8673c3eb1ad1dd54d379fef15c3f3ee714c99e
           resources:
             requests:
               cpu: 20m
