@@ -633,7 +633,7 @@ silkRoad:
     readiness:
       enabled: true
       type: http
-      path: /health
+      path: /ready
       port: http
       initialDelaySeconds: 5
       periodSeconds: 5
@@ -642,7 +642,7 @@ silkRoad:
     liveness:
       enabled: true
       type: http
-      path: /health
+      path: /live
       port: http
       initialDelaySeconds: 10
       periodSeconds: 10
@@ -727,7 +727,7 @@ tunnelServer:
     readiness:
       enabled: true
       type: http
-      path: /health
+      path: /ready
       port: http
       initialDelaySeconds: 5
       periodSeconds: 5
@@ -736,7 +736,7 @@ tunnelServer:
     liveness:
       enabled: true
       type: http
-      path: /health
+      path: /live
       port: http
       initialDelaySeconds: 10
       periodSeconds: 10
@@ -821,7 +821,7 @@ tunnelClient:
     readiness:
       enabled: true
       type: http
-      path: /health
+      path: /ready
       port: http
       initialDelaySeconds: 5
       periodSeconds: 5
@@ -830,7 +830,7 @@ tunnelClient:
     liveness:
       enabled: true
       type: http
-      path: /health
+      path: /live
       port: http
       initialDelaySeconds: 10
       periodSeconds: 10
