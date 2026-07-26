@@ -1,6 +1,7 @@
 {{- $root := . -}}
 {{- $workloads := dict
   "control-plane" .Values.controlPlane
+  "metrics-dlq-replayer" .Values.metricsDlqReplayer
   "model-discovery" .Values.modelDiscovery
   "model-discovery-web" .Values.modelDiscoveryWeb
   "support-admin" .Values.supportAdmin
@@ -91,7 +92,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ $name }}
-          image: "{{ $root.Values.global.imageRegistry }}/{{ $cfg.image.repository }}:{{ $name }}-{{ $cfg.image.tag | default $root.Values.global.imageTag }}"
+          image: "{{ $root.Values.global.imageRegistry }}/{{ $cfg.image.repository }}:{{ $cfg.image.namePrefix | default $name }}-{{ $cfg.image.tag | default $root.Values.global.imageTag }}"
           imagePullPolicy: {{ $cfg.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - name: http

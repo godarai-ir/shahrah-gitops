@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: shahrah-project-guardrails
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+  labels:
+    app.kubernetes.io/name: shahrah
+    app.kubernetes.io/part-of: shahrah
+spec:
+  project: default
+  source:
+    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: projects
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

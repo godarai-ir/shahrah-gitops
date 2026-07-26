@@ -1,6 +1,7 @@
 {{- $root := . -}}
 {{- $workloads := dict
   "control-plane" .Values.controlPlane
+  "metrics-dlq-replayer" .Values.metricsDlqReplayer
   "model-discovery" .Values.modelDiscovery
   "model-discovery-web" .Values.modelDiscoveryWeb
   "support-admin" .Values.supportAdmin

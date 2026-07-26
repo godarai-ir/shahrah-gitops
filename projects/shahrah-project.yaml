@@ -9,6 +9,7 @@ spec:
     - https://github.com/Delpak/shahrah-gitops.git
     - git@github.com:Delpak/shahrah-gitops.git
     - ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    - registry-1.docker.io/bitnamicharts
   destinations:
     - namespace: shahrah-staging
       server: https://kubernetes.default.svc

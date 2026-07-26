@@ -1,0 +1,46 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: shahrah-redis-dlq
+  namespace: shahrah-production
+  labels:
+    app.kubernetes.io/name: shahrah
+    app.kubernetes.io/component: metrics-dlq-replayer
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: shahrah.redis-dlq
+      rules:
+        - alert: ShahrahMetricsDLQBacklogGrowing
+          expr: shahrah_model_metrics_dlq_stream_entries > 5000
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Model metrics DLQ is above 50% of its configured maximum
+        - alert: ShahrahMetricsDLQPendingStuck
+          expr: shahrah_model_metrics_dlq_pending_entries > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Model metrics DLQ entries have remained pending
+        - alert: ShahrahMetricsDLQReplayErrors
+          expr: increase(shahrah_model_metrics_dlq_replay_errors_total[10m]) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Model metrics DLQ replay is failing
+        - alert: ShahrahMetricsDLQWriteFailure
+          expr: increase(shahrah_model_metrics_dlq_enqueue_errors_total[5m]) > 0 or increase(shahrah_model_metrics_dlq_dropped_total[5m]) > 0 or increase(shahrah_model_metrics_queue_dropped_total[5m]) > 0
+          labels:
+            severity: critical
+          annotations:
+            summary: Model metrics could not be persisted to the Redis Stream DLQ
+        - alert: ShahrahMetricsDLQPoisonEvent
+          expr: increase(shahrah_model_metrics_dlq_poison_total[15m]) > 0
+          labels:
+            severity: warning
+          annotations:
+            summary: An invalid model metrics event was moved to the poison stream
