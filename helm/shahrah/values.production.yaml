@@ -62,7 +62,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.29.6
+    tag: v0.30.1
   env:
     NODE_ENV: production
     PLATFORM_PROVIDER_CREDENTIAL_MODE: platform_store
@@ -320,9 +320,9 @@ supportAdmin:
       secretName: godarai-ir-tls
       clusterIssuer: ''
 metricsDlqReplayer:
-  enabled: false
+  enabled: true
   image:
-    tag: v0.29.6
+    tag: v0.30.1
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
