@@ -226,7 +226,7 @@ controlPlane:
     readiness:
       enabled: true
       type: http
-      path: /health
+      path: /ready
       port: http
       initialDelaySeconds: 10
       periodSeconds: 5
@@ -633,7 +633,7 @@ silkRoad:
     readiness:
       enabled: true
       type: http
-      path: /ready
+      path: /health
       port: http
       initialDelaySeconds: 5
       periodSeconds: 5
