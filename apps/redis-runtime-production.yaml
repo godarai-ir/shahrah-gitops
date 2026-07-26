@@ -39,7 +39,7 @@ spec:
             size: 512Mi
           resources:
             requests:
-              cpu: 50m
+              cpu: 25m
               memory: 160Mi
             limits:
               cpu: 500m
@@ -57,7 +57,7 @@ spec:
             whenDeleted: Retain
           resources:
             requests:
-              cpu: 50m
+              cpu: 25m
               memory: 160Mi
             limits:
               cpu: 500m
@@ -80,7 +80,7 @@ spec:
           automateClusterRecovery: true
           resources:
             requests:
-              cpu: 20m
+              cpu: 10m
               memory: 32Mi
             limits:
               cpu: 100m
@@ -109,7 +109,7 @@ spec:
             digest: sha256:0468a9a14ebd96953f967f9f3e8673c3eb1ad1dd54d379fef15c3f3ee714c99e
           resources:
             requests:
-              cpu: 20m
+              cpu: 10m
               memory: 32Mi
             limits:
               cpu: 100m
