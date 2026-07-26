@@ -305,7 +305,7 @@ silkRoad:
     SILK_ROAD_MOCK_ALLOWED_DEPLOYMENT_IDS: provider-account:713500dd-4ac2-48a7-a4d0-fde804b571a8:mock/chat
 tunnelServer:
   image:
-    tag: v0.26.1
+    tag: v0.27.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -326,7 +326,7 @@ tunnelServer:
     minAvailable: 1
 tunnelClient:
   image:
-    tag: v0.26.1
+    tag: v0.27.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
