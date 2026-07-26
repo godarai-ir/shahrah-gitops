@@ -62,7 +62,7 @@ redis:
   enabled: true
 controlPlane:
   image:
-    tag: v0.29.6
+    tag: v0.30.0
   env:
     NODE_ENV: production
     PLATFORM_PROVIDER_CREDENTIAL_MODE: platform_store
@@ -168,7 +168,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.33.2
+    tag: v0.34.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -197,7 +197,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.32.0
+    tag: v0.33.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -234,7 +234,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.29.1
+    tag: v0.30.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_BASE_PATH: /blog
@@ -251,7 +251,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.27.1
+    tag: v0.28.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -264,7 +264,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.26.1
+    tag: v0.27.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -283,7 +283,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.18.2
+    tag: v0.19.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -300,7 +300,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.26.1
+    tag: v0.27.0
   probes:
     readiness:
       type: tcp
@@ -374,7 +374,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: sha-2fa2bc83efef6c4cf6127b8f7cc672b78cb4a6cd
+    tag: v0.28.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -399,7 +399,7 @@ silkRoad:
     SILK_ROAD_MOCK_ALLOWED_DEPLOYMENT_IDS: provider-account:713500dd-4ac2-48a7-a4d0-fde804b571a8:mock/chat
 tunnelServer:
   image:
-    tag: v0.27.0
+    tag: v0.28.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -420,7 +420,7 @@ tunnelServer:
     minAvailable: 1
 tunnelClient:
   image:
-    tag: v0.27.0
+    tag: v0.28.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -446,7 +446,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.25.1
+      tag: v0.26.0
   clickhouse:
     enabled: true
     replicatedDatabase:
@@ -456,7 +456,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.26.1
+      tag: v0.27.0
     command:
     - npx
     - prisma
@@ -478,7 +478,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.26.1
+      tag: v0.27.0
 externalServices:
   postgres:
     enabled: true
