@@ -146,7 +146,7 @@ controlPlane:
         key: redis-password
   replicaCount: 3
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 3
     maxReplicas: 15
   pdb:
