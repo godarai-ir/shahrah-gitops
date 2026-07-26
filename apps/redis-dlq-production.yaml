@@ -16,6 +16,10 @@ spec:
       releaseName: shahrah-redis-dlq
       values: |
         architecture: replication
+        image:
+          registry: docker.io
+          repository: bitnami/redis
+          tag: 8.2.1-debian-12-r0
         auth:
           enabled: true
           sentinel: true
@@ -62,6 +66,10 @@ spec:
             minAvailable: 2
         sentinel:
           enabled: true
+          image:
+            registry: docker.io
+            repository: bitnami/redis-sentinel
+            tag: 8.2.1-debian-12-r0
           masterSet: mymaster
           quorum: 2
           downAfterMilliseconds: 5000
@@ -92,6 +100,10 @@ spec:
             allowExternal: true
         metrics:
           enabled: true
+          image:
+            registry: docker.io
+            repository: bitnami/redis-exporter
+            tag: 1.76.0-debian-12-r0
           resources:
             requests:
               cpu: 20m
