@@ -144,7 +144,7 @@ controlPlane:
       secretKeyRef:
         name: shahrah-redis-dlq
         key: redis-password
-  replicaCount: 3
+  replicaCount: 0
   autoscaling:
     enabled: false
     minReplicas: 3
