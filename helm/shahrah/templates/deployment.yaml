@@ -34,7 +34,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ $cfg.replicaCount | default 1 }}
+  replicas: {{ if hasKey $cfg "replicaCount" }}{{ $cfg.replicaCount }}{{ else }}1{{ end }}
   revisionHistoryLimit: {{ $cfg.revisionHistoryLimit | default 5 }}
   strategy:
     type: {{ $strategyType }}
