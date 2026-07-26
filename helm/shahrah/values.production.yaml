@@ -59,7 +59,7 @@ typesense:
   persistence:
     storageClassName: longhorn-prod-r2
 redis:
-  enabled: true
+  enabled: false
 controlPlane:
   image:
     tag: v0.30.2
@@ -144,9 +144,9 @@ controlPlane:
       secretKeyRef:
         name: shahrah-redis-dlq
         key: redis-password
-  replicaCount: 0
+  replicaCount: 3
   autoscaling:
-    enabled: false
+    enabled: true
     minReplicas: 3
     maxReplicas: 15
   pdb:
