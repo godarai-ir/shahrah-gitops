@@ -283,7 +283,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.18.2
+    tag: v0.19.1
   replicaCount: 2
   ingress:
     enabled: false
