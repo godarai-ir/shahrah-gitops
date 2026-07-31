@@ -1377,12 +1377,9 @@ migrations:
       repository: godar-ai
       tag: ""
       pullPolicy: IfNotPresent
-    source:
-      key: truefoundry/models
-      repoUrl: https://github.com/truefoundry/models.git
-      ref: main
-      commitSha: ""
-      providersPath: providers
+    providersRoot: /app/providers
+    clearMissing: true
+    clearMissingProviders: true
     backoffLimit: 3
     databaseUrlSecretKey: MODEL_DISCOVERY_DATABASE_URL
   supportAdmin:

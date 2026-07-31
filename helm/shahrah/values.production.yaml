@@ -467,12 +467,9 @@ migrations:
       enabled: false
     image:
       tag: v0.28.1
-    source:
-      key: truefoundry/models
-      repoUrl: https://github.com/truefoundry/models.git
-      ref: main
-      commitSha: 9ee4a17eb9a435ba4cc79d411ffd6ae66052f996
-      providersPath: providers
+    providersRoot: /app/providers
+    clearMissing: true
+    clearMissingProviders: true
   supportAdmin:
     waitForPostgres:
       enabled: false

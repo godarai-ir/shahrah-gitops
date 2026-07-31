@@ -291,22 +291,18 @@ spec:
           image: "{{ .Values.global.imageRegistry }}/{{ $catalogImport.image.repository | default .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ $catalogImport.image.tag | default .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
           imagePullPolicy: {{ $catalogImport.image.pullPolicy | default "IfNotPresent" }}
           command:
-            - npm
+            - pnpm
             - run
-            - import:providers:git
+            - import:providers:yaml
             - --
-            - --source-key
-            - {{ $catalogImport.source.key | default "truefoundry/models" | quote }}
-            - --repo-url
-            - {{ $catalogImport.source.repoUrl | default "https://github.com/truefoundry/models.git" | quote }}
-            - --ref
-            - {{ $catalogImport.source.ref | default "main" | quote }}
-            {{ if $catalogImport.source.commitSha }}
-            - --commit-sha
-            - {{ $catalogImport.source.commitSha | quote }}
+            - --providers-root
+            - {{ $catalogImport.providersRoot | default "/app/providers" | quote }}
+            {{ if ne ($catalogImport.clearMissing | toString) "false" }}
+            - --clear-missing
             {{ end }}
-            - --providers-path
-            - {{ $catalogImport.source.providersPath | default "providers" | quote }}
+            {{ if ne ($catalogImport.clearMissingProviders | toString) "false" }}
+            - --clear-missing-providers
+            {{ end }}
           env:
             - name: DATABASE_URL
               valueFrom:

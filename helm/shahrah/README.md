@@ -75,8 +75,12 @@ changing the enable flag to `true`.
 
 - `migrate-clickhouse`, `migrate-main-db`, `model-discovery-migrate`, and `model-discovery-catalog-import` run as Argo CD `Sync` hooks.
 - External datastore aliases are applied in sync wave `-10`, ClickHouse migration assets in `-7`, migration jobs run in waves `-6`, `-5`, and `-4`, then catalog import runs in wave `-3`.
-- `model-discovery-catalog-import` stores the imported upstream commit in `ImportSourceState` and skips the YAML import when the pinned source commit was already imported.
-- `.github/workflows/update-model-discovery-catalog-source.yaml` periodically opens a PR when `truefoundry/models` has a newer `main` commit.
+- `model-discovery-catalog-import` reads the provider YAML catalog embedded at
+  `/app/providers` in the model-discovery migration image.
+- The import uses `--clear-missing`, so removing a model YAML file reconciles
+  that removal to the database on the next sync.
+- The import also uses `--clear-missing-providers`, so removing an entire
+  provider directory deletes that provider and its cascade-owned catalog data.
 
 ## Validation
 
