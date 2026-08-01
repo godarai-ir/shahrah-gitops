@@ -471,7 +471,7 @@ migrations:
       key: truefoundry/models
       repoUrl: https://github.com/truefoundry/models.git
       ref: main
-      commitSha: 9ee4a17eb9a435ba4cc79d411ffd6ae66052f996
+      commitSha: be4a9d37ac35a9785542f9ff945ed52f6dbfca0e
       providersPath: providers
   supportAdmin:
     waitForPostgres:
