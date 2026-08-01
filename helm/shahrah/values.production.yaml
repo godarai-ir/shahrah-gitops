@@ -477,7 +477,8 @@ migrations:
     image:
       tag: v0.28.1
     command:
-    - npx
+    - pnpm
+    - exec
     - prisma
     - migrate
     - deploy
@@ -487,7 +488,7 @@ migrations:
       enabled: false
     image:
       tag: v0.28.1
-    providersRoot: /app/providers
+    providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
   supportAdmin:

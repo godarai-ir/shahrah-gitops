@@ -296,7 +296,7 @@ spec:
             - import:providers:yaml
             - --
             - --providers-root
-            - {{ $catalogImport.providersRoot | default "/app/providers" | quote }}
+            - {{ $catalogImport.providersRoot | default "/app/apps/model-discovery/providers" | quote }}
             {{ if ne ($catalogImport.clearMissing | toString) "false" }}
             - --clear-missing
             {{ end }}
