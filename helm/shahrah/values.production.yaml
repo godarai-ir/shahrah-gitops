@@ -14,6 +14,9 @@ config:
     NEXT_PUBLIC_SITE_URL: https://godarai.ir
     SHAHRAH_BASE_DOMAIN: godarai.ir
     SHAHRAH_TENANT_BASE_DOMAIN: godarai.ir
+    GODARAI_AUTH_BASE_URL: https://auth.godarai.ir
+    GODARAI_TENANT_ORIGIN_TEMPLATE: https://{tenant}.godarai.ir
+    MICROSOFT_TENANT_ID: common
     MODEL_DISCOVERY_API_BASE_INTERNAL: http://model-discovery:3002/api/v1
     SUPPORT_ADMIN_ORIGIN: https://admin.godarai.ir
     REDIS_HOST: redis.shahrah-production.svc.cluster.local
@@ -177,6 +180,7 @@ tenantAdmin:
   - RESEND_FROM_EMAIL
   - RESEND_FROM_NAME
   - RESEND_REPLY_TO
+  - GODARAI_AUTH_BASE_URL
   envFromSecretKeys:
   - MASTER_KEY
   - RESEND_API_KEY
@@ -210,10 +214,26 @@ website:
   - NEXT_PUBLIC_SITE_URL
   - SHAHRAH_BASE_DOMAIN
   - SHAHRAH_TENANT_BASE_DOMAIN
+  - GODARAI_AUTH_BASE_URL
+  - GODARAI_TENANT_ORIGIN_TEMPLATE
+  - MICROSOFT_TENANT_ID
   envFromSecretKeys:
+  - DATABASE_URL
+  - MASTER_KEY
   - RESEND_API_KEY
+  - BETTER_AUTH_SECRET
+  - GOOGLE_CLIENT_ID
+  - GOOGLE_CLIENT_SECRET
+  - GITHUB_CLIENT_ID
+  - GITHUB_CLIENT_SECRET
+  - MICROSOFT_CLIENT_ID
+  - MICROSOFT_CLIENT_SECRET
   ingress:
     hosts:
+    - host: auth.godarai.ir
+      paths:
+      - path: /
+        pathType: Prefix
     - host: godarai.ir
       paths:
       - path: /api/contact

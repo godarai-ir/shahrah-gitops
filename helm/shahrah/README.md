@@ -2,6 +2,9 @@
 
 This chart deploys Shahrah services/apps for staging and production.
 
+Production rollout and operations for Google, GitHub, and Microsoft sign-in
+are documented in [SOCIAL_AUTH_PRODUCTION.md](SOCIAL_AUTH_PRODUCTION.md).
+
 ## Production load-test mock provider
 
 The in-process Silk Road mock provider must remain disabled until a dedicated
