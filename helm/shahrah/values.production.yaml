@@ -65,7 +65,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.33.0
+    tag: v0.34.0
   env:
     NODE_ENV: production
     PLATFORM_PROVIDER_CREDENTIAL_MODE: platform_store
@@ -171,7 +171,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.37.0
+    tag: v0.38.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -201,7 +201,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.36.0
+    tag: v0.37.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -254,7 +254,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.33.0
+    tag: v0.34.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_BASE_PATH: /blog
@@ -271,7 +271,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.31.0
+    tag: v0.32.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -284,7 +284,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.30.0
+    tag: v0.31.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -303,7 +303,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.21.0
+    tag: v0.22.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -320,7 +320,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.30.0
+    tag: v0.31.0
   probes:
     readiness:
       type: tcp
@@ -342,7 +342,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.33.0
+    tag: v0.34.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -475,7 +475,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.30.0
+      tag: v0.31.0
     command:
     - pnpm
     - exec
@@ -487,7 +487,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.30.0
+      tag: v0.31.0
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
@@ -495,7 +495,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.30.0
+      tag: v0.31.0
 externalServices:
   postgres:
     enabled: true
