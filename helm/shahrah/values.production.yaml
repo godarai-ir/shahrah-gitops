@@ -416,6 +416,39 @@ silkRoad:
     SILK_ROAD_ENABLE_MOCK_PROVIDER: 'true'
     SILK_ROAD_MOCK_ALLOWED_TENANT_IDS: a6ea1c25-d710-4e31-8dac-d2651bf1c796
     SILK_ROAD_MOCK_ALLOWED_DEPLOYMENT_IDS: provider-account:713500dd-4ac2-48a7-a4d0-fde804b571a8:mock/chat
+    SILK_ROAD_EGRESS_PROXY_URL: http://10.10.0.190:1443
+    SILK_ROAD_EGRESS_PROXY_REQUIRED: 'true'
+    HTTP_PROXY: http://10.10.0.190:1443
+    HTTPS_PROXY: http://10.10.0.190:1443
+    NO_PROXY: localhost,127.0.0.1,.svc,.cluster.local
+  networkPolicy:
+    enabled: true
+    ingress:
+    - from:
+      - podSelector: {}
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: observability
+      ports:
+      - protocol: TCP
+        port: 8083
+    egress:
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: kube-system
+      ports:
+      - protocol: UDP
+        port: 53
+      - protocol: TCP
+        port: 53
+    - to:
+      - ipBlock:
+          cidr: 10.10.0.190/32
+      ports:
+      - protocol: TCP
+        port: 1443
 tunnelServer:
   image:
     tag: v0.31.0
