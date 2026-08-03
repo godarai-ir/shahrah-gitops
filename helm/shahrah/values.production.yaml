@@ -223,7 +223,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.40.0
+    tag: v0.41.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -325,7 +325,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.26.0
+    tag: v0.27.0
   replicaCount: 2
   ingress:
     enabled: false
