@@ -193,6 +193,8 @@ tenantAdmin:
     minReplicas: 2
     maxReplicas: 8
   ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 30m
     hosts:
     - host: '*.godarai.ir'
       paths:
