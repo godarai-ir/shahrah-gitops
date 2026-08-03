@@ -174,7 +174,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.41.0
+    tag: v0.42.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -204,7 +204,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.39.0
+    tag: v0.40.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -257,7 +257,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.36.0
+    tag: v0.37.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_BASE_PATH: /blog
@@ -274,7 +274,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.34.0
+    tag: v0.35.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -287,7 +287,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.33.0
+    tag: v0.34.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -306,7 +306,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.24.0
+    tag: v0.25.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -323,7 +323,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.33.0
+    tag: v0.34.0
   probes:
     readiness:
       type: tcp
@@ -511,7 +511,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.33.0
+      tag: v0.34.0
     command:
     - pnpm
     - exec
@@ -523,7 +523,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.33.0
+      tag: v0.34.0
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
@@ -531,7 +531,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.33.0
+      tag: v0.34.0
 externalServices:
   postgres:
     enabled: true
