@@ -1,0 +1,315 @@
+{{- if .Values.privateFiles.enabled }}
+{{- $secretName := .Values.privateFiles.secretName | default .Values.secrets.name -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.privateFiles.minio.service.name }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: minio
+  ports:
+    - name: s3
+      port: {{ .Values.privateFiles.minio.service.port }}
+      targetPort: s3
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.privateFiles.minio.service.name }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  serviceName: {{ .Values.privateFiles.minio.service.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: minio
+  template:
+    metadata:
+      labels:
+        {{- include "shahrah.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: minio
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: minio
+          image: "{{ .Values.privateFiles.minio.image.repository }}:{{ .Values.privateFiles.minio.image.tag }}"
+          imagePullPolicy: {{ .Values.privateFiles.minio.image.pullPolicy }}
+          args:
+            - server
+            - /data
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.privateFiles.accessKeySecretKey }}
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.privateFiles.secretKeySecretKey }}
+          ports:
+            - name: s3
+              containerPort: {{ .Values.privateFiles.minio.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: s3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: s3
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.privateFiles.minio.resources | nindent 12 }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  {{- if .Values.privateFiles.minio.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "shahrah.labels" . | nindent 10 }}
+          app.kubernetes.io/component: minio
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- with .Values.privateFiles.minio.persistence.storageClassName }}
+        storageClassName: {{ . | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.privateFiles.minio.persistence.size | quote }}
+  {{- else }}
+      volumes:
+        - name: data
+          emptyDir: {}
+  {{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: private-files-bucket-init
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: private-files-bucket-init
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "-9"
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: private-files-bucket-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: minio-init
+          image: "{{ .Values.privateFiles.minio.clientImage.repository }}:{{ .Values.privateFiles.minio.clientImage.tag }}"
+          imagePullPolicy: {{ .Values.privateFiles.minio.clientImage.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              until mc alias set private-files {{ .Values.privateFiles.endpoint | quote }} "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"; do
+                echo "waiting for MinIO"
+                sleep 2
+              done
+              mc mb --ignore-existing "private-files/{{ .Values.privateFiles.bucket }}"
+              mc anonymous set none "private-files/{{ .Values.privateFiles.bucket }}"
+          env:
+            - name: MC_CONFIG_DIR
+              value: /tmp/.mc
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.privateFiles.accessKeySecretKey }}
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.privateFiles.secretKeySecretKey }}
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+---
+{{- if .Values.privateFiles.clamav.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.privateFiles.clamav.service.name }}-data
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clamav
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- with .Values.privateFiles.clamav.persistence.storageClassName }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.privateFiles.clamav.persistence.size | quote }}
+---
+{{- end }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.privateFiles.clamav.service.name }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clamav
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: clamav
+  ports:
+    - name: clamd
+      port: {{ .Values.privateFiles.clamav.service.port }}
+      targetPort: clamd
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.privateFiles.clamav.service.name }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clamav
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: clamav
+  template:
+    metadata:
+      labels:
+        {{- include "shahrah.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: clamav
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: clamav
+          image: "{{ .Values.privateFiles.clamav.image.repository }}:{{ .Values.privateFiles.clamav.image.tag }}"
+          imagePullPolicy: {{ .Values.privateFiles.clamav.image.pullPolicy }}
+          ports:
+            - name: clamd
+              containerPort: {{ .Values.privateFiles.clamav.service.port }}
+              protocol: TCP
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - printf 'PING\n' | nc 127.0.0.1 {{ .Values.privateFiles.clamav.service.port }} | grep -q PONG
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - printf 'PING\n' | nc 127.0.0.1 {{ .Values.privateFiles.clamav.service.port }} | grep -q PONG
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - printf 'PING\n' | nc 127.0.0.1 {{ .Values.privateFiles.clamav.service.port }} | grep -q PONG
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 4
+          resources:
+            {{- toYaml .Values.privateFiles.clamav.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+          {{- if .Values.privateFiles.clamav.persistence.enabled }}
+          volumeMounts:
+            - name: virus-database
+              mountPath: /var/lib/clamav
+          {{- end }}
+      {{- if .Values.privateFiles.clamav.persistence.enabled }}
+      volumes:
+        - name: virus-database
+          persistentVolumeClaim:
+            claimName: {{ .Values.privateFiles.clamav.service.name }}-data
+      {{- end }}
+{{- end }}
