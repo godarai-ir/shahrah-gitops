@@ -44,6 +44,15 @@ changing the enable flag to `true`.
 - A pre-provisioned Kubernetes Secret named `shahrah-secret` must exist in the target namespace.
 - Do not commit plaintext secret values into `values*.yaml`.
 - When `postgres.enabled=true`, that Secret must also include `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
+- When `privateFiles.enabled=true`, that Secret must include `PRIVATE_FILES_S3_ACCESS_KEY` and `PRIVATE_FILES_S3_SECRET_KEY`.
+
+## Private files and malware scanning
+
+- `privateFiles.enabled=true` deploys an internal MinIO StatefulSet, an idempotent bucket bootstrap Job, and a ClamAV Deployment.
+- MinIO data is persistent; production uses the `longhorn-prod-r2` storage class.
+- The bucket is private and shared by support-ticket attachments and bank-transfer receipt images under separate object prefixes.
+- Both upload paths fail closed when storage or ClamAV is unavailable. Never enable `SUPPORT_ATTACHMENT_ALLOW_UNSCANNED_DEV` in production.
+- MinIO and ClamAV container images are pinned by digest. Update the digest intentionally when promoting dependency updates.
 
 ## Container registry
 
