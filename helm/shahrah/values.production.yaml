@@ -74,7 +74,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.39.1
+    tag: v0.39.2
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -367,7 +367,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.39.1
+    tag: v0.39.2
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
