@@ -176,6 +176,9 @@ controlPlane:
     enabled: true
     minAvailable: 2
   ingress:
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "330"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "330"
     hosts:
     - host: godarai.ir
       paths:
