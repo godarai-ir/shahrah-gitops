@@ -74,7 +74,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.40.0
+    tag: v0.40.1
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -296,7 +296,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.37.0
+    tag: v0.37.1
   ingress:
     hosts:
     - host: godarai.ir
@@ -309,7 +309,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.36.0
+    tag: v0.36.1
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -367,7 +367,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.40.0
+    tag: v0.40.1
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -418,7 +418,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: v0.33.0
+    tag: v0.33.1
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -476,7 +476,7 @@ silkRoad:
         port: 1443
 tunnelServer:
   image:
-    tag: v0.33.0
+    tag: v0.33.1
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -497,7 +497,7 @@ tunnelServer:
     minAvailable: 1
 tunnelClient:
   image:
-    tag: v0.33.0
+    tag: v0.33.1
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -533,7 +533,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.36.0
+      tag: v0.36.1
     command:
     - pnpm
     - exec
@@ -545,7 +545,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.36.0
+      tag: v0.36.1
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
