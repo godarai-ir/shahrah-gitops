@@ -446,6 +446,8 @@ silkRoad:
     HTTP_PROXY: http://10.10.0.190:1443
     HTTPS_PROXY: http://10.10.0.190:1443
     NO_PROXY: localhost,127.0.0.1,.svc,.cluster.local
+  envFromSecretKeys:
+  - DEEPSEEK_USER_ID_HMAC_SECRET
   networkPolicy:
     enabled: true
     ingress:
