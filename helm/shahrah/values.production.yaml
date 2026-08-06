@@ -309,7 +309,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.38.0
+    tag: v0.39.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -533,7 +533,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.38.0
+      tag: v0.39.0
     command:
     - pnpm
     - exec
@@ -545,7 +545,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.38.0
+      tag: v0.39.0
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
