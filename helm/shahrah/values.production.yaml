@@ -74,7 +74,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.45.0
+    tag: v0.46.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -194,7 +194,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.47.0
+    tag: v0.48.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -367,7 +367,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.45.0
+    tag: v0.46.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -418,7 +418,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: v0.35.0
+    tag: v0.36.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -478,7 +478,7 @@ silkRoad:
         port: 1443
 tunnelServer:
   image:
-    tag: v0.35.0
+    tag: v0.36.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -499,7 +499,7 @@ tunnelServer:
     minAvailable: 1
 tunnelClient:
   image:
-    tag: v0.35.0
+    tag: v0.36.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
