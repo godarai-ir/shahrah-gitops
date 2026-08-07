@@ -74,7 +74,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.44.0
+    tag: v0.45.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -194,7 +194,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.46.0
+    tag: v0.47.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -226,7 +226,7 @@ tenantAdmin:
       clusterIssuer: ''
 website:
   image:
-    tag: v0.44.0
+    tag: v0.45.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - RESEND_FROM_EMAIL
@@ -279,7 +279,7 @@ website:
       clusterIssuer: ''
 blog:
   image:
-    tag: v0.40.0
+    tag: v0.41.0
   env:
     PUBLIC_SITE_URL: https://godarai.ir/blog
     PUBLIC_BASE_PATH: /blog
@@ -296,7 +296,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.39.0
+    tag: v0.40.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -309,7 +309,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.40.0
+    tag: v0.41.0
   replicaCount: 3
   extraEnv:
   - name: DATABASE_URL
@@ -328,7 +328,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.29.0
+    tag: v0.30.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -345,7 +345,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.35.0
+    tag: v0.36.0
   probes:
     readiness:
       type: tcp
@@ -367,7 +367,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.44.0
+    tag: v0.45.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -418,7 +418,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: v0.34.0
+    tag: v0.35.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -478,7 +478,7 @@ silkRoad:
         port: 1443
 tunnelServer:
   image:
-    tag: v0.34.0
+    tag: v0.35.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -499,7 +499,7 @@ tunnelServer:
     minAvailable: 1
 tunnelClient:
   image:
-    tag: v0.34.0
+    tag: v0.35.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -535,7 +535,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.40.0
+      tag: v0.41.0
     command:
     - pnpm
     - exec
@@ -547,7 +547,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.40.0
+      tag: v0.41.0
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
@@ -555,7 +555,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.35.0
+      tag: v0.36.0
 externalServices:
   postgres:
     enabled: true
