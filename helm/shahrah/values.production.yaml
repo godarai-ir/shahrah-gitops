@@ -215,6 +215,9 @@ tenantAdmin:
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/proxy-body-size: 30m
+      nginx.ingress.kubernetes.io/proxy-buffering: 'off'
+      nginx.ingress.kubernetes.io/proxy-read-timeout: '330'
+      nginx.ingress.kubernetes.io/proxy-send-timeout: '330'
     hosts:
     - host: '*.godarai.ir'
       paths:
