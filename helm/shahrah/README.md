@@ -31,8 +31,6 @@ changing the enable flag to `true`.
 - `model-discovery-web`
 - `support-admin`
 - `silk-road`
-- `tunnel-server`
-- `tunnel-client`
 - `tenant-admin`
 - `website`
 - `blog`
