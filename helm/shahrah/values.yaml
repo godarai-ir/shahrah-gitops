@@ -33,8 +33,6 @@ config:
     TYPESENSE_ENABLE_CORS: "true"
     SILK_ROAD_ADDR: :8083
     SILK_ROAD_URL: http://silk-road:8083
-    # Temporary rollout alias for control-plane images that predate provider_egress.
-    TUNNEL_CLIENT_URL: http://silk-road:8083
     SMTP_HOST: smtp.example.local
     SMTP_PORT: "587"
     SMTP_FROM: no-reply@example.com
@@ -258,7 +256,6 @@ controlPlane:
     - REDIS_HOST
     - REDIS_PORT
     - SILK_ROAD_URL
-    - TUNNEL_CLIENT_URL
     - SHAHRAH_MODEL_DISCOVERY_URL
     - EMAIL_SENDING_ENABLED
     - SMTP_HOST
