@@ -72,7 +72,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.49.0
+    tag: v0.50.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -299,7 +299,7 @@ blog:
       clusterIssuer: ''
 docs:
   image:
-    tag: v0.40.0
+    tag: v0.41.0
   ingress:
     hosts:
     - host: godarai.ir
@@ -370,7 +370,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.49.0
+    tag: v0.50.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
