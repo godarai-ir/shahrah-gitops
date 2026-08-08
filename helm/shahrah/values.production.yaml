@@ -421,7 +421,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: v0.38.0
+    tag: v0.38.1
   replicaCount: 2
   affinity:
     podAntiAffinity:
