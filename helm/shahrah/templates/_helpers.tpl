@@ -39,8 +39,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   "model-discovery-web" .Values.modelDiscoveryWeb
   "support-admin" .Values.supportAdmin
   "silk-road" .Values.silkRoad
-  "tunnel-server" .Values.tunnelServer
-  "tunnel-client" .Values.tunnelClient
   "tenant-admin" .Values.tenantAdmin
   "website" .Values.website
   "blog" .Values.blog

@@ -43,8 +43,6 @@ config:
     TYPESENSE_COLLECTION_MODELS: models
     TYPESENSE_READS_ENABLED: 'true'
     TYPESENSE_READY_STRICT: 'true'
-    TUNNEL_SERVER_URL: http://tunnel-server:8082
-    TUNNEL_CLIENT_URL: http://tunnel-client:8081
     SILK_ROAD_URL: http://silk-road:8083
     SMTP_HOST: smtp.prod.internal
     SMTP_PORT: '587'
@@ -94,6 +92,7 @@ controlPlane:
   - REDIS_PORT
   - REDIS_SENTINEL_ADDRS
   - REDIS_MASTER_NAME
+  - SILK_ROAD_URL
   - TUNNEL_CLIENT_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
   - METRICS_MODEL_ENABLED
@@ -455,7 +454,12 @@ silkRoad:
     enabled: true
     ingress:
     - from:
-      - podSelector: {}
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/component: control-plane
+      ports:
+      - protocol: TCP
+        port: 8083
     - from:
       - namespaceSelector:
           matchLabels:
