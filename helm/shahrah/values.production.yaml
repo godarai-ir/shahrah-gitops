@@ -543,7 +543,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.43.0
+      tag: v0.43.1
     command:
     - pnpm
     - exec
@@ -555,7 +555,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.43.0
+      tag: v0.43.1
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
