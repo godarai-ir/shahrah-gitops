@@ -9,11 +9,31 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://mohammad-abbasi.me/cert-manager-webhook-arvancloud
-    chart: cert-manager-webhook-arvancloud
-    targetRevision: 0.1.1
+    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    targetRevision: main
+    path: vendor/cert-manager-webhook-arvancloud
     helm:
       releaseName: cert-manager-webhook-arvancloud
+      values: |
+        image:
+          repository: docker.io/delpak/godar-ai
+          tag: mirror-cert-manager-webhook-arvancloud-latest
+          pullPolicy: IfNotPresent
+        imagePullSecrets:
+          - name: regcred
+        extraEnv:
+          - name: HTTPS_PROXY
+            value: http://10.10.0.5:3128
+          - name: HTTP_PROXY
+            value: http://10.10.0.5:3128
+          - name: NO_PROXY
+            value: localhost,127.0.0.1,kubernetes.default.svc,.svc,.svc.cluster.local,.cluster.local,10.0.0.0/8,10.10.0.0/24,10.42.0.0/16,10.43.0.0/16,172.16.0.0/12,192.168.0.0/16
+          - name: https_proxy
+            value: http://10.10.0.5:3128
+          - name: http_proxy
+            value: http://10.10.0.5:3128
+          - name: no_proxy
+            value: localhost,127.0.0.1,kubernetes.default.svc,.svc,.svc.cluster.local,.cluster.local,10.0.0.0/8,10.10.0.0/24,10.42.0.0/16,10.43.0.0/16,172.16.0.0/12,192.168.0.0/16
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
