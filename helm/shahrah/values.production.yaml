@@ -314,12 +314,44 @@ modelDiscovery:
   image:
     tag: v0.44.0
   replicaCount: 3
+  envFromConfigKeys:
+  - REDIS_HOST
+  - REDIS_PORT
+  - REDIS_SENTINEL_ADDRS
+  - REDIS_MASTER_NAME
+  - TYPESENSE_HOST
+  - TYPESENSE_PORT
+  - TYPESENSE_PROTOCOL
+  - TYPESENSE_COLLECTION_MODELS
+  - TYPESENSE_READS_ENABLED
+  - TYPESENSE_READY_STRICT
+  - MODEL_DISCOVERY_CORS_ORIGIN
+  envFromSecretKeys:
+  - MODEL_DISCOVERY_DATABASE_URL
+  - TYPESENSE_API_KEY
+  - MASTER_KEY
+  - JWT_SECRET
   extraEnv:
   - name: DATABASE_URL
     valueFrom:
       secretKeyRef:
         name: shahrah-secret
         key: MODEL_DISCOVERY_DATABASE_URL
+  # Redis moved to a Sentinel-based HA setup (see controlPlane below); the
+  # plain "redis" Service was removed, so REDIS_HOST alone no longer
+  # resolves. Follow the Sentinel-elected master via REDIS_SENTINEL_ADDRS/
+  # REDIS_MASTER_NAME (added to envFromConfigKeys above) and read the
+  # password from the redis chart's own secret, matching controlPlane.
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-redis-runtime
+        key: redis-password
+  - name: REDIS_SENTINEL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-redis-runtime
+        key: redis-password
   ingress:
     enabled: false
   autoscaling:

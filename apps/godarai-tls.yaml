@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    repoURL: ssh://git@ssh.github.com:443/godarai-ir/shahrah-gitops.git
     targetRevision: main
     path: platform/godarai-tls
   destination:
