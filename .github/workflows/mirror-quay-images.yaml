@@ -36,8 +36,6 @@ jobs:
             target_tag: mirror-cert-manager-webhook-v1.20.2
           - source: quay.io/jetstack/cert-manager-acmesolver:v1.20.2
             target_tag: mirror-cert-manager-acmesolver-v1.20.2
-          - source: ghcr.io/mohammadv184/cert-manager-webhook-arvancloud:latest
-            target_tag: mirror-cert-manager-webhook-arvancloud-latest
 
     steps:
       - name: Set up Docker Buildx
