@@ -9,7 +9,7 @@ metadata:
 spec:
   project: shahrah
   source:
-    repoURL: ssh://git@ssh.github.com:443/godarai-ir/shahrah-gitops.git
+    repoURL: https://github.com/godarai-ir/shahrah-gitops.git
     targetRevision: main
     path: platform/observability/servicemonitors
   destination:
