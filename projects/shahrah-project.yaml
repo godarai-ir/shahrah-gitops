@@ -6,9 +6,9 @@ metadata:
 spec:
   description: Shahrah GitOps project with environment guardrails.
   sourceRepos:
-    - https://github.com/Delpak/shahrah-gitops.git
-    - git@github.com:Delpak/shahrah-gitops.git
-    - ssh://git@ssh.github.com:443/Delpak/shahrah-gitops.git
+    - https://github.com/godarai-ir/shahrah-gitops.git
+    - git@github.com:godarai-ir/shahrah-gitops.git
+    - ssh://git@ssh.github.com:443/godarai-ir/shahrah-gitops.git
     - registry-1.docker.io/bitnamicharts
   destinations:
     - namespace: shahrah-staging
