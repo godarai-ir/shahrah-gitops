@@ -194,7 +194,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.56.0
+    tag: v0.57.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -337,11 +337,6 @@ modelDiscovery:
       secretKeyRef:
         name: shahrah-secret
         key: MODEL_DISCOVERY_DATABASE_URL
-  # Redis moved to a Sentinel-based HA setup (see controlPlane below); the
-  # plain "redis" Service was removed, so REDIS_HOST alone no longer
-  # resolves. Follow the Sentinel-elected master via REDIS_SENTINEL_ADDRS/
-  # REDIS_MASTER_NAME (added to envFromConfigKeys above) and read the
-  # password from the redis chart's own secret, matching controlPlane.
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
