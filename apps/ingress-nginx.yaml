@@ -42,6 +42,7 @@ spec:
               https: 30444
           config:
             use-forwarded-headers: "true"
+            proxy-body-size: "512m"
           metrics:
             enabled: true
             serviceMonitor:
