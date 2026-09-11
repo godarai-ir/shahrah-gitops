@@ -399,7 +399,10 @@ modelDiscovery:
   revisionHistoryLimit: 5
   labels: {}
   annotations: {}
-  podLabels: {}
+  podLabels:
+    # Required by the shahrah-redis-runtime NetworkPolicy, which only admits
+    # Redis/sentinel traffic on 6379/26379 from pods carrying this label.
+    shahrah-redis-runtime-client: "true"
   podAnnotations: {}
   serviceAccountName: ""
   priorityClassName: ""
