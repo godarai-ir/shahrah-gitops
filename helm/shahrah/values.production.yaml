@@ -72,7 +72,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.62.0
+    tag: v0.63.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -360,7 +360,7 @@ modelDiscovery:
     minAvailable: 2
 modelDiscoveryWeb:
   image:
-    tag: v0.35.0
+    tag: v0.36.0
   replicaCount: 2
   ingress:
     enabled: false
@@ -377,7 +377,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.38.0
+    tag: v0.39.0
   probes:
     readiness:
       type: tcp
@@ -399,7 +399,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.62.0
+    tag: v0.63.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -592,7 +592,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.38.0
+      tag: v0.39.0
 externalServices:
   postgres:
     enabled: true
