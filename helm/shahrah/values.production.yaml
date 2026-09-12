@@ -72,7 +72,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.63.0
+    tag: v0.64.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -196,7 +196,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.60.0
+    tag: v0.61.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -377,7 +377,7 @@ catalogPathIngress:
     clusterIssuer: ''
 supportAdmin:
   image:
-    tag: v0.39.0
+    tag: v0.40.0
   probes:
     readiness:
       type: tcp
@@ -399,7 +399,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.63.0
+    tag: v0.64.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -450,7 +450,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: v0.49.0
+    tag: v0.50.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -592,7 +592,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.39.0
+      tag: v0.40.0
 externalServices:
   postgres:
     enabled: true
