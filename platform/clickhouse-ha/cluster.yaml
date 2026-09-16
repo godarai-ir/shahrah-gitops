@@ -148,6 +148,11 @@ spec:
         disks:
           backup_s3:
             type: s3_plain
+            # Without this, ClickHouse writes a test object at startup and exits
+            # if that fails, so an S3 credential or bucket-policy problem takes
+            # down every restarting replica. Backups still fail loudly in the
+            # clickhouse-backup-full CronJob.
+            skip_access_check: true
             endpoint:
               "@from_env": CLICKHOUSE_BACKUP_S3_ENDPOINT
             access_key_id:
