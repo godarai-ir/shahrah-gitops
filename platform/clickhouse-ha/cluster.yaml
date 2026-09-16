@@ -75,6 +75,34 @@ spec:
       repository: docker.io/clickhouse/clickhouse-server
       tag: 26.3.17.56
     imagePullPolicy: IfNotPresent
+    # Replaces the operator's default /ping probe, which stays green on a replica
+    # whose data volume was rebuilt but never rejoined sharah_db (UNKNOWN_DATABASE
+    # for every query routed to it). Ready means: the server answers queries and
+    # has at least as many sharah_db tables locally as the Replicated database
+    # registers in Keeper.
+    # If Keeper is unreachable or sharah_db is not registered yet (fresh install),
+    # the probe passes. Failing it there would drain every replica at once and
+    # deadlock the migrate-clickhouse hook, which reaches ClickHouse through the
+    # Service.
+    readinessProbe:
+      exec:
+        command:
+          - sh
+          - -c
+          - |
+            set -eu
+            q() {
+              clickhouse client --user sharah_user --password "$SHAHRAH_CLICKHOUSE_PASSWORD" \
+                --connect_timeout 2 --receive_timeout 5 --query "$1"
+            }
+            local_tables=$(q "SELECT count() FROM system.tables WHERE database = 'sharah_db'")
+            expected_tables=$(q "SELECT count() FROM system.zookeeper WHERE path = '/clickhouse/databases/sharah_db/metadata'" 2>/dev/null) || exit 0
+            [ "$local_tables" -ge "$expected_tables" ]
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 8
+      successThreshold: 1
+      failureThreshold: 3
     resources:
       requests:
         cpu: 250m
