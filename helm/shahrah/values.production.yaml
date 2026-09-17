@@ -196,7 +196,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.61.0
+    tag: v0.62.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -318,7 +318,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.50.0
+    tag: v0.51.0
   replicaCount: 3
   envFromConfigKeys:
   - REDIS_HOST
@@ -576,7 +576,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.50.0
+      tag: v0.51.0
     command:
     - pnpm
     - exec
@@ -588,7 +588,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.50.0
+      tag: v0.51.0
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
