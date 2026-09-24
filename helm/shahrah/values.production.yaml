@@ -319,7 +319,7 @@ docs:
       clusterIssuer: ''
 modelDiscovery:
   image:
-    tag: v0.53.0
+    tag: v0.54.0
   replicaCount: 3
   envFromConfigKeys:
   - REDIS_HOST
@@ -577,7 +577,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.53.0
+      tag: v0.54.0
     command:
     - pnpm
     - exec
@@ -589,7 +589,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.53.0
+      tag: v0.54.0
     providersRoot: /app/apps/model-discovery/providers
     clearMissing: true
     clearMissingProviders: true
