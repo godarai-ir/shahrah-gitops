@@ -43,6 +43,7 @@ changing the enable flag to `true`.
 - Do not commit plaintext secret values into `values*.yaml`.
 - When `postgres.enabled=true`, that Secret must also include `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
 - When `privateFiles.enabled=true`, that Secret must include `PRIVATE_FILES_S3_ACCESS_KEY` and `PRIVATE_FILES_S3_SECRET_KEY`.
+- `control-plane` reads `TYPESAFE_API_KEY` from `shahrah-secret` to authenticate `semantic_policy` guardrail calls to the TypeSafe API; without it, selected semantic guardrails fail as execution errors.
 
 ## Private files and malware scanning
 
