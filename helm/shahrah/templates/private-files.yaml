@@ -145,6 +145,12 @@ spec:
         app.kubernetes.io/component: private-files-bucket-init
     spec:
       restartPolicy: OnFailure
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
       containers:
         - name: minio-init
           image: "{{ .Values.privateFiles.minio.clientImage.repository }}:{{ .Values.privateFiles.minio.clientImage.tag }}"
