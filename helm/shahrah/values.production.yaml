@@ -62,8 +62,6 @@ typesense:
 privateFiles:
   enabled: true
   minio:
-    # MinIO no longer serves community images from Docker Hub or Quay; these
-    # are the previously pinned digests, pushed from a node's containerd cache.
     image:
       repository: docker.io/delpak/godar-ai
       tag: minio-server-14cea493d9a3
@@ -80,7 +78,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.70.0
+    tag: v0.71.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -412,7 +410,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.70.0
+    tag: v0.71.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
