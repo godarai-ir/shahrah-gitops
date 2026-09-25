@@ -62,6 +62,14 @@ typesense:
 privateFiles:
   enabled: true
   minio:
+    # MinIO no longer serves community images from Docker Hub or Quay; these
+    # are the previously pinned digests, pushed from a node's containerd cache.
+    image:
+      repository: docker.io/delpak/godar-ai
+      tag: minio-server-14cea493d9a3
+    clientImage:
+      repository: docker.io/delpak/godar-ai
+      tag: minio-mc-a7fe349ef4bd
     persistence:
       storageClassName: longhorn-prod-r2
       size: 1Gi
