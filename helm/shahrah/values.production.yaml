@@ -78,7 +78,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.71.0
+    tag: v0.72.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -203,7 +203,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.73.0
+    tag: v0.74.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -410,7 +410,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.71.0
+    tag: v0.72.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -573,7 +573,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.30.0
+      tag: v0.31.0
   clickhouse:
     enabled: true
     replicatedDatabase:
