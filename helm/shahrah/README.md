@@ -44,6 +44,7 @@ changing the enable flag to `true`.
 - When `postgres.enabled=true`, that Secret must also include `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`.
 - When `privateFiles.enabled=true`, that Secret must include `PRIVATE_FILES_S3_ACCESS_KEY` and `PRIVATE_FILES_S3_SECRET_KEY`.
 - `control-plane` reads `TYPESAFE_API_KEY` from `shahrah-secret` to authenticate `semantic_policy` guardrail calls to the TypeSafe API; without it, selected semantic guardrails fail as execution errors.
+- `control-plane` reads `OIDC_SIGNING_KEY_PEM` from `shahrah-secret` when `OIDC_ENABLED=true`. It must be a stable EC P-256 private key in PEM form, shared by every replica, because the pod fails to start without it. Create it with `openssl ecparam -name prime256v1 -genkey -noout` (the output is already SEC1 PEM) and add it to the Secret before deploying a control-plane image that includes the OIDC provider. Rotating the key invalidates issued tokens unless the old public key is kept in `OIDC_RETIRED_PUBLIC_KEYS_PEM`.
 
 ## Private files and malware scanning
 
