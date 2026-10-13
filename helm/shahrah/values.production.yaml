@@ -93,6 +93,9 @@ controlPlane:
     TRACE_RETENTION_CLEANUP_ENABLED: 'true'
     TRACE_RETENTION_CLEANUP_INTERVAL_MS: '3600000'
     TRACE_RETENTION_CLEANUP_TIMEOUT_MS: '30000'
+    OIDC_ENABLED: 'true'
+    OIDC_ISSUER_SCHEME: https
+    OIDC_LOGIN_URL_TEMPLATE: https://{slug}.godarai.ir/login
   envFromConfigKeys:
   - REDIS_HOST
   - REDIS_PORT
@@ -131,6 +134,7 @@ controlPlane:
   - PRIVATE_FILES_S3_SECRET_KEY
   - SHAHRAH_SMART_CACHE_EMBEDDING_BASE_URL
   - SHAHRAH_SMART_CACHE_EMBEDDING_API_KEY
+  - OIDC_SIGNING_KEY_PEM
   extraEnv:
   - name: TRACE_OTLP_ENDPOINT
     value: opentelemetry-collector.observability.svc.cluster.local:4317
