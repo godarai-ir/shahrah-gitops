@@ -1,0 +1,56 @@
+image:
+  repository: docker.io/delpak/godar-ai
+  # Mirrored from docker.io/library/mongo:8.0.20 (see .github/workflows/mirror-quay-images.yaml).
+  tag: mirror-mongo-8.0.20
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+replicaSetName: rs0
+replicas: 3
+
+# Created out of band (never committed). Keys:
+#   mongodb-root-username, mongodb-root-password   admin user
+#   mongodb-keyfile                                 replica set keyfile (openssl rand -base64 756)
+#   librechat-password                              password of the application user
+secretName: mongodb-secret
+
+# Application user and database used by LibreChat (MONGO_URI).
+app:
+  username: librechat
+  database: LibreChat
+
+# Pods allowed to connect (in addition to the replica set members and the init/backup jobs).
+clientPodLabels:
+  app.kubernetes.io/component: librechat
+
+persistence:
+  storageClassName: longhorn-prod-r2
+  size: 20Gi
+
+# WiredTiger cache; keep it well below the memory limit.
+wiredTigerCacheSizeGB: "0.5"
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 1Gi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+
+# hard = one member per node (needs at least as many nodes as replicas).
+podAntiAffinity: hard
+
+backup:
+  schedule: "17 2 * * *"
+  keep: 7
+  storageClassName: longhorn-prod-r2
+  size: 20Gi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

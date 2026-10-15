@@ -1,0 +1,14 @@
+# Tenant chat hosts are <slug>.chat.godarai.ir. A wildcard covers exactly one label, so the existing
+# *.godarai.ir certificate does not cover them; this one does. Same ClusterIssuer (Arvan DNS-01).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: godarai-ir-chat-wildcard
+  namespace: shahrah-production
+spec:
+  secretName: godarai-ir-chat-tls
+  issuerRef:
+    name: letsencrypt-arvan-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - "*.chat.godarai.ir"

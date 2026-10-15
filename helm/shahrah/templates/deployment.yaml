@@ -7,6 +7,7 @@
   "support-admin" .Values.supportAdmin
   "silk-road" .Values.silkRoad
   "tenant-admin" .Values.tenantAdmin
+  "librechat" .Values.librechat
   "website" .Values.website
   "blog" .Values.blog
   "docs" .Values.docs
@@ -53,9 +54,14 @@ spec:
         {{- with $cfg.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with $cfg.podAnnotations }}
+      {{- if or $cfg.podAnnotations (eq $name "librechat") }}
       annotations:
+        {{- with $cfg.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if eq $name "librechat" }}
+        checksum/librechat-config: {{ $cfg.config | sha256sum }}
+        {{- end }}
       {{- end }}
     spec:
       {{- if $root.Values.imagePullSecrets }}

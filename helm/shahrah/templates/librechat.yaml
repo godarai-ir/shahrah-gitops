@@ -1,0 +1,105 @@
+{{- if .Values.librechat.enabled }}
+{{- $secretName := .Values.privateFiles.secretName | default .Values.secrets.name -}}
+{{- $bucket := required "librechat.env.AWS_BUCKET_NAME is required" .Values.librechat.env.AWS_BUCKET_NAME -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: librechat-config
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: librechat
+data:
+  librechat.yaml: |
+    {{- .Values.librechat.config | nindent 4 }}
+---
+# Creates the chat bucket and a MinIO user that can touch nothing else. The root credentials are the
+# ones the support file store already uses; the chat user's credentials come from `librechat-secret`.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: librechat-bucket-init
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: librechat-bucket-init
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "-9"
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: librechat-bucket-init
+    spec:
+      restartPolicy: OnFailure
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range $s := .Values.imagePullSecrets }}
+        - name: {{ $s }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: minio-init
+          image: "{{ .Values.privateFiles.minio.clientImage.repository }}:{{ .Values.privateFiles.minio.clientImage.tag }}"
+          imagePullPolicy: {{ .Values.privateFiles.minio.clientImage.pullPolicy }}
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              until mc alias set chat {{ .Values.privateFiles.endpoint | quote }} "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"; do
+                echo "waiting for MinIO"
+                sleep 2
+              done
+              mc mb --ignore-existing "chat/{{ $bucket }}"
+              mc anonymous set none "chat/{{ $bucket }}"
+              cat > /tmp/policy.json <<POLICY
+              {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::{{ $bucket }}","arn:aws:s3:::{{ $bucket }}/*"]}]}
+              POLICY
+              mc admin policy info chat librechat-{{ $bucket }} >/dev/null 2>&1 \
+                || mc admin policy create chat librechat-{{ $bucket }} /tmp/policy.json
+              mc admin user add chat "$CHAT_ACCESS_KEY" "$CHAT_SECRET_KEY"
+              mc admin user info chat "$CHAT_ACCESS_KEY" | grep -q "librechat-{{ $bucket }}" \
+                || mc admin policy attach chat librechat-{{ $bucket }} --user "$CHAT_ACCESS_KEY"
+          env:
+            - name: MC_CONFIG_DIR
+              value: /tmp/.mc
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.privateFiles.accessKeySecretKey }}
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ .Values.privateFiles.secretKeySecretKey }}
+            - name: CHAT_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: CHAT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: librechat-secret
+                  key: AWS_SECRET_ACCESS_KEY
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+{{- end }}

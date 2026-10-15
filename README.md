@@ -9,6 +9,7 @@ This repository is the single source of truth for Shahrah deployments via Argo C
 - `platform/argocd-proxy-env`: Argo CD proxy environment patch job
 - `projects/`: Argo CD AppProject guardrails
 - `bootstrap/`: App-of-apps root bootstrap
+- `helm/mongodb`, `apps/mongodb.yaml`, `apps/librechat-redis.yaml`, `librechat:` in `helm/shahrah`: shared multi-tenant GodarChat (see `docs/godarchat.md`)
 
 ## Bootstrap
 

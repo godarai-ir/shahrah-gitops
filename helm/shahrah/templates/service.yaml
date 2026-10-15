@@ -7,6 +7,7 @@
   "support-admin" .Values.supportAdmin
   "silk-road" .Values.silkRoad
   "tenant-admin" .Values.tenantAdmin
+  "librechat" .Values.librechat
   "website" .Values.website
   "blog" .Values.blog
   "docs" .Values.docs
@@ -31,5 +32,11 @@ spec:
       port: {{ $cfg.service.port | default $cfg.containerPort }}
       targetPort: {{ $cfg.service.targetPort | default "http" }}
       protocol: TCP
+    {{- range $p := $cfg.service.extraPorts }}
+    - name: {{ $p.name }}
+      port: {{ $p.port }}
+      targetPort: {{ $p.targetPort | default $p.port }}
+      protocol: {{ $p.protocol | default "TCP" }}
+    {{- end }}
 {{- end }}
 {{- end }}
