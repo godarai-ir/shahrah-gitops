@@ -68,6 +68,18 @@ privateFiles:
     clientImage:
       repository: docker.io/delpak/godar-ai
       tag: minio-mc-a7fe349ef4bd
+    # files.godarai.ir is covered by the *.godarai.ir certificate (godarai-ir-tls). It shadows the
+    # tenant-admin wildcard rule, so `files` must never be assigned as a tenant slug.
+    ingress:
+      enabled: true
+      host: files.godarai.ir
+      annotations:
+        # LibreChat uploads through this endpoint too; nginx's 1m default would reject large files.
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      tls:
+        enabled: true
+        secretName: godarai-ir-tls
+        clusterIssuer: ''
     persistence:
       storageClassName: longhorn-prod-r2
       size: 1Gi
@@ -643,6 +655,8 @@ librechat:
     fullTag: v0.9.0-rc2
   env:
     TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
+    # Presigned URLs (avatars, file links) are signed for this host, so browsers must be able to reach it.
+    AWS_ENDPOINT_URL: https://files.godarai.ir
     TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.godarai.ir
   ingress:
     hosts:
@@ -654,8 +668,65 @@ librechat:
       enabled: true
       secretName: godarai-ir-chat-tls
       clusterIssuer: ''
-  config: "version: 1.3.17\ncache: true\nfileStrategy: s3\nregistration:\n  socialLogins:\
-    \ [\"openid\"]\nendpoints:\n  custom:\n    - name: \"Godar\"\n      apiKey: \"\
-    {{LIBRECHAT_OPENID_ACCESS_TOKEN}}\"\n      baseURL: \"https://{slug}.godarai.ir/v1\"\
-    \n      models:\n        default: [\"auto\"]\n        fetch: true\n      titleConvo:\
-    \ true\n      modelDisplayLabel: \"Godar\"\n"
+  config: |
+    version: 1.3.17
+    cache: true
+    fileStrategy: s3
+    registration:
+      socialLogins: ["openid"]
+    endpoints:
+      custom:
+        - name: "Godar"
+          # Each user stores their own Godar personal access token (PAT) from the key button in the
+          # model picker; the model list is whatever that PAT may use.
+          apiKey: "user_provided"
+          requireUserKey: true
+          baseURL: "https://{slug}.godarai.ir/v1"
+          models:
+            default: ["auto"]
+            fetch: true
+          modelDisplay: "fqn"
+          titleConvo: true
+          modelDisplayLabel: "Godar"
+    # Remote MCP servers shared by every tenant. Only servers that need no pre-registered OAuth app
+    # (dynamic client registration, no auth, or a per-user key) belong here; each user signs in or
+    # supplies their own key, so no credentials are shared across tenants. No stdio servers: they
+    # would run inside the LibreChat pod.
+    mcpServers:
+      notion:
+        type: streamable-http
+        url: https://mcp.notion.com/mcp
+        requiresOAuth: true
+      atlassian:
+        # Jira and Confluence
+        type: streamable-http
+        url: https://mcp.atlassian.com/v1/mcp
+        requiresOAuth: true
+      linear:
+        type: streamable-http
+        url: https://mcp.linear.app/mcp
+        requiresOAuth: true
+      clickup:
+        type: streamable-http
+        url: https://mcp.clickup.com/mcp
+        requiresOAuth: true
+      fireflies:
+        type: streamable-http
+        url: https://api.fireflies.ai/mcp
+        requiresOAuth: true
+      tavily:
+        type: streamable-http
+        url: https://mcp.tavily.com/mcp
+        requiresOAuth: true
+      microsoft-learn:
+        type: streamable-http
+        url: https://learn.microsoft.com/api/mcp
+      context7:
+        type: streamable-http
+        url: https://mcp.context7.com/mcp
+        headers:
+          Authorization: "Bearer {{CONTEXT7_API_KEY}}"
+        customUserVars:
+          CONTEXT7_API_KEY:
+            title: Context7 API key
+            description: Free key from context7.com/dashboard

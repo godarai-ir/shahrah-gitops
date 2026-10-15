@@ -151,6 +151,18 @@ privateFiles:
     service:
       name: minio
       port: 9000
+    # Public S3 endpoint. Browsers load presigned URLs (e.g. LibreChat avatars) from the host the
+    # URL was signed for, so it must be reachable outside the cluster. The S3 API still requires
+    # signed requests; anonymous access stays denied.
+    ingress:
+      enabled: false
+      className: nginx
+      annotations: {}
+      host: ""
+      tls:
+        enabled: false
+        secretName: ""
+        clusterIssuer: ""
     persistence:
       enabled: true
       storageClassName: local-path
@@ -1356,6 +1368,8 @@ librechat:
     ALLOW_SOCIAL_REGISTRATION: "true"
     ALLOW_PASSWORD_RESET: "false"
     OPENID_BUTTON_LABEL: Godar
+    APP_TITLE: "گدار چت"
+    CUSTOM_FOOTER: "گدار چت"
     # Path only. In host mode the authorization request is built as <tenant origin><OPENID_CALLBACK_URL>;
     # unset, the redirect_uri becomes https://<slug>.chat.<domain>undefined and sign-in is rejected.
     OPENID_CALLBACK_URL: /oauth/openid/callback
@@ -1396,12 +1410,16 @@ librechat:
     endpoints:
       custom:
         - name: "Godar"
-          # The user's Godar OIDC access token; the gateway attributes usage to the tenant (credit_product=librechat).
-          apiKey: "{{LIBRECHAT_OPENID_ACCESS_TOKEN}}"
+          # Each user stores their own Godar personal access token (PAT) from the key button in the
+          # model picker. Until one is stored the picker lists no models; afterwards it lists exactly
+          # the models that PAT may use. The gateway attributes usage to the tenant.
+          apiKey: "user_provided"
+          requireUserKey: true
           baseURL: "https://{slug}.example.com/v1"
           models:
             default: ["auto"]
             fetch: true
+          modelDisplay: "fqn"
           titleConvo: true
           modelDisplayLabel: "Godar"
   volumes:
