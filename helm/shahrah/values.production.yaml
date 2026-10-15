@@ -140,12 +140,6 @@ controlPlane:
   - OIDC_SIGNING_KEY_PEM
   - CHAT_PROVISIONING_TOKEN
   extraEnv:
-  - name: TRACE_OTLP_ENDPOINT
-    value: opentelemetry-collector.observability.svc.cluster.local:4317
-  - name: TRACE_OTLP_INSECURE
-    value: 'true'
-  - name: TRACE_OTLP_SERVICE_NAME
-    value: shahrah-control-plane
   - name: TRACE_DEFAULT_SAMPLE_RATE
     value: '0.01'
   - name: TRACE_SLOW_REQUEST_MS
