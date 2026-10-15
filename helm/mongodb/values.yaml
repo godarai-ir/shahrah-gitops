@@ -4,7 +4,10 @@ image:
   tag: mirror-mongo-8.0.20
   pullPolicy: IfNotPresent
 
-imagePullSecrets: []
+# docker.io/delpak/godar-ai is a private repository: without this the node pulls anonymously
+# and Docker Hub answers "not found".
+imagePullSecrets:
+  - regcred
 
 replicaSetName: rs0
 replicas: 3
