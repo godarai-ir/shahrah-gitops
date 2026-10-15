@@ -1356,6 +1356,9 @@ librechat:
     ALLOW_SOCIAL_REGISTRATION: "true"
     ALLOW_PASSWORD_RESET: "false"
     OPENID_BUTTON_LABEL: Godar
+    # Path only. In host mode the authorization request is built as <tenant origin><OPENID_CALLBACK_URL>;
+    # unset, the redirect_uri becomes https://<slug>.chat.<domain>undefined and sign-in is rejected.
+    OPENID_CALLBACK_URL: /oauth/openid/callback
     AWS_ENDPOINT_URL: http://minio:9000
     AWS_REGION: us-east-1
     AWS_BUCKET_NAME: godarai-chat
