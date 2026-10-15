@@ -124,6 +124,45 @@ spec:
         - name: data
           emptyDir: {}
   {{- end }}
+{{- $ing := .Values.privateFiles.minio.ingress }}
+{{- if $ing.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.privateFiles.minio.service.name }}
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+  annotations:
+    {{- if $ing.tls.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ $ing.tls.clusterIssuer | quote }}
+    {{- end }}
+    {{- with $ing.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if $ing.className }}
+  ingressClassName: {{ $ing.className }}
+  {{- end }}
+  rules:
+    - host: {{ required "privateFiles.minio.ingress.host is required" $ing.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.privateFiles.minio.service.name }}
+                port:
+                  number: {{ .Values.privateFiles.minio.service.port }}
+  {{- if and $ing.tls.enabled $ing.tls.secretName }}
+  tls:
+    - secretName: {{ $ing.tls.secretName }}
+      hosts:
+        - {{ $ing.host | quote }}
+  {{- end }}
+{{- end }}
 ---
 apiVersion: batch/v1
 kind: Job

@@ -151,6 +151,18 @@ privateFiles:
     service:
       name: minio
       port: 9000
+    # Public S3 endpoint. Browsers load presigned URLs (e.g. LibreChat avatars) from the host the
+    # URL was signed for, so it must be reachable outside the cluster. The S3 API still requires
+    # signed requests; anonymous access stays denied.
+    ingress:
+      enabled: false
+      className: nginx
+      annotations: {}
+      host: ""
+      tls:
+        enabled: false
+        secretName: ""
+        clusterIssuer: ""
     persistence:
       enabled: true
       storageClassName: local-path
@@ -1356,6 +1368,8 @@ librechat:
     ALLOW_SOCIAL_REGISTRATION: "true"
     ALLOW_PASSWORD_RESET: "false"
     OPENID_BUTTON_LABEL: Godar
+    APP_TITLE: "گدار چت"
+    CUSTOM_FOOTER: "گدار چت"
     # Path only. In host mode the authorization request is built as <tenant origin><OPENID_CALLBACK_URL>;
     # unset, the redirect_uri becomes https://<slug>.chat.<domain>undefined and sign-in is rejected.
     OPENID_CALLBACK_URL: /oauth/openid/callback
@@ -1368,8 +1382,6 @@ librechat:
   # Secret `librechat-secret`, created out of band (never committed). Keys:
   #   CREDS_KEY, CREDS_IV              deployment-wide encryption of stored credentials AND of every
   #                                    tenant's OIDC client secret. Losing them loses that data: back up.
-    APP_TITLE: "گدار چت"
-    CUSTOM_FOOTER: "گدار چت"
   #   JWT_SECRET, JWT_REFRESH_SECRET   token signing
   #   OPENID_SESSION_SECRET            signs the sign-in session of every tenant
   #   TENANT_PROVISIONING_TOKEN        >= 32 chars; same value as CHAT_PROVISIONING_TOKEN in shahrah-secret
@@ -1407,6 +1419,7 @@ librechat:
           models:
             default: ["auto"]
             fetch: true
+          modelDisplay: "fqn"
           titleConvo: true
           modelDisplayLabel: "Godar"
   volumes:
@@ -1419,7 +1432,6 @@ librechat:
       emptyDir: {}
   volumeMounts:
     - name: librechat-config
-          modelDisplay: "fqn"
       mountPath: /app/librechat.yaml
       subPath: librechat.yaml
       readOnly: true
