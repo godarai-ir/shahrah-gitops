@@ -62,7 +62,7 @@ kubectl -n $NS create secret generic librechat-secret \
 
 1. DNS: رکورد wildcard `*.chat.godarai.ir` به همان لودبالانسر ingress (Arvan).
 2. اجرای دستی workflow `Mirror Quay Images` تا `docker.io/delpak/godar-ai:mirror-mongo-8.0.20` ساخته شود.
-3. ساخت و push ایمیج GodarChat به `docker.io/delpak/godar-ai:librechat-v0.8.8-godar.1` از کد commit‌شده‌ی فورک LibreChat (نه working tree محلی). tag در `librechat.image.tag` پین شده است.
+3. ایمیج GodarChat ساخته شده است: `docker.io/delpak/godar-ai:librechat-v0.9.0-rc2` (پین‌شده در `librechat.image.tag`). برای نسخه‌ی جدید، فقط این tag را عوض کنید.
 4. ساخت Secretها (بالا).
 5. release نسخه‌ای از control-plane که شامل `internal/chatprovisioning` است (در main هست ولی در `v0.72.0` نیست) و بالا بردن `controlPlane.image.tag`. تا آن موقع `CHAT_*` نادیده گرفته می‌شود.
 6. merge: Argo اول mongodb (Job `mongodb-init` بعد از sync، replica set و کاربر برنامه را می‌سازد)، redis، سپس chart اصلی (Job ساخت bucket در wave `-9`) را اعمال می‌کند.
