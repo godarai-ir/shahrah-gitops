@@ -62,7 +62,7 @@ kubectl -n $NS create secret generic librechat-secret \
 
 1. DNS: رکورد wildcard `*.chat.godarai.ir` به همان لودبالانسر ingress (Arvan).
 2. اجرای دستی workflow `Mirror Quay Images` تا `docker.io/delpak/godar-ai:mirror-mongo-8.0.20` ساخته شود.
-3. ایمیج GodarChat ساخته شده است: `docker.io/delpak/godar-ai:librechat-v0.9.0-rc2` (پین‌شده در `librechat.image.tag`). برای نسخه‌ی جدید، فقط این tag را عوض کنید.
+3. ایمیج GodarChat ساخته شده است و با tag خالص منتشر می‌شود: `docker.io/delpak/godar-ai:v0.9.0-rc2` (بدون پیشوند `librechat-`؛ workflow فورک آن را با `api-` برای نسخه‌ی API هم push می‌کند). مقدار در `librechat.image.fullTag` پین شده است؛ برای نسخه‌ی جدید فقط همین را عوض کنید.
 4. ساخت Secretها (بالا).
 5. release نسخه‌ای از control-plane که شامل `internal/chatprovisioning` است (در main هست ولی در `v0.72.0` نیست) و بالا بردن `controlPlane.image.tag`. تا آن موقع `CHAT_*` نادیده گرفته می‌شود.
 6. merge: Argo اول mongodb (Job `mongodb-init` بعد از sync، replica set و کاربر برنامه را می‌سازد)، redis، سپس chart اصلی (Job ساخت bucket در wave `-9`) را اعمال می‌کند.
@@ -76,6 +76,7 @@ pod های LibreChat stateless هستند (session، stream و limiter در Redi
 
 - **Redis تک‌نمونه است.** کلاینت LibreChat Sentinel/failover ندارد؛ AOF داده را نگه می‌دارد ولی در قطعی، چت تا برگشت Redis در دسترس نیست.
 - **MinIO تک‌نمونه و ۱Gi است** (`privateFiles.minio.persistence`، ساخته‌شده برای فایل‌های support). حجم فایل‌های چت همین‌جا ذخیره می‌شود. `volumeClaimTemplates` استیت‌فول‌ست immutable است؛ PVC را در Longhorn دستی expand کنید، بعد مقدار را در values هم‌خوان کنید. در عمل بهتر است MinIO جدا یا HA بگیرد.
+- **اندازه‌ی volumeهای Mongo ۵Gi است** (هر عضو و backup)، چون Longhorn بر اساس حجم درخواستی زمان‌بندی می‌کند و روی هر نود حدود ۸۵ از ۱۰۵ گیگ از قبل رزرو شده است. volume را می‌شود online بزرگ کرد ولی کوچک نه. اگر `volumeClaimTemplates` عوض شد، StatefulSet و PVCها باید دستی حذف و دوباره ساخته شوند.
 - **MongoDB:** backup منطقی روزانه روی PVC جدا (۷ نسخه) فقط محافظ خطای انسانی است، نه خرابی دیسک/کلاستر. نسخه‌ی خارج کلاستر لازم است. exporter/alert برای Mongo هنوز نیست.
 - **دسترسی pod به issuer** (`https://{slug}.godarai.ir`، discovery و gateway) از آدرس عمومی می‌گذرد (egress به ۴۴۳ آزاد است). rewrite در CoreDNS به ingress-nginx داخلی بهتر است.
 - **توکن gateway:** `{{LIBRECHAT_OPENID_ACCESS_TOKEN}}` در حالت host با `OPENID_REUSE_TOKENS` خاموش کار می‌کند فقط اگر توکن login در `user.federatedTokens` در درخواست‌های بعدی هم موجود باشد؛ end-to-end تأیید نشده. نخستین تست واقعی دقیقاً همین است.

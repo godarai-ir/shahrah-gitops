@@ -96,7 +96,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ $name }}
-          image: "{{ $root.Values.global.imageRegistry }}/{{ $cfg.image.repository }}:{{ $cfg.image.namePrefix | default $name }}-{{ $cfg.image.tag | default $root.Values.global.imageTag }}"
+          image: "{{ $root.Values.global.imageRegistry }}/{{ $cfg.image.repository }}:{{ if $cfg.image.fullTag }}{{ $cfg.image.fullTag }}{{ else }}{{ $cfg.image.namePrefix | default $name }}-{{ $cfg.image.tag | default $root.Values.global.imageTag }}{{ end }}"
           imagePullPolicy: {{ $cfg.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - name: http

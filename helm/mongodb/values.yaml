@@ -26,7 +26,9 @@ clientPodLabels:
 
 persistence:
   storageClassName: longhorn-prod-r2
-  size: 20Gi
+  # Longhorn schedules by requested size and every node already has ~85 of 105 GB scheduled.
+  # Volumes can be expanded online later; they cannot be shrunk.
+  size: 5Gi
 
 # WiredTiger cache; keep it well below the memory limit.
 wiredTigerCacheSizeGB: "0.5"
@@ -46,7 +48,7 @@ backup:
   schedule: "17 2 * * *"
   keep: 7
   storageClassName: longhorn-prod-r2
-  size: 20Gi
+  size: 5Gi
   resources:
     requests:
       cpu: 50m

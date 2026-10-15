@@ -1198,7 +1198,9 @@ librechat:
   image:
     repository: godar-ai
     namePrefix: librechat
-    # Immutable tag of the GodarChat image: docker.io/delpak/godar-ai:librechat-<tag>.
+    # The GodarChat image is published with the bare release tag (docker.io/delpak/godar-ai:v0.9.0-rc2),
+    # without the <workload>- prefix the other services use. fullTag is used verbatim as the image tag.
+    fullTag: ""
     tag: ""
     pullPolicy: IfNotPresent
   replicaCount: 3
