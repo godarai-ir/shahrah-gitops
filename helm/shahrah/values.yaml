@@ -1368,6 +1368,8 @@ librechat:
   # Secret `librechat-secret`, created out of band (never committed). Keys:
   #   CREDS_KEY, CREDS_IV              deployment-wide encryption of stored credentials AND of every
   #                                    tenant's OIDC client secret. Losing them loses that data: back up.
+    APP_TITLE: "گدار چت"
+    CUSTOM_FOOTER: "گدار چت"
   #   JWT_SECRET, JWT_REFRESH_SECRET   token signing
   #   OPENID_SESSION_SECRET            signs the sign-in session of every tenant
   #   TENANT_PROVISIONING_TOKEN        >= 32 chars; same value as CHAT_PROVISIONING_TOKEN in shahrah-secret
@@ -1396,8 +1398,11 @@ librechat:
     endpoints:
       custom:
         - name: "Godar"
-          # The user's Godar OIDC access token; the gateway attributes usage to the tenant (credit_product=librechat).
-          apiKey: "{{LIBRECHAT_OPENID_ACCESS_TOKEN}}"
+          # Each user stores their own Godar personal access token (PAT) from the key button in the
+          # model picker. Until one is stored the picker lists no models; afterwards it lists exactly
+          # the models that PAT may use. The gateway attributes usage to the tenant.
+          apiKey: "user_provided"
+          requireUserKey: true
           baseURL: "https://{slug}.example.com/v1"
           models:
             default: ["auto"]
@@ -1414,6 +1419,7 @@ librechat:
       emptyDir: {}
   volumeMounts:
     - name: librechat-config
+          modelDisplay: "fqn"
       mountPath: /app/librechat.yaml
       subPath: librechat.yaml
       readOnly: true
