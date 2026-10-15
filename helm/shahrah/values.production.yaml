@@ -68,14 +68,11 @@ privateFiles:
     clientImage:
       repository: docker.io/delpak/godar-ai
       tag: minio-mc-a7fe349ef4bd
-    # files.godarai.ir is covered by the *.godarai.ir certificate (godarai-ir-tls). It shadows the
-    # tenant-admin wildcard rule, so `files` must never be assigned as a tenant slug.
     ingress:
       enabled: true
       host: files.godarai.ir
       annotations:
-        # LibreChat uploads through this endpoint too; nginx's 1m default would reject large files.
-        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+        nginx.ingress.kubernetes.io/proxy-body-size: '0'
       tls:
         enabled: true
         secretName: godarai-ir-tls
@@ -90,7 +87,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.73.0
+    tag: v0.74.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -221,7 +218,7 @@ controlPlane:
       clusterIssuer: ''
 tenantAdmin:
   image:
-    tag: v0.75.0
+    tag: v0.76.0
   envFromConfigKeys:
   - SHAHRAH_CONTROL_PLANE_URL
   - SHAHRAH_MODEL_DISCOVERY_URL
@@ -428,7 +425,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.73.0
+    tag: v0.74.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -479,7 +476,7 @@ metricsDlqReplayer:
         port: 53
 silkRoad:
   image:
-    tag: v0.54.0
+    tag: v0.55.0
   replicaCount: 2
   affinity:
     podAntiAffinity:
@@ -591,7 +588,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.32.0
+      tag: v0.33.0
   clickhouse:
     enabled: true
     replicatedDatabase:
@@ -651,11 +648,9 @@ postgres:
     size: 100Gi
 librechat:
   image:
-    # docker.io/delpak/godar-ai:v0.9.0-rc2 (LibreChat with host multi-tenancy)
     fullTag: v0.9.0-rc2
   env:
     TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
-    # Presigned URLs (avatars, file links) are signed for this host, so browsers must be able to reach it.
     AWS_ENDPOINT_URL: https://files.godarai.ir
     TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.godarai.ir
   ingress:
@@ -668,65 +663,26 @@ librechat:
       enabled: true
       secretName: godarai-ir-chat-tls
       clusterIssuer: ''
-  config: |
-    version: 1.3.17
-    cache: true
-    fileStrategy: s3
-    registration:
-      socialLogins: ["openid"]
-    endpoints:
-      custom:
-        - name: "Godar"
-          # Each user stores their own Godar personal access token (PAT) from the key button in the
-          # model picker; the model list is whatever that PAT may use.
-          apiKey: "user_provided"
-          requireUserKey: true
-          baseURL: "https://{slug}.godarai.ir/v1"
-          models:
-            default: ["auto"]
-            fetch: true
-          modelDisplay: "fqn"
-          titleConvo: true
-          modelDisplayLabel: "Godar"
-    # Remote MCP servers shared by every tenant. Only servers that need no pre-registered OAuth app
-    # (dynamic client registration, no auth, or a per-user key) belong here; each user signs in or
-    # supplies their own key, so no credentials are shared across tenants. No stdio servers: they
-    # would run inside the LibreChat pod.
-    mcpServers:
-      notion:
-        type: streamable-http
-        url: https://mcp.notion.com/mcp
-        requiresOAuth: true
-      atlassian:
-        # Jira and Confluence
-        type: streamable-http
-        url: https://mcp.atlassian.com/v1/mcp
-        requiresOAuth: true
-      linear:
-        type: streamable-http
-        url: https://mcp.linear.app/mcp
-        requiresOAuth: true
-      clickup:
-        type: streamable-http
-        url: https://mcp.clickup.com/mcp
-        requiresOAuth: true
-      fireflies:
-        type: streamable-http
-        url: https://api.fireflies.ai/mcp
-        requiresOAuth: true
-      tavily:
-        type: streamable-http
-        url: https://mcp.tavily.com/mcp
-        requiresOAuth: true
-      microsoft-learn:
-        type: streamable-http
-        url: https://learn.microsoft.com/api/mcp
-      context7:
-        type: streamable-http
-        url: https://mcp.context7.com/mcp
-        headers:
-          Authorization: "Bearer {{CONTEXT7_API_KEY}}"
-        customUserVars:
-          CONTEXT7_API_KEY:
-            title: Context7 API key
-            description: Free key from context7.com/dashboard
+  config: "version: 1.3.17\ncache: true\nfileStrategy: s3\nregistration:\n  socialLogins:\
+    \ [\"openid\"]\nendpoints:\n  custom:\n    - name: \"Godar\"\n      # Each user\
+    \ stores their own Godar personal access token (PAT) from the key button in the\n\
+    \      # model picker; the model list is whatever that PAT may use.\n      apiKey:\
+    \ \"user_provided\"\n      requireUserKey: true\n      baseURL: \"https://{slug}.godarai.ir/v1\"\
+    \n      models:\n        default: [\"auto\"]\n        fetch: true\n      modelDisplay:\
+    \ \"fqn\"\n      titleConvo: true\n      modelDisplayLabel: \"Godar\"\n# Remote\
+    \ MCP servers shared by every tenant. Only servers that need no pre-registered\
+    \ OAuth app\n# (dynamic client registration, no auth, or a per-user key) belong\
+    \ here; each user signs in or\n# supplies their own key, so no credentials are\
+    \ shared across tenants. No stdio servers: they\n# would run inside the LibreChat\
+    \ pod.\nmcpServers:\n  notion:\n    type: streamable-http\n    url: https://mcp.notion.com/mcp\n\
+    \    requiresOAuth: true\n  atlassian:\n    # Jira and Confluence\n    type: streamable-http\n\
+    \    url: https://mcp.atlassian.com/v1/mcp\n    requiresOAuth: true\n  linear:\n\
+    \    type: streamable-http\n    url: https://mcp.linear.app/mcp\n    requiresOAuth:\
+    \ true\n  clickup:\n    type: streamable-http\n    url: https://mcp.clickup.com/mcp\n\
+    \    requiresOAuth: true\n  fireflies:\n    type: streamable-http\n    url: https://api.fireflies.ai/mcp\n\
+    \    requiresOAuth: true\n  tavily:\n    type: streamable-http\n    url: https://mcp.tavily.com/mcp\n\
+    \    requiresOAuth: true\n  microsoft-learn:\n    type: streamable-http\n    url:\
+    \ https://learn.microsoft.com/api/mcp\n  context7:\n    type: streamable-http\n\
+    \    url: https://mcp.context7.com/mcp\n    headers:\n      Authorization: \"\
+    Bearer {{CONTEXT7_API_KEY}}\"\n    customUserVars:\n      CONTEXT7_API_KEY:\n\
+    \        title: Context7 API key\n        description: Free key from context7.com/dashboard\n"
