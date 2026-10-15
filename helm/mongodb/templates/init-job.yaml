@@ -59,8 +59,8 @@ spec:
             capabilities:
               drop: ["ALL"]
           resources:
-            requests: { cpu: 25m, memory: 64Mi }
-            limits: { cpu: 250m, memory: 256Mi }
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 512Mi }
           volumeMounts:
             - { name: scripts, mountPath: /scripts, readOnly: true }
       volumes:
@@ -82,16 +82,25 @@ data:
     const rootPassword = process.env.ROOT_PASSWORD;
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+    // Every connection is closed: this script retries for minutes and an open connection per attempt
+    // used to exhaust the container memory (OOMKilled).
     function connectDirect(host) {
       const conn = new Mongo(`mongodb://${host}/?directConnection=true`);
-      conn.getDB('admin').auth(rootUser, rootPassword);
-      return conn.getDB('admin');
+      try {
+        conn.getDB('admin').auth(rootUser, rootPassword);
+      } catch (e) {
+        conn.close();
+        throw e;
+      }
+      return conn;
     }
 
     async function waitFor(host) {
       for (let i = 0; i < 120; i++) {
         try {
-          connectDirect(host).runCommand({ ping: 1 });
+          const conn = connectDirect(host);
+          conn.getDB('admin').runCommand({ ping: 1 });
+          conn.close();
           return;
         } catch (e) {
           await sleep(2000);
@@ -103,7 +112,8 @@ data:
     (async () => {
       for (const host of members) await waitFor(host);
 
-      const first = connectDirect(members[0]);
+      const firstConn = connectDirect(members[0]);
+      const first = firstConn.getDB('admin');
       let initiated = false;
       try {
         initiated = first.adminCommand({ replSetGetStatus: 1 }).ok === 1;
@@ -119,19 +129,24 @@ data:
         const res = first.adminCommand({ replSetInitiate: cfg });
         if (!res.ok && res.codeName !== 'AlreadyInitialized') throw new Error(JSON.stringify(res));
       }
+      firstConn.close();
 
       // Reconnect through the whole set so writes reach whichever member is primary.
       let admin = null;
       for (let i = 0; i < 90 && !admin; i++) {
+        let conn = null;
         try {
-          const conn = new Mongo(`mongodb://${members.join(',')}/?replicaSet=${rs}`);
+          conn = new Mongo(`mongodb://${members.join(',')}/?replicaSet=${rs}`);
           const candidate = conn.getDB('admin');
           candidate.auth(rootUser, rootPassword);
           if (candidate.hello().isWritablePrimary) admin = candidate;
         } catch (e) {
           /* no primary yet */
         }
-        if (!admin) await sleep(2000);
+        if (!admin) {
+          if (conn) conn.close();
+          await sleep(2000);
+        }
       }
       if (!admin) throw new Error('no primary elected');
 

@@ -89,7 +89,10 @@ spec:
         - name: mongodb
           image: {{ include "mongodb.image" . | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # The image entrypoint only creates MONGO_INITDB_ROOT_* when its first argument is literally
+          # `mongod`; starting with an option skips that step and leaves the instance without any user.
           args:
+            - mongod
             - --replSet={{ .Values.replicaSetName }}
             - --keyFile=/keyfile/keyfile
             - --bind_ip_all
