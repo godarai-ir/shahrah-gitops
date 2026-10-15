@@ -27,3 +27,15 @@ jobs:
 
       - name: Helm template production
         run: helm template shahrah helm/shahrah -f helm/shahrah/values.yaml -f helm/shahrah/values.production.yaml > /tmp/shahrah-production.yaml
+
+      - name: GodarChat is rendered with host multi-tenancy and S3
+        run: |
+          grep -q 'name: MULTI_TENANT_MODE' /tmp/shahrah-production.yaml
+          grep -q 'fileStrategy: s3' /tmp/shahrah-production.yaml
+          # Host mode refuses these at startup; they must never be rendered for GodarChat.
+          ! grep -E 'name: (DOMAIN_CLIENT|DOMAIN_SERVER|OPENID_ISSUER|OPENID_CLIENT_ID|OPENID_CLIENT_SECRET|OPENID_REUSE_TOKENS|ADMIN_PANEL_URL)$' /tmp/shahrah-production.yaml
+
+      - name: Helm lint and template mongodb
+        run: |
+          helm lint helm/mongodb
+          helm template mongodb helm/mongodb -n shahrah-production > /tmp/mongodb.yaml

@@ -1,0 +1,88 @@
+# Redis for GodarChat (LibreChat). Standalone on purpose: LibreChat has no Sentinel client, so a
+# failover-capable topology would not be followed. Persistence (AOF) keeps sessions and streams
+# across restarts. Kept apart from shahrah-redis-runtime, which is sized and locked down for the control plane.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: librechat-redis
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: librechat-redis
+    app.kubernetes.io/part-of: godar-chat
+spec:
+  project: shahrah
+  source:
+    repoURL: https://github.com/godarai-ir/shahrah-gitops.git
+    targetRevision: main
+    path: vendor/redis
+    helm:
+      releaseName: librechat-redis
+      values: |
+        architecture: standalone
+        image:
+          registry: docker.io
+          repository: bitnami/redis
+          tag: latest
+          digest: sha256:5ff436b8a0dbe3808f03c7b682865cd30ddb1f08c1a8d17970ebf475f5689722
+        auth:
+          enabled: true
+          existingSecret: librechat-redis
+          existingSecretPasswordKey: redis-password
+        commonConfiguration: |-
+          appendonly yes
+          appendfsync everysec
+          save ""
+          maxmemory 384mb
+          maxmemory-policy noeviction
+        master:
+          persistence:
+            enabled: true
+            storageClass: longhorn-redis-r1
+            size: 2Gi
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+        networkPolicy:
+          enabled: true
+          allowExternal: false
+          allowExternalEgress: false
+          extraIngress:
+            - from:
+                - podSelector:
+                    matchLabels:
+                      app.kubernetes.io/component: librechat
+          metrics:
+            allowExternal: true
+        metrics:
+          enabled: true
+          image:
+            registry: docker.io
+            repository: bitnami/redis-exporter
+            tag: latest
+            digest: sha256:0468a9a14ebd96953f967f9f3e8673c3eb1ad1dd54d379fef15c3f3ee714c99e
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          serviceMonitor:
+            enabled: true
+            namespace: shahrah-production
+            interval: 30s
+            additionalLabels:
+              release: kube-prometheus-stack
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shahrah-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

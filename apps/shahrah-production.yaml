@@ -39,6 +39,12 @@ spec:
       namespace: shahrah-production
       jsonPointers:
         - /spec/replicas
+    - group: apps
+      kind: Deployment
+      name: librechat
+      namespace: shahrah-production
+      jsonPointers:
+        - /spec/replicas
   syncPolicy:
     automated:
       prune: true

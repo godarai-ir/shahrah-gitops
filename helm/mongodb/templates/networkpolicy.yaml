@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "mongodb.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mongodb
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        # replica set members, the init job and the backup job
+        - podSelector:
+            matchLabels:
+              {{- include "mongodb.selectorLabels" . | nindent 14 }}
+        # the application
+        - podSelector:
+            matchLabels:
+              {{- toYaml .Values.clientPodLabels | nindent 14 }}
+      ports:
+        - { port: 27017, protocol: TCP }

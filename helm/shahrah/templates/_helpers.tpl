@@ -40,6 +40,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   "support-admin" .Values.supportAdmin
   "silk-road" .Values.silkRoad
   "tenant-admin" .Values.tenantAdmin
+  "librechat" .Values.librechat
   "website" .Values.website
   "blog" .Values.blog
   "docs" .Values.docs

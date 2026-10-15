@@ -36,6 +36,8 @@ jobs:
             target_tag: mirror-cert-manager-webhook-v1.20.2
           - source: quay.io/jetstack/cert-manager-acmesolver:v1.20.2
             target_tag: mirror-cert-manager-acmesolver-v1.20.2
+          - source: docker.io/library/mongo:8.0.20
+            target_tag: mirror-mongo-8.0.20
 
     steps:
       - name: Set up Docker Buildx

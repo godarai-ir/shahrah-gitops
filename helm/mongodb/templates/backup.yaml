@@ -1,0 +1,84 @@
+# Logical backup: one compressed archive per run on a separate volume; the newest
+# `backup.keep` are kept. It guards against operator error and does not replace an off-cluster copy.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-backup
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: {{ .Values.backup.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.backup.size }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongodb-backup
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            {{- include "mongodb.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: mongodb-backup
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 999
+            runAsGroup: 999
+            fsGroup: 999
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: dump
+              image: {{ include "mongodb.image" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  out="/backup/mongodb-$(date -u +%Y%m%dT%H%M%SZ).archive.gz"
+                  mongodump \
+                    --uri="mongodb://{{ include "mongodb.members" . }}/?replicaSet={{ .Values.replicaSetName }}&readPreference=secondaryPreferred&authSource=admin" \
+                    --username="$ROOT_USER" --password="$ROOT_PASSWORD" --gzip --archive="$out.tmp"
+                  mv "$out.tmp" "$out"
+                  ls -1t /backup/mongodb-*.archive.gz | tail -n +$(( {{ .Values.backup.keep }} + 1 )) | xargs -r rm -f
+              env:
+                - name: ROOT_USER
+                  valueFrom:
+                    secretKeyRef: { name: {{ .Values.secretName }}, key: mongodb-root-username }
+                - name: ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef: { name: {{ .Values.secretName }}, key: mongodb-root-password }
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+              resources:
+                {{- toYaml .Values.backup.resources | nindent 16 }}
+              volumeMounts:
+                - { name: backup, mountPath: /backup }
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: mongodb-backup

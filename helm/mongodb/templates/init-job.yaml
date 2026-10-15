@@ -1,0 +1,152 @@
+# Initiates the replica set and creates the application user. Idempotent: it runs after every sync.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-init
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb-init
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 20
+  template:
+    metadata:
+      labels:
+        {{- include "mongodb.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mongodb-init
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: init
+          image: {{ include "mongodb.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["mongosh", "--quiet", "--nodb", "--file", "/scripts/init.js"]
+          env:
+            - name: MEMBERS
+              value: {{ include "mongodb.members" . | quote }}
+            - name: REPLICA_SET
+              value: {{ .Values.replicaSetName | quote }}
+            - name: ROOT_USER
+              valueFrom:
+                secretKeyRef: { name: {{ .Values.secretName }}, key: mongodb-root-username }
+            - name: ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: {{ .Values.secretName }}, key: mongodb-root-password }
+            - name: APP_USER
+              value: {{ .Values.app.username | quote }}
+            - name: APP_DATABASE
+              value: {{ .Values.app.database | quote }}
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: {{ .Values.secretName }}, key: librechat-password }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: { cpu: 25m, memory: 64Mi }
+            limits: { cpu: 250m, memory: 256Mi }
+          volumeMounts:
+            - { name: scripts, mountPath: /scripts, readOnly: true }
+      volumes:
+        - name: scripts
+          configMap:
+            name: mongodb-init
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-init
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+data:
+  init.js: |
+    const members = process.env.MEMBERS.split(',');
+    const rs = process.env.REPLICA_SET;
+    const rootUser = process.env.ROOT_USER;
+    const rootPassword = process.env.ROOT_PASSWORD;
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    function connectDirect(host) {
+      const conn = new Mongo(`mongodb://${host}/?directConnection=true`);
+      conn.getDB('admin').auth(rootUser, rootPassword);
+      return conn.getDB('admin');
+    }
+
+    async function waitFor(host) {
+      for (let i = 0; i < 120; i++) {
+        try {
+          connectDirect(host).runCommand({ ping: 1 });
+          return;
+        } catch (e) {
+          await sleep(2000);
+        }
+      }
+      throw new Error(`${host} did not become reachable`);
+    }
+
+    (async () => {
+      for (const host of members) await waitFor(host);
+
+      const first = connectDirect(members[0]);
+      let initiated = false;
+      try {
+        initiated = first.adminCommand({ replSetGetStatus: 1 }).ok === 1;
+      } catch (e) {
+        initiated = false;
+      }
+      if (!initiated) {
+        print(`initiating ${rs}`);
+        const cfg = {
+          _id: rs,
+          members: members.map((host, i) => ({ _id: i, host, priority: i === 0 ? 2 : 1 })),
+        };
+        const res = first.adminCommand({ replSetInitiate: cfg });
+        if (!res.ok && res.codeName !== 'AlreadyInitialized') throw new Error(JSON.stringify(res));
+      }
+
+      // Reconnect through the whole set so writes reach whichever member is primary.
+      let admin = null;
+      for (let i = 0; i < 90 && !admin; i++) {
+        try {
+          const conn = new Mongo(`mongodb://${members.join(',')}/?replicaSet=${rs}`);
+          const candidate = conn.getDB('admin');
+          candidate.auth(rootUser, rootPassword);
+          if (candidate.hello().isWritablePrimary) admin = candidate;
+        } catch (e) {
+          /* no primary yet */
+        }
+        if (!admin) await sleep(2000);
+      }
+      if (!admin) throw new Error('no primary elected');
+
+      const dbName = process.env.APP_DATABASE;
+      const user = process.env.APP_USER;
+      const db = admin.getSiblingDB(dbName);
+      const roles = [{ role: 'readWrite', db: dbName }];
+      if (db.getUser(user)) {
+        db.updateUser(user, { pwd: process.env.APP_PASSWORD, roles });
+        print('application user updated');
+      } else {
+        db.createUser({ user, pwd: process.env.APP_PASSWORD, roles });
+        print('application user created');
+      }
+    })().catch((e) => {
+      print(String(e));
+      quit(1);
+    });

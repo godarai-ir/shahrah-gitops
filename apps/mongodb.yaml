@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/part-of: godar-chat
+spec:
+  project: shahrah
+  source:
+    repoURL: https://github.com/godarai-ir/shahrah-gitops.git
+    targetRevision: main
+    path: helm/mongodb
+    helm:
+      releaseName: mongodb
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: shahrah-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

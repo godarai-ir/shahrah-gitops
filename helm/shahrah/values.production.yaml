@@ -96,6 +96,9 @@ controlPlane:
     OIDC_ENABLED: 'true'
     OIDC_ISSUER_SCHEME: https
     OIDC_LOGIN_URL_TEMPLATE: https://{slug}.godarai.ir/login
+    CHAT_PROVISIONING_ENABLED: 'true'
+    CHAT_PROVISIONING_URL: http://librechat:3081
+    CHAT_URL_TEMPLATE: https://{slug}.chat.godarai.ir
   envFromConfigKeys:
   - REDIS_HOST
   - REDIS_PORT
@@ -135,6 +138,7 @@ controlPlane:
   - SHAHRAH_SMART_CACHE_EMBEDDING_BASE_URL
   - SHAHRAH_SMART_CACHE_EMBEDDING_API_KEY
   - OIDC_SIGNING_KEY_PEM
+  - CHAT_PROVISIONING_TOKEN
   extraEnv:
   - name: TRACE_OTLP_ENDPOINT
     value: opentelemetry-collector.observability.svc.cluster.local:4317
@@ -201,6 +205,12 @@ controlPlane:
       paths:
       - path: /v1
         pathType: Prefix
+      # OpenID Connect provider of the tenant host (issuer https://<slug>.godarai.ir): GodarChat
+      # discovers it and exchanges codes here.
+      - path: /oidc
+        pathType: Prefix
+      - path: /.well-known/openid-configuration
+        pathType: Exact
     tls:
       enabled: true
       secretName: godarai-ir-tls
@@ -635,3 +645,36 @@ postgres:
   enabled: false
   persistence:
     size: 100Gi
+librechat:
+  image:
+    # docker.io/delpak/godar-ai:librechat-v0.9.0-rc2 (LibreChat with host multi-tenancy)
+    tag: v0.9.0-rc2
+  env:
+    TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
+    TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.godarai.ir
+  ingress:
+    hosts:
+    - host: '*.chat.godarai.ir'
+      paths:
+      - path: /
+        pathType: Prefix
+    tls:
+      enabled: true
+      secretName: godarai-ir-chat-tls
+      clusterIssuer: ''
+  config: |
+    version: 1.3.17
+    cache: true
+    fileStrategy: s3
+    registration:
+      socialLogins: ["openid"]
+    endpoints:
+      custom:
+        - name: "Godar"
+          apiKey: "{{LIBRECHAT_OPENID_ACCESS_TOKEN}}"
+          baseURL: "https://{slug}.godarai.ir/v1"
+          models:
+            default: ["auto"]
+            fetch: true
+          titleConvo: true
+          modelDisplayLabel: "Godar"
