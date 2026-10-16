@@ -1,0 +1,23 @@
+# k3s imports `*.override` keys of this ConfigMap into the default server block of CoreDNS.
+#
+# Pods that call a tenant host (https://<slug>.godarai.ir: GodarChat's OIDC discovery, token,
+# userinfo and the /v1 gateway) would otherwise resolve the public load balancer and leave the
+# cluster. This answers those names with the in-cluster ingress-nginx Service instead. TLS and the
+# Host header are unchanged, so the same ingress rules and *.godarai.ir certificate serve the call.
+#
+# Only single-label names under godarai.ir are rewritten (two-level hosts such as
+# <slug>.chat.godarai.ir and the apex stay public). `www` is excluded because it is not served by
+# this cluster's ingress.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  godarai-internal.override: |
+    # RE2 has no lookahead: this no-op rule claims `www` first so the regex below never sees it.
+    rewrite stop name exact www.godarai.ir. www.godarai.ir.
+    rewrite stop {
+      name regex ^[a-z0-9]([a-z0-9-]*[a-z0-9])?\.godarai\.ir\.$ ingress-nginx-controller.ingress-nginx.svc.cluster.local.
+      answer auto
+    }
