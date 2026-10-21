@@ -87,7 +87,7 @@ redis:
   enabled: false
 controlPlane:
   image:
-    tag: v0.80.0
+    tag: v0.81.0
   env:
     NODE_ENV: production
     PRIVATE_FILES_S3_ENDPOINT: http://minio:9000
@@ -425,7 +425,7 @@ supportAdmin:
 metricsDlqReplayer:
   enabled: true
   image:
-    tag: v0.80.0
+    tag: v0.81.0
   env:
     CLICKHOUSE_REQUIRED: 'true'
   envFromConfigKeys:
@@ -588,7 +588,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.38.0
+      tag: v0.39.0
   clickhouse:
     enabled: true
     replicatedDatabase:
