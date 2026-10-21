@@ -663,26 +663,75 @@ librechat:
       enabled: true
       secretName: godarai-ir-chat-tls
       clusterIssuer: ''
-  config: "version: 1.3.17\ncache: true\nfileStrategy: s3\nregistration:\n  socialLogins:\
-    \ [\"openid\"]\nendpoints:\n  custom:\n    - name: \"Godar\"\n      # Each user\
-    \ stores their own Godar personal access token (PAT) from the key button in the\n\
-    \      # model picker; the model list is whatever that PAT may use.\n      apiKey:\
-    \ \"user_provided\"\n      requireUserKey: true\n      baseURL: \"https://{slug}.godarai.ir/v1\"\
-    \n      models:\n        default: [\"auto\"]\n        fetch: true\n      modelDisplay:\
-    \ \"fqn\"\n      titleConvo: true\n      modelDisplayLabel: \"Godar\"\n# Remote\
-    \ MCP servers shared by every tenant. Only servers that need no pre-registered\
-    \ OAuth app\n# (dynamic client registration, no auth, or a per-user key) belong\
-    \ here; each user signs in or\n# supplies their own key, so no credentials are\
-    \ shared across tenants. No stdio servers: they\n# would run inside the LibreChat\
-    \ pod.\nmcpServers:\n  notion:\n    type: streamable-http\n    url: https://mcp.notion.com/mcp\n\
-    \    requiresOAuth: true\n  atlassian:\n    # Jira and Confluence\n    type: streamable-http\n\
-    \    url: https://mcp.atlassian.com/v1/mcp\n    requiresOAuth: true\n  linear:\n\
-    \    type: streamable-http\n    url: https://mcp.linear.app/mcp\n    requiresOAuth:\
-    \ true\n  clickup:\n    type: streamable-http\n    url: https://mcp.clickup.com/mcp\n\
-    \    requiresOAuth: true\n  fireflies:\n    type: streamable-http\n    url: https://api.fireflies.ai/mcp\n\
-    \    requiresOAuth: true\n  tavily:\n    type: streamable-http\n    url: https://mcp.tavily.com/mcp\n\
-    \    requiresOAuth: true\n  microsoft-learn:\n    type: streamable-http\n    url:\
-    \ https://learn.microsoft.com/api/mcp\n  context7:\n    type: streamable-http\n\
-    \    url: https://mcp.context7.com/mcp\n    headers:\n      Authorization: \"\
-    Bearer {{CONTEXT7_API_KEY}}\"\n    customUserVars:\n      CONTEXT7_API_KEY:\n\
-    \        title: Context7 API key\n        description: Free key from context7.com/dashboard\n"
+  config: |
+    version: 1.3.17
+    cache: true
+    fileStrategy: s3
+    registration:
+      socialLogins: ["openid"]
+    endpoints:
+      agents:
+        # GodarAI seat refusals the UI explains with a seat request instead of a generic provider error.
+        providerErrorCodes:
+          - seat_unassigned
+          - seat_credits_exhausted
+          - personal_limit_reached
+          - budget_rule_reached
+          - pool_exhausted
+      custom:
+        - name: "Godar"
+          # LibreChat signs a short-lived per-user JWT (USER_ASSERTION_* env) naming the member's
+          # OpenID subject and tenant; the gateway verifies it with LibreChat's public key, so users
+          # never paste a personal access token. `apiKey` is only the fallback the SDK requires.
+          apiKey: "user-assertion"
+          baseURL: "https://{slug}.godarai.ir/v1"
+          headers:
+            Authorization: "Bearer {{LIBRECHAT_USER_ASSERTION}}"
+          models:
+            default: ["auto"]
+            fetch: true
+          modelDisplay: "fqn"
+          titleConvo: true
+          modelDisplayLabel: "Godar"
+    # Remote MCP servers shared by every tenant. Only servers that need no pre-registered OAuth app
+    # (dynamic client registration, no auth, or a per-user key) belong here; each user signs in or
+    # supplies their own key, so no credentials are shared across tenants. No stdio servers: they
+    # would run inside the LibreChat pod.
+    mcpServers:
+      notion:
+        type: streamable-http
+        url: https://mcp.notion.com/mcp
+        requiresOAuth: true
+      atlassian:
+        # Jira and Confluence
+        type: streamable-http
+        url: https://mcp.atlassian.com/v1/mcp
+        requiresOAuth: true
+      linear:
+        type: streamable-http
+        url: https://mcp.linear.app/mcp
+        requiresOAuth: true
+      clickup:
+        type: streamable-http
+        url: https://mcp.clickup.com/mcp
+        requiresOAuth: true
+      fireflies:
+        type: streamable-http
+        url: https://api.fireflies.ai/mcp
+        requiresOAuth: true
+      tavily:
+        type: streamable-http
+        url: https://mcp.tavily.com/mcp
+        requiresOAuth: true
+      microsoft-learn:
+        type: streamable-http
+        url: https://learn.microsoft.com/api/mcp
+      context7:
+        type: streamable-http
+        url: https://mcp.context7.com/mcp
+        headers:
+          Authorization: "Bearer {{CONTEXT7_API_KEY}}"
+        customUserVars:
+          CONTEXT7_API_KEY:
+            title: Context7 API key
+            description: Free key from context7.com/dashboard
