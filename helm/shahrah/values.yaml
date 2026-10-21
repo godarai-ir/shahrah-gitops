@@ -1377,14 +1377,6 @@ librechat:
     AWS_REGION: us-east-1
     AWS_BUCKET_NAME: godarai-chat
     AWS_FORCE_PATH_STYLE: "true"
-    # Signed per-user assertion for the Godar gateway (`{{LIBRECHAT_USER_ASSERTION}}`). The gateway
-    # verifies it with the public key whose `kid` is USER_ASSERTION_KEY_ID; AUDIENCE must equal what
-    # it expects. The private key is USER_ASSERTION_PRIVATE_KEY_BASE64 in `librechat-secret`.
-    USER_ASSERTION_ALGORITHM: EdDSA
-    USER_ASSERTION_KEY_ID: librechat-user-assertion-2026-10
-    USER_ASSERTION_ISSUER: librechat
-    USER_ASSERTION_AUDIENCE: godar-gateway
-    USER_ASSERTION_TTL_SECONDS: "600"
   envFromConfigKeys: []
   envFromSecretKeys: []
   # Secret `librechat-secret`, created out of band (never committed). Keys:
@@ -1396,9 +1388,6 @@ librechat:
   #   MONGO_URI                        mongodb://librechat:<pw>@mongodb-0.mongodb-headless:27017,...,mongodb-2...:27017/LibreChat?replicaSet=rs0&authSource=LibreChat
   #   REDIS_URI                        redis://:<pw>@librechat-redis-master:6379
   #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY   MinIO user limited to the chat bucket (created by librechat-bucket-init)
-  #   USER_ASSERTION_PRIVATE_KEY_BASE64          base64 of the Ed25519 PKCS#8 PEM that signs gateway assertions.
-  #                                    Optional: without it the Authorization header is dropped and the
-  #                                    gateway and seat summary refuse the member.
   extraEnv:
     - { name: CREDS_KEY, valueFrom: { secretKeyRef: { name: librechat-secret, key: CREDS_KEY } } }
     - { name: CREDS_IV, valueFrom: { secretKeyRef: { name: librechat-secret, key: CREDS_IV } } }
@@ -1410,7 +1399,6 @@ librechat:
     - { name: REDIS_URI, valueFrom: { secretKeyRef: { name: librechat-secret, key: REDIS_URI } } }
     - { name: AWS_ACCESS_KEY_ID, valueFrom: { secretKeyRef: { name: librechat-secret, key: AWS_ACCESS_KEY_ID } } }
     - { name: AWS_SECRET_ACCESS_KEY, valueFrom: { secretKeyRef: { name: librechat-secret, key: AWS_SECRET_ACCESS_KEY } } }
-    - { name: USER_ASSERTION_PRIVATE_KEY_BASE64, valueFrom: { secretKeyRef: { name: librechat-secret, key: USER_ASSERTION_PRIVATE_KEY_BASE64, optional: true } } }
   # librechat.yaml, shared by all tenants. `{slug}` in a baseURL becomes the requesting tenant's slug.
   config: |
     version: 1.3.17
@@ -1420,24 +1408,14 @@ librechat:
     registration:
       socialLogins: ["openid"]
     endpoints:
-      agents:
-        # GodarAI seat refusals the UI explains with a seat request instead of a generic error.
-        providerErrorCodes:
-          - seat_unassigned
-          - seat_credits_exhausted
-          - personal_limit_reached
-          - budget_rule_reached
-          - pool_exhausted
       custom:
         - name: "Godar"
-          # LibreChat signs a short-lived per-user JWT (USER_ASSERTION_* env) naming the member's
-          # OpenID subject and tenant; the gateway verifies it with LibreChat's public key, so users
-          # never paste a personal access token. `apiKey` is only the fallback the SDK requires.
-          # The seat summary (/api/godar/seat) uses the same header and answers 503 without it.
-          apiKey: "user-assertion"
+          # Each user stores their own Godar personal access token (PAT) from the key button in the
+          # model picker. Until one is stored the picker lists no models; afterwards it lists exactly
+          # the models that PAT may use. The gateway attributes usage to the tenant.
+          apiKey: "user_provided"
+          requireUserKey: true
           baseURL: "https://{slug}.example.com/v1"
-          headers:
-            Authorization: "Bearer {{LIBRECHAT_USER_ASSERTION}}"
           models:
             default: ["auto"]
             fetch: true
