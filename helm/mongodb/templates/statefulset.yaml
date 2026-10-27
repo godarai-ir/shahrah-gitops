@@ -125,9 +125,12 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
+          # Liveness only asks "is mongod still listening". A mongosh round trip
+          # times out on a busy node and the kill loop kept a member from ever
+          # finishing recovery, which cost the replica set its majority.
           livenessProbe:
-            exec:
-              command: ["mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+            tcpSocket:
+              port: mongodb
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 6
