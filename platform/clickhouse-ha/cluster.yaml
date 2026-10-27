@@ -47,7 +47,9 @@ metadata:
     app.kubernetes.io/component: database
 spec:
   shards: 1
-  replicas: 2
+  # Single replica to save ~1 CPU / ~1Gi. Durability comes from the Longhorn
+  # volume (patched to 2 replicas by hand; the storage class is r1) and the S3 backups.
+  replicas: 1
   keeperClusterRef:
     name: shahrah-keeper
   dataVolumeClaimSpec:
