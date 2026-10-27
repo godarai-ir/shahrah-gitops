@@ -108,6 +108,7 @@ controlPlane:
     CHAT_PROVISIONING_ENABLED: 'true'
     CHAT_PROVISIONING_URL: http://librechat:3081
     CHAT_URL_TEMPLATE: https://{slug}.chat.godarai.ir
+    USER_ASSERTION_AUDIENCE: godarai-gateway
   envFromConfigKeys:
   - REDIS_HOST
   - REDIS_PORT
@@ -149,6 +150,14 @@ controlPlane:
   - OIDC_SIGNING_KEY_PEM
   - CHAT_PROVISIONING_TOKEN
   extraEnv:
+  # Public half of LibreChat's USER_ASSERTION_PRIVATE_KEY. Optional so the pod starts before the
+  # secret key exists; unset, the gateway answers user assertions with 401.
+  - name: USER_ASSERTION_PUBLIC_KEY_PEM
+    valueFrom:
+      secretKeyRef:
+        name: shahrah-secret
+        key: USER_ASSERTION_PUBLIC_KEY_PEM
+        optional: true
   - name: TRACE_DEFAULT_SAMPLE_RATE
     value: '0.01'
   - name: TRACE_SLOW_REQUEST_MS
@@ -653,6 +662,7 @@ librechat:
     TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
     AWS_ENDPOINT_URL: https://files.godarai.ir
     TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.godarai.ir
+    USER_ASSERTION_AUDIENCE: godarai-gateway
   ingress:
     hosts:
     - host: '*.chat.godarai.ir'
@@ -664,10 +674,12 @@ librechat:
       secretName: godarai-ir-chat-tls
       clusterIssuer: ''
   config: "version: 1.3.17\ncache: true\nfileStrategy: s3\nregistration:\n  socialLogins:\
-    \ [\"openid\"]\nendpoints:\n  custom:\n    - name: \"Godar\"\n      # Each user\
-    \ stores their own Godar personal access token (PAT) from the key button in the\n\
-    \      # model picker; the model list is whatever that PAT may use.\n      apiKey:\
-    \ \"user_provided\"\n      requireUserKey: true\n      baseURL: \"https://{slug}.godarai.ir/v1\"\
+    \ [\"openid\"]\nendpoints:\n  custom:\n    - name: \"Godar\"\n      # LibreChat\
+    \ signs a short-lived assertion naming the signed-in member on every request\n\
+    \      # (USER_ASSERTION_* env); the gateway verifies it, so members never paste a\n\
+    \      # key and chat spends their seat credits. apiKey is only the SDK fallback.\n\
+    \      apiKey: \"user-assertion\"\n      headers:\n        Authorization: \"Bearer\
+    \ {{LIBRECHAT_USER_ASSERTION}}\"\n      baseURL: \"https://{slug}.godarai.ir/v1\"\
     \n      models:\n        default: [\"auto\"]\n        fetch: true\n      modelDisplay:\
     \ \"fqn\"\n      titleConvo: true\n      modelDisplayLabel: \"Godar\"\n# Remote\
     \ MCP servers shared by every tenant. Only servers that need no pre-registered\
