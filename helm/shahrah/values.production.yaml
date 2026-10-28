@@ -672,7 +672,7 @@ librechat:
       secretName: godarai-ir-chat-tls
       clusterIssuer: ''
   config: "version: 1.3.17\ncache: true\nfileStrategy: s3\nregistration:\n  socialLogins:\
-    \ [\"openid\"]\nendpoints:\n  custom:\n    - name: \"Godar\"\n      # LibreChat\
+    \ [\"openid\"]\ninterface:\n  mcpServers:\n    use: true\n    create: true\nendpoints:\n  custom:\n    - name: \"Godar\"\n      # LibreChat\
     \ signs a short-lived assertion naming the signed-in member on every request\n\
     \      # (USER_ASSERTION_* env); the gateway verifies it, so members never paste\
     \ a\n      # key and chat spends their seat credits. apiKey is only the SDK fallback.\n\
