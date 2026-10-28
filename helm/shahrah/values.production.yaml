@@ -661,6 +661,8 @@ librechat:
     AWS_ENDPOINT_URL: https://files.godarai.ir
     TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.godarai.ir
     USER_ASSERTION_AUDIENCE: godarai-gateway
+    MCP_PROXY: http://10.10.0.190:1443
+    MCP_NO_PROXY: localhost,127.0.0.1,.svc,.cluster.local,.godarai.ir
   ingress:
     hosts:
     - host: '*.chat.godarai.ir'
