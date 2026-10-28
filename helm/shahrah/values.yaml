@@ -1410,6 +1410,11 @@ librechat:
     fileStrategy: s3
     registration:
       socialLogins: ["openid"]
+    # Members may add their own MCP servers; tenant roles pick this up at each start.
+    interface:
+      mcpServers:
+        use: true
+        create: true
     endpoints:
       custom:
         - name: "Godar"
