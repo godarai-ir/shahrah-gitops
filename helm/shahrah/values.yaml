@@ -1332,6 +1332,13 @@ librechat:
         ports:
           - { protocol: TCP, port: 443 }
           - { protocol: TCP, port: 80 }
+      # EU egress proxy on nat-gw-1 (MCP_PROXY): MCP servers and their OAuth endpoints that
+      # refuse this network's addresses. See infra/eu-egress-proxy in the Shahrah repo.
+      - to:
+          - ipBlock:
+              cidr: 10.10.0.190/32
+        ports:
+          - { protocol: TCP, port: 1443 }
   resources:
     requests:
       cpu: 250m
