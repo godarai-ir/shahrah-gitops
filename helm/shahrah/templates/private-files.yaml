@@ -310,6 +310,16 @@ spec:
         - name: clamav
           image: "{{ .Values.privateFiles.clamav.image.repository }}:{{ .Values.privateFiles.clamav.image.tag }}"
           imagePullPolicy: {{ .Values.privateFiles.clamav.image.pullPolicy }}
+          {{- if not .Values.privateFiles.clamav.concurrentDatabaseReload }}
+          # The image has no env switch for this; append it to clamd.conf before /init.
+          command:
+            - /bin/sh
+            - -c
+            - |
+              grep -q '^ConcurrentDatabaseReload' /etc/clamav/clamd.conf \
+                || echo 'ConcurrentDatabaseReload no' >> /etc/clamav/clamd.conf
+              exec /init
+          {{- end }}
           ports:
             - name: clamd
               containerPort: {{ .Values.privateFiles.clamav.service.port }}

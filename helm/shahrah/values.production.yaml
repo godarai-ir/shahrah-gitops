@@ -83,6 +83,16 @@ privateFiles:
   clamav:
     persistence:
       storageClassName: longhorn-prod-r2
+    # The signature database alone keeps clamd at ~950Mi, so 1Gi is the floor.
+    # The limit only covers scan buffers because the reload no longer doubles memory.
+    concurrentDatabaseReload: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 1Gi
+      limits:
+        cpu: "1"
+        memory: 1536Mi
 redis:
   enabled: false
 controlPlane:

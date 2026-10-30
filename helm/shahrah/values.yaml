@@ -182,6 +182,10 @@ privateFiles:
     service:
       name: clamav
       port: 3310
+    # With the default (true), clamd loads the new signature database next to the
+    # old one on every update, so memory briefly doubles (~2Gi). false reloads in
+    # place: peak stays ~1Gi, but scans block for the reload (tens of seconds).
+    concurrentDatabaseReload: true
     persistence:
       enabled: true
       storageClassName: local-path
