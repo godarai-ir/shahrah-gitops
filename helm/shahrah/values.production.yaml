@@ -655,9 +655,10 @@ postgres:
     size: 100Gi
 librechat:
   image:
-    fullTag: v0.9.3
+    fullTag: v0.9.4
   env:
     TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
+    ADMIN_HOST_BASE_DOMAIN: admin.godarai.ir
     AWS_ENDPOINT_URL: https://files.godarai.ir
     TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.godarai.ir
     USER_ASSERTION_AUDIENCE: godarai-gateway
@@ -683,3 +684,16 @@ librechat:
     \n      baseURL: \"https://{slug}.godarai.ir/v1\"\n      models:\n        default:\
     \ [\"auto\"]\n        fetch: true\n      modelDisplay: \"fqn\"\n      titleConvo:\
     \ true\n      modelDisplayLabel: \"Godar\""
+adminPanel:
+  enabled: true
+  image:
+    tag: sha-77f69e72714ea2ccae71da6400286caca7e06861
+  env:
+    ADMIN_HOST_BASE_DOMAIN: admin.godarai.ir
+    TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
+  ingress:
+    hosts:
+    - host: '*.admin.godarai.ir'
+      paths:
+      - path: /
+        pathType: Prefix

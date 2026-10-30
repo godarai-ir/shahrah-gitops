@@ -1292,6 +1292,13 @@ librechat:
                 app.kubernetes.io/name: ingress-nginx
         ports:
           - { protocol: TCP, port: 3080 }
+      # The admin panel calls the API with Host set to the tenant's chat host.
+      - from:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/component: admin-panel
+        ports:
+          - { protocol: TCP, port: 3080 }
       - from:
           - podSelector:
               matchLabels:
@@ -1356,6 +1363,7 @@ librechat:
       drop: [ALL]
   # Host mode refuses to start with DOMAIN_CLIENT, DOMAIN_SERVER, OPENID_ISSUER, OPENID_CLIENT_*,
   # OPENID_REUSE_TOKENS, ADMIN_PANEL_URL, local file storage or without Redis. Do not add them.
+  # Each tenant's admin panel origin comes from ADMIN_HOST_BASE_DOMAIN instead of ADMIN_PANEL_URL.
   env:
     NODE_ENV: production
     HOST: 0.0.0.0
@@ -1363,6 +1371,9 @@ librechat:
     CONFIG_PATH: /app/librechat.yaml
     MULTI_TENANT_MODE: host
     TENANT_HOST_BASE_DOMAIN: chat.example.com
+    # https://<slug>.<ADMIN_HOST_BASE_DOMAIN> is the tenant's admin panel (adminPanel below). Unset,
+    # LibreChat keeps its admin API closed (404 ADMIN_PANEL_DISABLED).
+    ADMIN_HOST_BASE_DOMAIN: admin.example.com
     TENANT_OIDC_ISSUER_TEMPLATE: https://{slug}.example.com
     TENANT_ISOLATION_STRICT: "true"
     TENANT_PROVISIONING_PORT: "3081"
@@ -1482,6 +1493,158 @@ librechat:
       periodSeconds: 5
       timeoutSeconds: 3
       failureThreshold: 60
+
+# GodarChat admin panel (godarai-ir/admin-panel): ONE panel for every tenant, run with
+# MULTI_TENANT_MODE=host. https://<slug>.<ADMIN_HOST_BASE_DOMAIN> manages the LibreChat tenant at
+# https://<slug>.<TENANT_HOST_BASE_DOMAIN>: the slug comes from the Host header (ingress-nginx passes
+# it through unchanged) and every call reaches LibreChat on API_SERVER_URL with Host set to the
+# tenant's chat host. Sessions are sealed cookies, so pods are stateless.
+# Needs a LibreChat with ADMIN_HOST_BASE_DOMAIN support (GodarChat after v0.9.3).
+adminPanel:
+  enabled: false
+  image:
+    repository: godar-ai
+    # Published as docker.io/delpak/godar-ai:admin-panel-<tag> (admin-panel-vX.Y.Z, admin-panel-sha-<commit>).
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicaCount: 2
+  containerPort: 3000
+  revisionHistoryLimit: 5
+  labels: {}
+  annotations: {}
+  podLabels: {}
+  podAnnotations: {}
+  serviceAccountName: ""
+  priorityClassName: ""
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            topologyKey: kubernetes.io/hostname
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: admin-panel
+  topologySpreadConstraints: []
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 3000
+    targetPort: http
+  ingress:
+    enabled: true
+    className: nginx
+    annotations: {}
+    hosts:
+      - host: "*.admin.example.com"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      # *.godarai.ir does not cover two-level hosts: see platform/godarai-tls/admin-wildcard-certificate.yaml.
+      secretName: godarai-ir-admin-tls
+      clusterIssuer: ""
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+  pdb:
+    enabled: true
+    minAvailable: 1
+  networkPolicy:
+    enabled: true
+    ingress:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: ingress-nginx
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: ingress-nginx
+        ports:
+          - { protocol: TCP, port: 3000 }
+    # The panel talks to LibreChat only; sign-in redirects go through the browser.
+    egress:
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: kube-system
+        ports:
+          - { protocol: UDP, port: 53 }
+          - { protocol: TCP, port: 53 }
+      - to:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/component: librechat
+        ports:
+          - { protocol: TCP, port: 3080 }
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  # The image runs as the bun user (1000).
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: [ALL]
+  # VITE_API_BASE_URL and VITE_BASE_PATH are refused in host mode. Do not add them.
+  env:
+    NODE_ENV: production
+    PORT: "3000"
+    MULTI_TENANT_MODE: host
+    # Same values as librechat.env.
+    ADMIN_HOST_BASE_DOMAIN: admin.example.com
+    TENANT_HOST_BASE_DOMAIN: chat.example.com
+    API_SERVER_URL: http://librechat:3080
+    # Tenants sign in through their own identity provider only.
+    ADMIN_SSO_ONLY: "true"
+  envFromConfigKeys: []
+  envFromSecretKeys: []
+  # Secret `admin-panel-secret`, created out of band (never committed). Keys:
+  #   SESSION_SECRET   >= 32 chars; seals the session cookie. Rotating it signs every admin out.
+  extraEnv:
+    - { name: SESSION_SECRET, valueFrom: { secretKeyRef: { name: admin-panel-secret, key: SESSION_SECRET } } }
+  probes:
+    readiness:
+      enabled: true
+      type: http
+      path: /health
+      port: http
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    liveness:
+      enabled: true
+      type: http
+      path: /health
+      port: http
+      initialDelaySeconds: 20
+      periodSeconds: 15
+      timeoutSeconds: 3
+      failureThreshold: 6
+    startup:
+      enabled: false
+      type: http
+      path: /health
+      port: http
 
 migrations:
   enabled: true
