@@ -595,7 +595,7 @@ migrations:
     waitForPostgres:
       enabled: false
     image:
-      tag: v0.42.0
+      tag: v0.43.0
   clickhouse:
     enabled: true
     replicatedDatabase:
