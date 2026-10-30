@@ -1,0 +1,14 @@
+# Tenant admin panels are <slug>.admin.godarai.ir. A wildcard covers exactly one label, so neither
+# *.godarai.ir nor *.chat.godarai.ir covers them; this one does. Same ClusterIssuer (Arvan DNS-01).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: godarai-ir-admin-wildcard
+  namespace: shahrah-production
+spec:
+  secretName: godarai-ir-admin-tls
+  issuerRef:
+    name: letsencrypt-arvan-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - "*.admin.godarai.ir"

@@ -34,6 +34,10 @@ jobs:
           grep -q 'fileStrategy: s3' /tmp/shahrah-production.yaml
           # Host mode refuses these at startup; they must never be rendered for GodarChat.
           ! grep -E 'name: (DOMAIN_CLIENT|DOMAIN_SERVER|OPENID_ISSUER|OPENID_CLIENT_ID|OPENID_CLIENT_SECRET|OPENID_REUSE_TOKENS|ADMIN_PANEL_URL)$' /tmp/shahrah-production.yaml
+          # Each tenant's admin panel origin comes from ADMIN_HOST_BASE_DOMAIN; the panel refuses
+          # fixed browser-facing origins in host mode.
+          grep -q 'name: ADMIN_HOST_BASE_DOMAIN' /tmp/shahrah-production.yaml
+          ! grep -E 'name: (VITE_API_BASE_URL|VITE_BASE_PATH)$' /tmp/shahrah-production.yaml
 
       - name: Helm lint and template mongodb
         run: |
