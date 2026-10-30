@@ -1391,6 +1391,11 @@ librechat:
     # Path only. In host mode the authorization request is built as <tenant origin><OPENID_CALLBACK_URL>;
     # unset, the redirect_uri becomes https://<slug>.chat.<domain>undefined and sign-in is rejected.
     OPENID_CALLBACK_URL: /oauth/openid/callback
+    # Admin panel sign-in: Godar puts the tenant role in the ID token's `roles` claim, and only
+    # tenant_admin may use https://<slug>.<ADMIN_HOST_BASE_DOMAIN>. Unset, no one is an admin.
+    OPENID_ADMIN_ROLE: tenant_admin
+    OPENID_ADMIN_ROLE_PARAMETER_PATH: roles
+    OPENID_ADMIN_ROLE_TOKEN_KIND: id
     AWS_ENDPOINT_URL: http://minio:9000
     AWS_REGION: us-east-1
     AWS_BUCKET_NAME: godarai-chat
