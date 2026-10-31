@@ -46,3 +46,28 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   "docs" .Values.docs
 -}}
 {{- end -}}
+
+{{/*
+Migration hook images. Shared by migrate-jobs.yaml and migration-images-configmap.yaml
+so the tracked ConfigMap always changes when a hook's image changes.
+*/}}
+{{- define "shahrah.migrations.mainDbImage" -}}
+{{ .Values.global.imageRegistry }}/{{ .Values.migrations.mainDb.image.repository }}:goose-{{ .Values.migrations.mainDb.image.tag | default .Values.global.imageTag }}
+{{- end -}}
+
+{{- define "shahrah.migrations.supportAdminImage" -}}
+{{ .Values.global.imageRegistry }}/{{ .Values.migrations.supportAdmin.image.repository }}:support-admin-migrate-{{ .Values.migrations.supportAdmin.image.tag | default .Values.global.imageTag }}
+{{- end -}}
+
+{{- define "shahrah.migrations.clickhouseImage" -}}
+{{ .Values.migrations.clickhouse.image.repository }}:{{ .Values.migrations.clickhouse.image.tag }}
+{{- end -}}
+
+{{- define "shahrah.migrations.modelDiscoveryImage" -}}
+{{ .Values.global.imageRegistry }}/{{ .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}
+{{- end -}}
+
+{{- define "shahrah.migrations.modelDiscoveryCatalogImportImage" -}}
+{{- $catalogImport := .Values.migrations.modelDiscoveryCatalogImport -}}
+{{ .Values.global.imageRegistry }}/{{ $catalogImport.image.repository | default .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ $catalogImport.image.tag | default .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}
+{{- end -}}
