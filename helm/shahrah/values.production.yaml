@@ -655,7 +655,7 @@ postgres:
     size: 100Gi
 librechat:
   image:
-    fullTag: v0.9.4
+    fullTag: v0.9.5
   env:
     TENANT_HOST_BASE_DOMAIN: chat.godarai.ir
     ADMIN_HOST_BASE_DOMAIN: admin.godarai.ir
