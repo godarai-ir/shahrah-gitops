@@ -1,0 +1,35 @@
+{{- if .Values.migrations.enabled }}
+{{- $m := .Values.migrations }}
+# The migration Jobs are Argo CD Sync hooks, and hooks only run inside a sync
+# operation. A release that only bumps a migration image (e.g. goose) changes no
+# tracked resource, so Argo marks the app Synced and the hook never runs. This
+# ConfigMap is a tracked resource carrying every hook image: bumping one makes
+# the app OutOfSync, auto-sync starts an operation, and the hooks run.
+# It sits in a wave after the hooks (-6..-3), so a failed migration leaves it at
+# the old images and the app stays OutOfSync instead of looking deployed.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: migration-images
+  labels:
+    {{- include "shahrah.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrations
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+data:
+  {{- if $m.mainDb.enabled }}
+  migrate-main-db: {{ include "shahrah.migrations.mainDbImage" . | quote }}
+  {{- end }}
+  {{- if $m.supportAdmin.enabled }}
+  support-admin-migrate: {{ include "shahrah.migrations.supportAdminImage" . | quote }}
+  {{- end }}
+  {{- if $m.clickhouse.enabled }}
+  migrate-clickhouse: {{ include "shahrah.migrations.clickhouseImage" . | quote }}
+  {{- end }}
+  {{- if $m.modelDiscovery.enabled }}
+  model-discovery-migrate: {{ include "shahrah.migrations.modelDiscoveryImage" . | quote }}
+  {{- end }}
+  {{- if $m.modelDiscoveryCatalogImport.enabled }}
+  model-discovery-catalog-import: {{ include "shahrah.migrations.modelDiscoveryCatalogImportImage" . | quote }}
+  {{- end }}
+{{- end }}

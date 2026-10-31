@@ -38,7 +38,7 @@ spec:
       {{- end }}
       containers:
         - name: goose
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.mainDb.image.repository }}:goose-{{ .Values.migrations.mainDb.image.tag | default .Values.global.imageTag }}"
+          image: {{ include "shahrah.migrations.mainDbImage" . | quote }}
           imagePullPolicy: {{ .Values.migrations.mainDb.image.pullPolicy | default "IfNotPresent" }}
           command:
             {{- toYaml .Values.migrations.mainDb.command | nindent 12 }}
@@ -90,7 +90,7 @@ spec:
       {{- end }}
       containers:
         - name: support-admin-migrate
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.supportAdmin.image.repository }}:support-admin-migrate-{{ .Values.migrations.supportAdmin.image.tag | default .Values.global.imageTag }}"
+          image: {{ include "shahrah.migrations.supportAdminImage" . | quote }}
           imagePullPolicy: {{ .Values.migrations.supportAdmin.image.pullPolicy | default "IfNotPresent" }}
           command:
             {{- toYaml .Values.migrations.supportAdmin.command | nindent 12 }}
@@ -140,7 +140,7 @@ spec:
             - until nc -z {{ if .Values.clickhouse.enabled }}{{ .Values.clickhouse.service.name | default "clickhouse" }}{{ else }}{{ .Values.externalServices.clickhouse.name | default .Values.migrations.clickhouse.serviceName | default "clickhouse" }}{{ end }} {{ if .Values.clickhouse.enabled }}{{ .Values.clickhouse.service.nativePort | default 9000 }}{{ else }}{{ .Values.externalServices.clickhouse.port | default .Values.migrations.clickhouse.servicePort | default 9000 }}{{ end }}; do echo waiting for clickhouse; sleep 2; done
       containers:
         - name: migrate-clickhouse
-          image: "{{ .Values.migrations.clickhouse.image.repository }}:{{ .Values.migrations.clickhouse.image.tag }}"
+          image: {{ include "shahrah.migrations.clickhouseImage" . | quote }}
           imagePullPolicy: {{ .Values.migrations.clickhouse.image.pullPolicy | default "IfNotPresent" }}
           command:
             - sh
@@ -235,7 +235,7 @@ spec:
       {{- end }}
       containers:
         - name: model-discovery-migrate
-          image: "{{ .Values.global.imageRegistry }}/{{ .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
+          image: {{ include "shahrah.migrations.modelDiscoveryImage" . | quote }}
           imagePullPolicy: {{ .Values.migrations.modelDiscovery.image.pullPolicy | default "IfNotPresent" }}
           command:
             {{- toYaml .Values.migrations.modelDiscovery.command | nindent 12 }}
@@ -288,7 +288,7 @@ spec:
       {{- end }}
       containers:
         - name: model-discovery-catalog-import
-          image: "{{ .Values.global.imageRegistry }}/{{ $catalogImport.image.repository | default .Values.migrations.modelDiscovery.image.repository }}:model-discovery-migrate-{{ $catalogImport.image.tag | default .Values.migrations.modelDiscovery.image.tag | default .Values.global.imageTag }}"
+          image: {{ include "shahrah.migrations.modelDiscoveryCatalogImportImage" . | quote }}
           imagePullPolicy: {{ $catalogImport.image.pullPolicy | default "IfNotPresent" }}
           command:
             - pnpm
